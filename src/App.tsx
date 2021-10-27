@@ -1,6 +1,10 @@
+import Shell from './scenes/Shell'
+
 function App() {
   return (
-    <div className="h-screen flex overflow-hidden bg-gray-100">Legend List</div>
+    <div>
+      <Shell />
+    </div>
   )
 }
 
