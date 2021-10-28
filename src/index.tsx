@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import './index.css'
 import App from './App'
-import './testDexie'
+// import './models/testDexie'
 
 ReactDOM.render(
   <React.StrictMode>

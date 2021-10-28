@@ -1,5 +1,12 @@
 import Dexie from 'dexie'
-import { Task, TaskVersion, TagTask, Tag, Filter, PrecedingTask } from './types'
+import {
+  Task,
+  TaskVersion,
+  TagTask,
+  Tag,
+  Filter,
+  PrecedingTask,
+} from '../types'
 
 export class MyAppDatabase extends Dexie {
   Task: Dexie.Table<Task, string>
