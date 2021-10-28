@@ -8,7 +8,7 @@ import {
   PrecedingTask,
 } from '../types'
 
-export class MyAppDatabase extends Dexie {
+export class DexieDatabase extends Dexie {
   Task: Dexie.Table<Task, string>
   TaskVersion: Dexie.Table<TaskVersion, string>
   TagTask: Dexie.Table<TagTask, string>
@@ -36,3 +36,5 @@ export class MyAppDatabase extends Dexie {
     this.PrecedingTask = this.table('PrecedingTask')
   }
 }
+
+export default new DexieDatabase()
