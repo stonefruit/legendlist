@@ -1,9 +1,12 @@
 export type Task = {
   id: string
+  name: string
   content: string
-  start_date?: number
-  due_date?: number
-  completed_at?: number
+  priority: number
+  planned_start_date?: number
+  planned_end_date?: number
+  actual_start_date?: number
+  actual_end_date?: number
   created_at: number
   modified_at: number
 }
@@ -20,6 +23,7 @@ export type Filter = {
   name: string
   string_match: string
   tags: string[]
+  order: number
   created_at: number
   modified_at: number
 }
@@ -35,6 +39,12 @@ export type TagTask = {
   order: number
   created_at: number
   modified_at: number
+}
+
+export type PrecedingTask = {
+  id: string
+  task_id: string
+  preceding_task_id: string
 }
 
 export type Settings = {
