@@ -30,7 +30,7 @@ function AddTaskBar({ addTask }: Props) {
   }
 
   return (
-    <div className="flex mt-2 h-10 bg-gray-100 border border-opacity-0 focus-within:border-opacity-100 border-gray-200 focus-within:border-yellow-500 mx-5 rounded-lg">
+    <div className="flex mt-2 h-9 bg-gray-100 border border-opacity-0 focus-within:border-opacity-100 border-gray-200 focus-within:border-yellow-500 mx-5 rounded-lg">
       <div className="flex-1 px-4 flex justify-between">
         <div className="flex-1 flex">
           <div className="relative w-full text-gray-400 focus-within:text-gray-300">
@@ -42,7 +42,10 @@ function AddTaskBar({ addTask }: Props) {
               )}
             >
               <PlusIcon
-                className={classNames(name && 'text-yellow-500', 'h-5 w-5')}
+                className={classNames(
+                  name && 'text-yellow-500 hover:text-yellow-600',
+                  'h-4 w-4'
+                )}
                 aria-hidden="true"
               />
             </div>
@@ -50,7 +53,7 @@ function AddTaskBar({ addTask }: Props) {
               value={name}
               onChange={onChangeContent}
               id="search-field"
-              className="block bg-gray-100 w-full h-full pl-8 pr-3 py-2 border-transparent focus:text-gray-900 placeholder-gray-400 focus:outline-none focus:placeholder-gray-300 focus:ring-0 focus:border-transparent"
+              className="text-sm block bg-gray-100 w-full h-full pl-6 pr-3 py-2 border-transparent focus:text-gray-900 placeholder-gray-400 focus:outline-none focus:placeholder-gray-300 focus:ring-0 focus:border-transparent"
               placeholder="Add Task. Press Enter to save."
               type="addTask"
               name="addTask"

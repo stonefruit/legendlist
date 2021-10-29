@@ -28,4 +28,19 @@ const find = async (): Promise<Task[]> => {
   return await db.Task.orderBy('created_at').toArray()
 }
 
-export { create, get, find }
+const update = async ({
+  id,
+  actual_end_date,
+}: {
+  id: string
+  actual_end_date: number
+}): Promise<boolean> => {
+  try {
+    await db.Task.update(id, { actual_end_date })
+    return true
+  } catch {
+    return false
+  }
+}
+
+export { create, get, find, update }
