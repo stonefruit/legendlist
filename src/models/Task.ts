@@ -1,12 +1,12 @@
 import db from './dexie-db'
 import { v4 as uuidv4 } from 'uuid'
-import { Task } from '../types'
+import { Task, TaskCreateAttributes } from '../types'
 
 const create = async ({
   name,
   priority,
   content,
-}: Omit<Task, 'id' | 'created_at' | 'modified_at'>): Promise<string> => {
+}: TaskCreateAttributes): Promise<string> => {
   const id = uuidv4()
   const created_at = Date.now()
   await db.Task.put({
