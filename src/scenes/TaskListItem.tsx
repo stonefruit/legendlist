@@ -6,7 +6,6 @@ type Props = {
 }
 export default function TaskListItem({ task, updateTask }: Props) {
   const onChangeDone = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log('hi')
     e.preventDefault()
     if (e.target.checked) {
       await updateTask({ id: task.id, actual_end_date: Date.now() })

@@ -50,7 +50,7 @@ export default function TaskView({ navigation, navIndex }: Props) {
 
   return (
     <div className="flex flex-row">
-      <div className="pl-64 flex flex-col flex-1 h-screen overflow-y-scroll">
+      <div className="pl-64 flex flex-col flex-1 h-screen overflow-y-auto">
         <div className="py-6">
           <div className="max-w-7xl mx-auto px-8">
             <h1 className="text-2xl font-semibold text-gray-900">
