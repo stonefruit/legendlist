@@ -1,8 +1,9 @@
 import { HomeIcon } from '@heroicons/react/outline'
 import { useState } from 'react'
 import SideBar from './SideBar'
-import MainView from './MainView'
+import TaskView from './TaskView'
 import MiniSideBar from './MiniSideBar'
+import NoteView from './NoteView'
 
 export const navigation = [
   { name: 'Home', href: '#', icon: HomeIcon, current: true },
@@ -15,7 +16,10 @@ export default function Example() {
     <div className="bg-yellow-50 h-screen">
       <MiniSideBar navigation={navigation} />
       <SideBar navigation={navigation} />
-      <MainView navigation={navigation} navIndex={navIndex} />
+      <div className="flex flex-row">
+        <TaskView navigation={navigation} navIndex={navIndex} />
+        <NoteView />
+      </div>
     </div>
   )
 }

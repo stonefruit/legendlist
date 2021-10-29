@@ -8,7 +8,7 @@ type Props = {
   navigation: NavigationItem[]
   navIndex: number
 }
-export default function MainView({ navigation, navIndex }: Props) {
+export default function TaskView({ navigation, navIndex }: Props) {
   const [tasks, setTasks] = useState<Task[]>([])
   useEffect(() => {
     const runAsync = async () => {
@@ -29,7 +29,7 @@ export default function MainView({ navigation, navIndex }: Props) {
   }
 
   return (
-    <div className="pl-64 flex flex-col flex-1">
+    <div className="pl-64 flex flex-col flex-1 h-screen">
       <div className="py-6">
         <div className="max-w-7xl mx-auto px-8">
           <h1 className="text-2xl font-semibold text-gray-900">
