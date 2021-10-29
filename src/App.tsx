@@ -1,11 +1,8 @@
 import Shell from './scenes/Shell'
 
+// Can add toasts and all here next time
 function App() {
-  return (
-    <div>
-      <Shell />
-    </div>
-  )
+  return <Shell />
 }
 
 export default App

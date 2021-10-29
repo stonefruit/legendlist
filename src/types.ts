@@ -50,3 +50,10 @@ export type PrecedingTask = {
 export type Settings = {
   locale?: string
 }
+
+export type NavigationItem = {
+  name: string
+  href: string
+  icon: (props: React.SVGProps<SVGSVGElement>) => JSX.Element
+  current: boolean
+}
