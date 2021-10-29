@@ -51,6 +51,7 @@ export default function Shell() {
     }
     setNavigation(newNavigation)
   }
+
   return (
     <div className="bg-yellow-50 h-screen">
       <MiniSideBar navigation={navigation} />

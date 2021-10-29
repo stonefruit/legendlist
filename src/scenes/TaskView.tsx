@@ -5,6 +5,33 @@ import TaskList from './TaskList.'
 import * as db from '../models'
 import NoteView from './NoteView'
 
+const taskFilterer = (tasks: Task[], { navId }: { navId: string }): Task[] => {
+  if (navId === 'HOME') {
+    return tasks.filter((task) => {
+      return !task.actualEndDate
+    })
+  }
+  if (navId === 'COMPLETED') {
+    return tasks.filter((task) => {
+      return task.actualEndDate
+    })
+  }
+  return []
+}
+
+const taskSorter = (tasks: Task[]): Task[] => {
+  const sorter = (taskA: Task, taskB: Task) => {
+    if (taskA.createdAt < taskB.createdAt) {
+      return 1
+    } else if (taskA.createdAt > taskB.createdAt) {
+      return -1
+    } else {
+      return 0
+    }
+  }
+  return tasks.sort(sorter)
+}
+
 type Props = {
   navigation: NavigationItem[]
   navIndex: number
@@ -12,9 +39,8 @@ type Props = {
 export default function TaskView({ navigation, navIndex }: Props) {
   const [tasks, setTasks] = useState<Task[]>([])
 
-  const filteredTasks = tasks.filter((task) => {
-    return !task.actualEndDate
-  })
+  const filteredTasks = taskFilterer(tasks, { navId: navigation[navIndex].id })
+  taskSorter(tasks)
 
   const refreshTasks = async () => {
     const dbTasks = await db.Task.find()

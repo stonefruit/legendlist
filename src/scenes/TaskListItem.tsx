@@ -9,6 +9,8 @@ export default function TaskListItem({ task, updateTask }: Props) {
     e.preventDefault()
     if (e.target.checked) {
       await updateTask({ id: task.id, actualEndDate: Date.now() })
+    } else {
+      await updateTask({ id: task.id, actualEndDate: null })
     }
   }
   return (
