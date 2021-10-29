@@ -19,13 +19,13 @@ export class DexieDatabase extends Dexie {
   constructor() {
     super('LegendListDatabase')
     this.version(1).stores({
-      Task: '&id, name, content, priority, planned_start_date, planned_end_date, actual_start_date, actual_end_date, created_at, modified_at',
+      Task: '&id, name, content, priority, plannedStartDate, plannedEndDate, actualStartDate, actualEndDate, createdAt, modifiedAt',
       TaskVersion:
-        '&id, task_id, name, content, priority, planned_start_date, planned_end_date, actual_start_date, actual_end_date, created_at, modified_at',
-      TagTask: '&id, tag_id, task_id, order, created_at, modified_at',
-      Tag: '&id, name, created_at, modified_at',
-      Filter: '&id, name, string_match, tags, order, created_at, modified_at',
-      PrecedingTask: '&id, task_id, preceding_task_id',
+        '&id, taskId, name, content, priority, plannedStartDate, plannedEndDate, actualStartDate, actualEndDate, createdAt, modifiedAt',
+      TagTask: '&id, tagId, taskId, order, createdAt, modifiedAt',
+      Tag: '&id, name, createdAt, modifiedAt',
+      Filter: '&id, name, stringMatch, tags, order, createdAt, modifiedAt',
+      PrecedingTask: '&id, taskId, precedingTaskId',
     })
 
     this.Task = this.table('Task')

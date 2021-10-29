@@ -3,56 +3,56 @@ table Task {
   name string
   content string
   priority number
-  planned_start_date number
-  planned_end_date number
-  actual_start_date number
-  actual_end_date number
-  created_at number
-  modified_at number
+  plannedStartDate number
+  plannedEndDate number
+  actualStartDate number
+  actualEndDate number
+  createdAt number
+  modifiedAt number
 }
 
 table TaskVersion {
   id string
-  task_id string [ref: > Task.id]
+  taskId string [ref: > Task.id]
   name string
   content string
   priority number
-  planned_start_date number
-  planned_end_date number
-  actual_start_date number
-  actual_end_date number
-  created_at number
-  modified_at number
+  plannedStartDate number
+  plannedEndDate number
+  actualStartDate number
+  actualEndDate number
+  createdAt number
+  modifiedAt number
 }
 
 table TagTask {
   id string
-  tag_id string [ref: > Tag.id]
-  task_id string [ref: > Task.id]
+  tagId string [ref: > Tag.id]
+  taskId string [ref: > Task.id]
   order number
-  created_at number
-  modified_at number
+  createdAt number
+  modifiedAt number
 }
 
 table Tag {
   id string
   name string
-  created_at number
-  modified_at number
+  createdAt number
+  modifiedAt number
 }
 
 table Filter {
   id string
   name string
-  string_match string
+  stringMatch string
   tags string[]
   order number
-  created_at number
-  modified_at number
+  createdAt number
+  modifiedAt number
 }
 
 table PrecedingTask {
   id string
-  task_id string [ref: > Task.id]
-  preceding_task_id string [ref: > Task.id]
+  taskId string [ref: > Task.id]
+  precedingTaskId string [ref: > Task.id]
 }

@@ -8,7 +8,7 @@ export default function TaskListItem({ task, updateTask }: Props) {
   const onChangeDone = async (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault()
     if (e.target.checked) {
-      await updateTask({ id: task.id, actual_end_date: Date.now() })
+      await updateTask({ id: task.id, actualEndDate: Date.now() })
     }
   }
   return (
@@ -16,7 +16,7 @@ export default function TaskListItem({ task, updateTask }: Props) {
       <div className="flex items-center h-5">
         <input
           onChange={onChangeDone}
-          checked={!!task.actual_end_date}
+          checked={!!task.actualEndDate}
           id="done"
           name="done"
           type="checkbox"
@@ -28,7 +28,7 @@ export default function TaskListItem({ task, updateTask }: Props) {
           {task.name}
         </label>
         <p id="comments-description" className="text-gray-400 text-xs">
-          {task.actual_end_date}
+          {task.actualEndDate}
         </p>
         <div className="w-full border-t mt-2 mb-3" />
       </div>

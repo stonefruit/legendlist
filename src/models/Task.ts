@@ -8,14 +8,14 @@ const create = async ({
   content,
 }: TaskCreateAttributes): Promise<string> => {
   const id = uuidv4()
-  const created_at = Date.now()
+  const createdAt = Date.now()
   await db.Task.put({
     id: uuidv4(),
     name: name || id,
     priority,
     content,
-    created_at,
-    modified_at: created_at,
+    createdAt,
+    modifiedAt: createdAt,
   })
   return id
 }
@@ -25,18 +25,18 @@ const get = async ({ id }: Task): Promise<Task | undefined> => {
 }
 
 const find = async (): Promise<Task[]> => {
-  return await db.Task.orderBy('created_at').toArray()
+  return await db.Task.orderBy('createdAt').toArray()
 }
 
 const update = async ({
   id,
-  actual_end_date,
+  actualEndDate,
 }: {
   id: string
-  actual_end_date: number
+  actualEndDate: number
 }): Promise<boolean> => {
   try {
-    await db.Task.update(id, { actual_end_date })
+    await db.Task.update(id, { actualEndDate })
     return true
   } catch {
     return false

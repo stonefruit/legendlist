@@ -13,7 +13,7 @@ export default function TaskView({ navigation, navIndex }: Props) {
   const [tasks, setTasks] = useState<Task[]>([])
 
   const filteredTasks = tasks.filter((task) => {
-    return !task.actual_end_date
+    return !task.actualEndDate
   })
 
   const refreshTasks = async () => {
@@ -39,12 +39,12 @@ export default function TaskView({ navigation, navIndex }: Props) {
 
   const updateTask = async ({
     id,
-    actual_end_date,
+    actualEndDate,
   }: {
     id: string
-    actual_end_date: number
+    actualEndDate: number
   }) => {
-    await db.Task.update({ id, actual_end_date })
+    await db.Task.update({ id, actualEndDate })
     await refreshTasks()
   }
 
