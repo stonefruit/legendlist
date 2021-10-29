@@ -8,7 +8,7 @@ function TaskList({ tasks }: Props) {
     <div className="mx-auto px-8">
       <div className="py-4">
         {tasks.map((task) => {
-          return <div>{task.name}</div>
+          return <div key={task.id}>{task.name}</div>
         })}
       </div>
     </div>

@@ -17,7 +17,7 @@ export class DexieDatabase extends Dexie {
   PrecedingTask: Dexie.Table<PrecedingTask, string>
 
   constructor() {
-    super('MyAppDatabase')
+    super('LegendListDatabase')
     this.version(1).stores({
       Task: '&id, name, content, priority, planned_start_date, planned_end_date, actual_start_date, actual_end_date, created_at, modified_at',
       TaskVersion:
