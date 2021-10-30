@@ -55,6 +55,7 @@ const RichTextEditor = ({ value, setValue }) => {
         <BlockButton format="bulleted-list" icon={unorderedListIcon} />
       </Toolbar>
       <Editable
+        className="h-full overflow-y-auto pb-20"
         renderElement={renderElement}
         renderLeaf={renderLeaf}
         placeholder="Enter some rich text…"

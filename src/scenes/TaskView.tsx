@@ -4,6 +4,7 @@ import AddTaskBar from './AddTaskBar'
 import TaskList from './TaskList.'
 import * as db from '../models'
 import NoteView from './NoteView'
+import * as models from '../models'
 
 const taskFilterer = (tasks: Task[], { navId }: { navId: string }): Task[] => {
   if (navId === 'HOME') {
@@ -38,6 +39,8 @@ type Props = {
 }
 export default function TaskView({ navigation, navIndex }: Props) {
   const [tasks, setTasks] = useState<Task[]>([])
+  const [activeTaskId, setActiveTaskId] = useState<string | null>(null)
+  const [activeTask, setActiveTask] = useState<Task | null>(null)
 
   const filteredTasks = taskFilterer(tasks, { navId: navigation[navIndex].id })
   taskSorter(tasks)
@@ -54,11 +57,31 @@ export default function TaskView({ navigation, navIndex }: Props) {
     runAsync()
   }, [])
 
+  useEffect(() => {
+    const runAsync = async () => {
+      if (activeTaskId === null) {
+        setActiveTask(null)
+        return
+      }
+      const updatedTask = await models.Task.get({ id: activeTaskId })
+      if (!updatedTask) {
+        setActiveTask(null)
+        return
+      }
+      setActiveTask(updatedTask)
+    }
+    runAsync()
+  }, [activeTaskId])
+
   const addTask = async ({ name }: TaskCreateAttributes) => {
     await db.Task.create({
       name,
-      content: '',
+      content: [],
       priority: 0,
+      actualEndDate: null,
+      actualStartDate: null,
+      plannedEndDate: null,
+      plannedStartDate: null,
     })
     await refreshTasks()
   }
@@ -74,6 +97,10 @@ export default function TaskView({ navigation, navIndex }: Props) {
     await refreshTasks()
   }
 
+  const selectActiveTask = (id: string | null) => {
+    setActiveTaskId(id)
+  }
+
   return (
     <div className="flex flex-row">
       <div className="pl-64 flex flex-col flex-1 h-screen overflow-y-auto">
@@ -84,10 +111,15 @@ export default function TaskView({ navigation, navIndex }: Props) {
             </h1>
           </div>
           <AddTaskBar addTask={addTask} />
-          <TaskList tasks={filteredTasks} updateTask={updateTask} />
+          <TaskList
+            tasks={filteredTasks}
+            updateTask={updateTask}
+            selectActiveTask={selectActiveTask}
+            activeTaskId={activeTaskId}
+          />
         </div>
       </div>
-      <NoteView />
+      <NoteView task={activeTask} />
     </div>
   )
 }

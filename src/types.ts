@@ -1,15 +1,15 @@
-import { BaseEditor } from 'slate'
+import { BaseEditor, Descendant } from 'slate'
 import { ReactEditor } from 'slate-react'
 
 export type Task = {
   id: string
   name: string
-  content: string
+  content: Descendant[]
   priority: number
-  plannedStartDate?: number
-  plannedEndDate?: number
-  actualStartDate?: number
-  actualEndDate?: number
+  plannedStartDate: number | null
+  plannedEndDate: number | null
+  actualStartDate: number | null
+  actualEndDate: number | null
   createdAt: number
   modifiedAt: number
 }
@@ -51,7 +51,7 @@ export type PrecedingTask = {
 }
 
 export type Settings = {
-  locale?: string
+  locale: string | null
 }
 
 export type NavigationItem = {

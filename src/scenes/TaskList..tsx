@@ -8,16 +8,29 @@ type Props = {
     actualEndDate,
   }: {
     id: string
-    actualEndDate?: number
+    actualEndDate: number | null
   }): Promise<void>
+  activeTaskId: string | null
+  selectActiveTask(id: string | null): void
 }
-function TaskList({ tasks, updateTask }: Props) {
+function TaskList({
+  tasks,
+  updateTask,
+  activeTaskId,
+  selectActiveTask,
+}: Props) {
   return (
-    <div className="mx-auto px-8">
+    <div className="mx-auto">
       <div className="py-4">
         {tasks.map((task) => {
           return (
-            <TaskListItem key={task.id} task={task} updateTask={updateTask} />
+            <TaskListItem
+              key={task.id}
+              task={task}
+              updateTask={updateTask}
+              selectActiveTask={selectActiveTask}
+              activeTaskId={activeTaskId}
+            />
           )
         })}
       </div>
