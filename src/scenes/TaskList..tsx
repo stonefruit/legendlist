@@ -3,7 +3,13 @@ import TaskListItem from './TaskListItem'
 
 type Props = {
   tasks: Task[]
-  updateTask({}): Promise<void>
+  updateTask({
+    id,
+    actualEndDate,
+  }: {
+    id: string
+    actualEndDate?: number
+  }): Promise<void>
 }
 function TaskList({ tasks, updateTask }: Props) {
   return (

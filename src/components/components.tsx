@@ -29,6 +29,8 @@ export const Button = React.forwardRef(
       ref={ref}
       className={cx(
         className,
+        active && 'bg-gray-200',
+        'p-2 rounded-md w-8 h-8 flex align-middle justify-center',
         css`
           cursor: pointer;
           color: ${reversed

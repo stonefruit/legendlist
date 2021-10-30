@@ -6,13 +6,12 @@ import {
   Editor,
   Transforms,
   createEditor,
-  Descendant,
   Element as SlateElement,
   BaseEditor,
 } from 'slate'
 import { withHistory } from 'slate-history'
 
-import { Button, Icon, Toolbar } from './components'
+import { Button, Toolbar } from './components'
 
 import boldIcon from '../assets/boldIcon.svg'
 import codeIcon from '../assets/codeIcon.svg'
@@ -32,7 +31,7 @@ const HOTKEYS = {
   'mod+b': 'bold',
   'mod+i': 'italic',
   'mod+u': 'underline',
-  'mod+`': 'code',
+  'mod+\\': 'code',
 }
 
 const LIST_TYPES = ['numbered-list', 'bulleted-list']
@@ -41,7 +40,6 @@ const RichTextEditor = ({ value, setValue }) => {
   const renderElement = useCallback((props) => <Element {...props} />, [])
   const renderLeaf = useCallback((props) => <Leaf {...props} />, [])
   const editor = useMemo(() => withHistory(withReact(createEditor())), [])
-
   return (
     <Slate editor={editor} value={value} onChange={(value) => setValue(value)}>
       <Toolbar>
@@ -49,6 +47,7 @@ const RichTextEditor = ({ value, setValue }) => {
         <MarkButton format="italic" icon={italicIcon} />
         <MarkButton format="underline" icon={underlineIcon} />
         <MarkButton format="code" icon={codeIcon} />
+        <div className="w-3" />
         <BlockButton format="heading-one" icon={h1Icon} />
         <BlockButton format="heading-two" icon={h2Icon} />
         <BlockButton format="block-quote" icon={quoteIcon} />
@@ -128,19 +127,50 @@ const isMarkActive = (editor: EditorType, format: string) => {
 const Element = ({ attributes, children, element }) => {
   switch (element.type) {
     case 'block-quote':
-      return <blockquote {...attributes}>{children}</blockquote>
+      return (
+        <blockquote
+          className="border-l-2 border-gray-400 text-gray-500 pl-10 italic mt-1"
+          {...attributes}
+        >
+          {children}
+        </blockquote>
+      )
     case 'bulleted-list':
-      return <ul {...attributes}>{children}</ul>
+      return (
+        <ul className="pl-8 mt-1 list-disc" {...attributes}>
+          {children}
+        </ul>
+      )
     case 'heading-one':
-      return <h1 {...attributes}>{children}</h1>
+      return (
+        <h1 className="mt-1 text-5xl" {...attributes}>
+          {children}
+        </h1>
+      )
     case 'heading-two':
-      return <h2 {...attributes}>{children}</h2>
+      return (
+        <h2 className="mt-1 text-3xl" {...attributes}>
+          {children}
+        </h2>
+      )
     case 'list-item':
-      return <li {...attributes}>{children}</li>
+      return (
+        <li className="mt-1" {...attributes}>
+          {children}
+        </li>
+      )
     case 'numbered-list':
-      return <ol {...attributes}>{children}</ol>
+      return (
+        <ol className="pl-8 mt-1 list-decimal" {...attributes}>
+          {children}
+        </ol>
+      )
     default:
-      return <p {...attributes}>{children}</p>
+      return (
+        <p className="mt-1" {...attributes}>
+          {children}
+        </p>
+      )
   }
 }
 
@@ -150,7 +180,7 @@ const Leaf = ({ attributes, children, leaf }) => {
   }
 
   if (leaf.code) {
-    children = <code>{children}</code>
+    children = <code className="bg-gray-100 p-1">{children}</code>
   }
 
   if (leaf.italic) {
@@ -174,7 +204,7 @@ const BlockButton = ({ format, icon }) => {
         toggleBlock(editor, format)
       }}
     >
-      <img className="h-5 w-auto" src={icon} alt="Workflow" />
+      <img className="h-full w-auto" src={icon} alt="Workflow" />
     </Button>
   )
 }
@@ -189,44 +219,9 @@ const MarkButton = ({ format, icon }) => {
         toggleMark(editor, format)
       }}
     >
-      <img className="h-4 w-auto" src={icon} alt="Workflow" />
+      <img className="h-full w-auto" src={icon} alt="Workflow" />
     </Button>
   )
 }
-
-const initialValue: Descendant[] = [
-  {
-    type: 'paragraph',
-    children: [
-      { text: 'This is editable ' },
-      { text: 'rich', bold: true },
-      { text: ' text, ' },
-      { text: 'much', italic: true },
-      { text: ' better than a ' },
-      { text: '<textarea>', code: true },
-      { text: '!' },
-    ],
-  },
-  {
-    type: 'paragraph',
-    children: [
-      {
-        text: "Since it's rich text, you can do things like turn a selection of text ",
-      },
-      { text: 'bold', bold: true },
-      {
-        text: ', or add a semantically rendered block quote in the middle of the page, like this:',
-      },
-    ],
-  },
-  {
-    type: 'block-quote',
-    children: [{ text: 'A wise quote.' }],
-  },
-  {
-    type: 'paragraph',
-    children: [{ text: 'Try it out for yourself!' }],
-  },
-]
 
 export default RichTextEditor

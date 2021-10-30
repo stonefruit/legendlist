@@ -2,7 +2,13 @@ import { Task } from '../types'
 
 type Props = {
   task: Task
-  updateTask({}): Promise<void>
+  updateTask({
+    id,
+    actualEndDate,
+  }: {
+    id: string
+    actualEndDate?: number
+  }): Promise<void>
 }
 export default function TaskListItem({ task, updateTask }: Props) {
   const onChangeDone = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -10,7 +16,7 @@ export default function TaskListItem({ task, updateTask }: Props) {
     if (e.target.checked) {
       await updateTask({ id: task.id, actualEndDate: Date.now() })
     } else {
-      await updateTask({ id: task.id, actualEndDate: null })
+      await updateTask({ id: task.id, actualEndDate: undefined })
     }
   }
   return (
