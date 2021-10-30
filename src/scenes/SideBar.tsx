@@ -1,6 +1,6 @@
 import { NavigationItem } from '../types'
 import { classNames } from '../utils'
-import legendlistLogo from '../assets/legendlistLogo.svg'
+import legendListLogo from '../assets/legendListLogo2.svg'
 
 type Props = {
   navigation: NavigationItem[]
@@ -18,7 +18,7 @@ export default function SideBar({
     <div className="flex w-64 pl-10 flex-col fixed inset-y-0 text-yellow-500 border-r border-yellow-200">
       <div className="flex flex-col flex-grow pt-5 bg-yellow-100 overflow-y-auto">
         <div className="flex items-center flex-shrink-0 px-4 mx-auto">
-          <img className="h-12 w-auto" src={legendlistLogo} alt="Workflow" />
+          <img className="h-12 w-auto" src={legendListLogo} alt="Workflow" />
         </div>
         <div className="mt-5 flex-1 flex flex-col">
           <nav className="flex-1 px-2 pb-4 space-y-1">

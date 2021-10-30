@@ -14,6 +14,16 @@ import { withHistory } from 'slate-history'
 
 import { Button, Icon, Toolbar } from './components'
 
+import boldIcon from '../assets/boldIcon.svg'
+import codeIcon from '../assets/codeIcon.svg'
+import h1Icon from '../assets/h1Icon.svg'
+import h2Icon from '../assets/h2Icon.svg'
+import italicIcon from '../assets/italicIcon.svg'
+import orderedListIcon from '../assets/orderedListIcon.svg'
+import unorderedListIcon from '../assets/unorderedListIcon.svg'
+import quoteIcon from '../assets/quoteIcon.svg'
+import underlineIcon from '../assets/underlineIcon.svg'
+
 type EditorType = BaseEditor & ReactEditor
 type CustomText = { text: string }
 type CustomElement = { type: 'paragraph' | string; children: CustomText[] }
@@ -35,15 +45,15 @@ const RichTextEditor = ({ value, setValue }) => {
   return (
     <Slate editor={editor} value={value} onChange={(value) => setValue(value)}>
       <Toolbar>
-        <MarkButton format="bold" icon="format_bold" />
-        <MarkButton format="italic" icon="format_italic" />
-        <MarkButton format="underline" icon="format_underlined" />
-        <MarkButton format="code" icon="code" />
-        <BlockButton format="heading-one" icon="looks_one" />
-        <BlockButton format="heading-two" icon="looks_two" />
-        <BlockButton format="block-quote" icon="format_quote" />
-        <BlockButton format="numbered-list" icon="format_list_numbered" />
-        <BlockButton format="bulleted-list" icon="format_list_bulleted" />
+        <MarkButton format="bold" icon={boldIcon} />
+        <MarkButton format="italic" icon={italicIcon} />
+        <MarkButton format="underline" icon={underlineIcon} />
+        <MarkButton format="code" icon={codeIcon} />
+        <BlockButton format="heading-one" icon={h1Icon} />
+        <BlockButton format="heading-two" icon={h2Icon} />
+        <BlockButton format="block-quote" icon={quoteIcon} />
+        <BlockButton format="numbered-list" icon={orderedListIcon} />
+        <BlockButton format="bulleted-list" icon={unorderedListIcon} />
       </Toolbar>
       <Editable
         renderElement={renderElement}
@@ -164,7 +174,7 @@ const BlockButton = ({ format, icon }) => {
         toggleBlock(editor, format)
       }}
     >
-      <Icon>{icon}</Icon>
+      <img className="h-5 w-auto" src={icon} alt="Workflow" />
     </Button>
   )
 }
@@ -179,7 +189,7 @@ const MarkButton = ({ format, icon }) => {
         toggleMark(editor, format)
       }}
     >
-      <Icon>{icon}</Icon>
+      <img className="h-4 w-auto" src={icon} alt="Workflow" />
     </Button>
   )
 }
