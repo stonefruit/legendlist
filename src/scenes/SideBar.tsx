@@ -1,6 +1,6 @@
 import { NavigationItem } from '../types'
 import { classNames } from '../utils'
-import legendListLogo from '../assets/legendListLogo2.svg'
+import legendListLogo from '../assets/legendListLogo.svg'
 
 type Props = {
   navigation: NavigationItem[]
