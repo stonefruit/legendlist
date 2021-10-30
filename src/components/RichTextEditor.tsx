@@ -13,15 +13,15 @@ import { withHistory } from 'slate-history'
 
 import { Button, Toolbar } from './components'
 
-import boldIcon from '../assets/boldIcon.svg'
-import codeIcon from '../assets/codeIcon.svg'
-import h1Icon from '../assets/h1Icon.svg'
-import h2Icon from '../assets/h2Icon.svg'
-import italicIcon from '../assets/italicIcon.svg'
-import orderedListIcon from '../assets/orderedListIcon.svg'
-import unorderedListIcon from '../assets/unorderedListIcon.svg'
-import quoteIcon from '../assets/quoteIcon.svg'
-import underlineIcon from '../assets/underlineIcon.svg'
+import BoldIcon from '../assets/BoldIcon'
+import CodeIcon from '../assets/CodeIcon'
+import H1Icon from '../assets/H1Icon'
+import H2Icon from '../assets/H2Icon'
+import OrderedListIcon from '../assets/OrderedListIcon'
+import UnorderedListIcon from '../assets/UnorderedListIcon'
+import ItalicIcon from '../assets/ItalicIcon'
+import QuoteIcon from '../assets/QuoteIcon'
+import UnderlineIcon from '../assets/UnderlineIcon'
 
 type EditorType = BaseEditor & ReactEditor
 type CustomText = { text: string }
@@ -41,18 +41,47 @@ const RichTextEditor = ({ value, setValue }) => {
   const renderLeaf = useCallback((props) => <Leaf {...props} />, [])
   const editor = useMemo(() => withHistory(withReact(createEditor())), [])
   return (
-    <Slate editor={editor} value={value} onChange={(value) => setValue(value)}>
+    <Slate editor={editor} value={value} onChange={(val) => setValue(val)}>
       <Toolbar>
-        <MarkButton format="bold" icon={boldIcon} />
-        <MarkButton format="italic" icon={italicIcon} />
-        <MarkButton format="underline" icon={underlineIcon} />
-        <MarkButton format="code" icon={codeIcon} />
+        <MarkButton
+          format="bold"
+          icon={() => BoldIcon({ width: 15, height: 15, fill: 'black' })}
+        />
+        <MarkButton
+          format="italic"
+          icon={() => ItalicIcon({ width: 20, height: 20, fill: 'black' })}
+        />
+        <MarkButton
+          format="underline"
+          icon={() => UnderlineIcon({ width: 20, height: 20, fill: 'black' })}
+        />
+        <MarkButton
+          format="code"
+          icon={() => CodeIcon({ width: 20, height: 20, fill: 'black' })}
+        />
         <div className="w-3" />
-        <BlockButton format="heading-one" icon={h1Icon} />
-        <BlockButton format="heading-two" icon={h2Icon} />
-        <BlockButton format="block-quote" icon={quoteIcon} />
-        <BlockButton format="numbered-list" icon={orderedListIcon} />
-        <BlockButton format="bulleted-list" icon={unorderedListIcon} />
+        <BlockButton
+          format="heading-one"
+          icon={() => H1Icon({ width: 32, height: 32, fill: 'black' })}
+        />
+        <BlockButton
+          format="heading-two"
+          icon={() => H2Icon({ width: 32, height: 32, fill: 'black' })}
+        />
+        <BlockButton
+          format="block-quote"
+          icon={() => QuoteIcon({ width: 20, height: 20, fill: 'black' })}
+        />
+        <BlockButton
+          format="numbered-list"
+          icon={() => OrderedListIcon({ width: 20, height: 20, fill: 'black' })}
+        />
+        <BlockButton
+          format="bulleted-list"
+          icon={() =>
+            UnorderedListIcon({ width: 20, height: 20, fill: 'black' })
+          }
+        />
       </Toolbar>
       <Editable
         className="h-full overflow-y-auto pb-20"
@@ -205,7 +234,7 @@ const BlockButton = ({ format, icon }) => {
         toggleBlock(editor, format)
       }}
     >
-      <img className="h-full w-auto" src={icon} alt="Workflow" />
+      {icon({ height: 32, width: 32 })}
     </Button>
   )
 }
@@ -220,7 +249,9 @@ const MarkButton = ({ format, icon }) => {
         toggleMark(editor, format)
       }}
     >
-      <img className="h-full w-auto" src={icon} alt="Workflow" />
+      <div className="flex align-middle justify-center h-full w-full">
+        {icon({ height: 32, width: 32 })}
+      </div>
     </Button>
   )
 }

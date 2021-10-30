@@ -30,17 +30,8 @@ export const Button = React.forwardRef(
       className={cx(
         className,
         active && 'bg-gray-200',
-        'p-2 rounded-md w-8 h-8 flex align-middle justify-center',
-        css`
-          cursor: pointer;
-          color: ${reversed
-            ? active
-              ? 'white'
-              : '#aaa'
-            : active
-            ? 'black'
-            : '#ccc'};
-        `
+        'p-2 rounded-md w-12 h-12 flex align-middle justify-center',
+        'cursor-pointer'
       )}
     />
   )

@@ -73,3 +73,9 @@ declare module 'slate' {
     Text: CustomText
   }
 }
+
+export type SvgIconProps = {
+  height?: number
+  width?: number
+  fill?: string
+}

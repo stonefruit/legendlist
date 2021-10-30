@@ -19,7 +19,11 @@ export default function NoteView({ task }: Props) {
 
   useEffect(() => {
     setShouldRefreshEditor(true)
-    setValue(task?.content || initialData)
+    if (task && task.content && task.content.length > 0) {
+      setValue(task.content)
+    } else {
+      setValue(initialData)
+    }
   }, [task])
 
   useEffect(() => {
