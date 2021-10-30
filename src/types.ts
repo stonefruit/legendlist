@@ -1,3 +1,6 @@
+import { BaseEditor } from 'slate'
+import { ReactEditor } from 'slate-react'
+
 export type Task = {
   id: string
   name: string
@@ -59,3 +62,14 @@ export type NavigationItem = {
 }
 
 export type TaskCreateAttributes = Omit<Task, 'id' | 'createdAt' | 'modifiedAt'>
+
+export type CustomElement = { type: string; children: CustomText[] }
+export type CustomText = { text: string }
+
+declare module 'slate' {
+  interface CustomTypes {
+    Editor: BaseEditor & ReactEditor
+    Element: CustomElement
+    Text: CustomText
+  }
+}
