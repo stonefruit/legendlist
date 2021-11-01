@@ -1,6 +1,8 @@
 import { BaseEditor, Descendant } from 'slate'
 import { ReactEditor } from 'slate-react'
 
+// START - DB TYPES
+
 export type Task = {
   id: string
   name: string
@@ -48,7 +50,28 @@ export type PrecedingTask = {
   id: string
   taskId: string
   precedingTaskId: string
+  createdAt: number
+  modifiedAt: number
 }
+
+export type Folder = {
+  id: string
+  name: string
+  description: string
+  createdAt: number
+  modifiedAt: number
+}
+
+export type FolderTask = {
+  id: string
+  folderId: string
+  taskId: string
+  order: number
+  createdAt: number
+  modifiedAt: number
+}
+
+// END - DB TYPES
 
 export type Settings = {
   locale: string | null

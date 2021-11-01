@@ -55,4 +55,23 @@ table PrecedingTask {
   id string
   taskId string [ref: > Task.id]
   precedingTaskId string [ref: > Task.id]
+  createdAt number
+  modifiedAt number
+}
+
+table Folder {
+  id string
+  name string
+  description string
+  createdAt number
+  modifiedAt number
+}
+
+table FolderTask {
+  id string
+  taskId string [ref: > Task.id]
+  folderId string [ref: > Folder.id]
+  order number
+  createdAt number
+  modifiedAt number
 }
