@@ -44,7 +44,7 @@ export default function TaskListItem({
     <div
       className={classNames(
         isActive ? 'bg-yellow-200' : 'hover:bg-yellow-100',
-        'flex px-5 py-3 cursor-pointer border-b group'
+        'flex px-5 py-3 cursor-pointer border-b group items-center'
       )}
       onClick={onClickTask(task.id)}
     >
@@ -65,7 +65,7 @@ export default function TaskListItem({
             isActive
               ? 'bg-yellow-200 group-hover:bg-yellow-200'
               : 'group-hover:bg-yellow-100',
-            ' placeholder-gray-400 pr-6 break-words placeholder-black border-0 bg-yellow-50 p-0 m-0 focus:ring-transparent w-full resize-none outline-none cursor-text font-medium text-gray-700'
+            ' placeholder-gray-400 pr-6 break-words border-0 bg-yellow-50 p-0 m-0 focus:ring-transparent w-full resize-none outline-none cursor-text font-medium text-gray-700'
           )}
           contentEditable
           placeholder="What would you like to call this item?"

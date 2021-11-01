@@ -1,6 +1,7 @@
 import { NavigationItem } from '../types'
 import { classNames } from '../utils'
 import LegendListLogo from '../assets/LegendListLogo'
+import { PlusIcon } from '@heroicons/react/solid'
 
 type Props = {
   navigation: NavigationItem[]
@@ -21,6 +22,12 @@ export default function SideBar({
           <LegendListLogo height={80} />
         </div>
         <div className="mt-5 flex-1 flex flex-col">
+          <div className="flex justify-between px-2 pb-4 items-center">
+            <div>Folders</div>
+            <button className="bg-yellow-200 rounded-md p-1 border border-yellow-400 cursor-pointer hover:bg-yellow-100 active:bg-white h-6 w-6 outline-none">
+              <PlusIcon className="h-full w-full" />
+            </button>
+          </div>
           <nav className="flex-1 px-2 pb-4 space-y-1">
             {navigation.map((item) => (
               <div

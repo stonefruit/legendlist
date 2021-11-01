@@ -5,6 +5,7 @@ import TaskList from './TaskList.'
 import * as db from '../models'
 import NoteView from './NoteView'
 import * as models from '../models'
+import { CheckIcon, TrashIcon, XIcon } from '@heroicons/react/solid'
 
 const taskFilterer = (tasks: Task[], { navId }: { navId: string }): Task[] => {
   if (navId === 'HOME') {
@@ -33,6 +34,8 @@ const taskSorter = (tasks: Task[]): Task[] => {
   return tasks.sort(sorter)
 }
 
+type TrashState = 'INACTIVE' | 'ACTIVE' | 'CONFIRM'
+
 type Props = {
   navigation: NavigationItem[]
   navIndex: number
@@ -41,9 +44,11 @@ export default function TaskView({ navigation, navIndex }: Props) {
   const [tasks, setTasks] = useState<Task[]>([])
   const [activeTaskId, setActiveTaskId] = useState<string | null>(null)
   const [activeTask, setActiveTask] = useState<Task | null>(null)
+  const [trashState, setTrashState] = useState<TrashState>('INACTIVE')
+  const [totalFilteredTasks, setTotalFilteredTasks] = useState(0)
 
   const filteredTasks = taskFilterer(tasks, { navId: navigation[navIndex].id })
-  taskSorter(tasks)
+  taskSorter(filteredTasks)
 
   const refreshTasks = async () => {
     const dbTasks = await db.Task.find()
@@ -56,6 +61,20 @@ export default function TaskView({ navigation, navIndex }: Props) {
     }
     runAsync()
   }, [])
+
+  useEffect(() => {
+    if (filteredTasks.length !== totalFilteredTasks) {
+      setTotalFilteredTasks(filteredTasks.length)
+    }
+  }, [filteredTasks, totalFilteredTasks])
+
+  useEffect(() => {
+    if (totalFilteredTasks > 0) {
+      setTrashState('INACTIVE')
+    } else {
+      setTrashState('ACTIVE')
+    }
+  }, [totalFilteredTasks])
 
   useEffect(() => {
     const runAsync = async () => {
@@ -107,10 +126,35 @@ export default function TaskView({ navigation, navIndex }: Props) {
     <div className="flex flex-row">
       <div className="pl-64 flex flex-col flex-1 h-screen overflow-y-auto">
         <div className="py-6">
-          <div className="max-w-7xl mx-auto px-8">
+          <div className="max-w-7xl mx-auto px-8 flex justify-between items-center">
             <h1 className="text-2xl font-semibold text-gray-900">
               {navigation[navIndex]?.name}
             </h1>
+            {trashState === 'ACTIVE' && (
+              <button
+                onClick={() => setTrashState('CONFIRM')}
+                className="bg-yellow-100 text-yellow-400 rounded-md p-1 border border-yellow-200 cursor-pointer hover:bg-yellow-50 active:bg-white h-6 w-6 outline-none"
+              >
+                <TrashIcon className="h-full w-full" />
+              </button>
+            )}
+            {trashState === 'CONFIRM' && (
+              <div className="flex justify-center items-center">
+                <div className="text-sm">Confirm?</div>
+                <button
+                  onClick={() => setTrashState('ACTIVE')}
+                  className="ml-1 bg-yellow-100 text-yellow-400 rounded-md p-1 border border-yellow-200 cursor-pointer hover:bg-yellow-50 active:bg-white h-6 w-6 outline-none"
+                >
+                  <XIcon className="h-full w-full" />
+                </button>
+                <button
+                  onClick={() => console.log('TODO REMOVE FOLDER')}
+                  className="ml-1 bg-yellow-100 text-yellow-400 rounded-md p-1 border border-yellow-200 cursor-pointer hover:bg-yellow-50 active:bg-white h-6 w-6 outline-none"
+                >
+                  <CheckIcon className="h-full w-full" />
+                </button>
+              </div>
+            )}
           </div>
           <AddTaskBar addTask={addTask} />
           <TaskList
