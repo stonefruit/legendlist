@@ -89,11 +89,13 @@ export default function TaskView({ navigation, navIndex }: Props) {
   const updateTask = async ({
     id,
     actualEndDate,
+    name,
   }: {
     id: string
-    actualEndDate: number
+    actualEndDate?: number | null
+    name?: string
   }) => {
-    await db.Task.update({ id, actualEndDate })
+    await db.Task.update({ id, actualEndDate, name })
     await refreshTasks()
   }
 

@@ -6,9 +6,11 @@ type Props = {
   updateTask({
     id,
     actualEndDate,
+    name,
   }: {
     id: string
-    actualEndDate: number | null
+    actualEndDate?: number | null
+    name?: string
   }): Promise<void>
   activeTaskId: string | null
   selectActiveTask(id: string | null): void

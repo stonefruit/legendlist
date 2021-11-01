@@ -41,15 +41,18 @@ const update = async ({
   id,
   actualEndDate,
   content,
+  name,
 }: {
   id: string
-  actualEndDate?: number
+  actualEndDate?: number | null
   content?: Descendant[]
+  name?: string
 }): Promise<boolean> => {
   try {
     const updateValues = {
       ...(actualEndDate === undefined ? {} : { actualEndDate }),
       ...(content === undefined ? {} : { content }),
+      ...(name === undefined ? {} : { name }),
     }
     await db.Task.update(id, updateValues)
     return true
