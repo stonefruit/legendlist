@@ -1,9 +1,10 @@
-import { HomeIcon, AcademicCapIcon } from '@heroicons/react/outline'
-import { useState } from 'react'
+import { HomeIcon, AcademicCapIcon, FolderIcon } from '@heroicons/react/outline'
+import { useEffect, useState } from 'react'
 import SideBar from './SideBar'
 import TaskView from './TaskView'
 import MiniSideBar from './MiniSideBar'
 import { NavigationItem } from '../types'
+import * as models from '../models'
 
 // Always start at Home
 const defaultNavigators = [
@@ -16,6 +17,28 @@ export default function Shell() {
   const [navigation, setNavigation] = useState<NavigationItem[]>([
     ...defaultNavigators,
   ])
+
+  useEffect(() => {
+    const runAsync = async () => {
+      const _folders = await models.Folder.find()
+      const newFolders = _folders.map((folder) => {
+        return {
+          id: folder.id,
+          name: folder.name,
+          current: false,
+          icon: undefined,
+        }
+      })
+      const navigationWithIcons = [...newFolders, ...navigation].map((nav) => {
+        nav.icon = nav.icon || FolderIcon
+        return nav
+      })
+      setNavigation(navigationWithIcons)
+    }
+    runAsync()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   const navIndex = navigation.findIndex((navigator) => navigator.current)
 
   const changeCurrentNavigation = (id: string) => {
@@ -49,7 +72,11 @@ export default function Shell() {
         return navigator
       })
     }
-    setNavigation(newNavigation)
+    const navigationWithIcons = newNavigation.map((nav) => {
+      nav.icon = nav.icon || FolderIcon
+      return nav
+    })
+    setNavigation(navigationWithIcons)
   }
 
   return (

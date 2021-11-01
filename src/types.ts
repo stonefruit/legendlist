@@ -57,7 +57,6 @@ export type PrecedingTask = {
 export type Folder = {
   id: string
   name: string
-  description: string
   createdAt: number
   modifiedAt: number
 }

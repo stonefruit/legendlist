@@ -8,6 +8,9 @@ import * as models from '../models'
 import { CheckIcon, TrashIcon, XIcon } from '@heroicons/react/solid'
 
 const taskFilterer = (tasks: Task[], { navId }: { navId: string }): Task[] => {
+  if (navId === 'ALL') {
+    return tasks
+  }
   if (navId === 'HOME') {
     return tasks.filter((task) => {
       return !task.actualEndDate

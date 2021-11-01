@@ -67,7 +67,6 @@ export default function TaskListItem({
               : 'group-hover:bg-yellow-100',
             ' placeholder-gray-400 pr-6 break-words border-0 bg-yellow-50 p-0 m-0 focus:ring-transparent w-full resize-none outline-none cursor-text font-medium text-gray-700'
           )}
-          contentEditable
           placeholder="What would you like to call this item?"
           onChange={onChangeName}
           value={task.name}

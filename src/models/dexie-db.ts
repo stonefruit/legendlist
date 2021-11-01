@@ -9,6 +9,7 @@ import {
   Folder,
   FolderTask,
 } from '../types'
+import seeder from './dexie-seeder'
 
 export class DexieDatabase extends Dexie {
   Task: Dexie.Table<Task, string>
@@ -29,8 +30,8 @@ export class DexieDatabase extends Dexie {
       TagTask: '&id, tagId, taskId, order, createdAt, modifiedAt',
       Tag: '&id, name, createdAt, modifiedAt',
       Filter: '&id, name, stringMatch, tags, order, createdAt, modifiedAt',
-      PrecedingTask: '&id, taskId, precedingTaskId createdAt, modifiedAt',
-      Folder: '&id, name, description, createdAt, modifiedAt',
+      PrecedingTask: '&id, taskId, precedingTaskId, createdAt, modifiedAt',
+      Folder: '&id, name, createdAt, modifiedAt',
       FolderTask: '&id, folderId, taskId, order, createdAt, modifiedAt',
     })
 
@@ -44,5 +45,8 @@ export class DexieDatabase extends Dexie {
     this.FolderTask = this.table('FolderTask')
   }
 }
+const db = new DexieDatabase()
 
-export default new DexieDatabase()
+db.on('ready', () => seeder(db))
+
+export default db

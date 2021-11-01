@@ -4,5 +4,16 @@ import * as TagTask from './TagTask'
 import * as Tag from './Tag'
 import * as Filter from './Filter'
 import * as PrecedingTask from './PrecedingTask'
+import * as Folder from './Folder'
+import * as FolderTask from './FolderTask'
 
-export { Task, TaskVersion, TagTask, Tag, Filter, PrecedingTask }
+export {
+  Task,
+  TaskVersion,
+  TagTask,
+  Tag,
+  Filter,
+  PrecedingTask,
+  FolderTask,
+  Folder,
+}

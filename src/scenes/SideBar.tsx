@@ -15,6 +15,8 @@ export default function SideBar({
     changeCurrentNavigation(id)
   }
 
+  const onChangeName = () => {}
+
   return (
     <div className="flex w-64 pl-10 flex-col fixed inset-y-0 text-yellow-500 border-r border-yellow-200">
       <div className="flex flex-col flex-grow pt-5 bg-yellow-100 overflow-y-auto">
@@ -50,7 +52,19 @@ export default function SideBar({
                   />
                 )}
                 {!item.icon && <div className="mr-3 flex-shrink-0 h-6 w-6" />}
-                {item.name}
+                <input
+                  disabled={!item.current}
+                  type="text"
+                  className={classNames(
+                    item.current
+                      ? 'bg-yellow-500 group-hover:bg-yellow-500 text-white cursor-text'
+                      : 'group-hover:bg-yellow-200 text-yellow-500 bg-yellow-100 cursor-pointer',
+                    ' placeholder-gray-400 pr-6 break-words border-0 bg-yellow-50 p-0 m-0 focus:ring-transparent w-full resize-none outline-none'
+                  )}
+                  placeholder="What would you like to call this item?"
+                  onChange={onChangeName}
+                  value={item.name}
+                />
               </div>
             ))}
           </nav>
