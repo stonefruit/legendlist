@@ -1,11 +1,24 @@
 import { useEffect, useState } from 'react'
+import Select from 'react-select'
 import { Descendant } from 'slate'
 import RichTextEditor from '../components/RichTextEditor'
-import { Task } from '../types'
+import { NavigationItem, Task } from '../types'
 import * as models from '../models'
 
 type Props = {
   task: Task | null
+  navigation: NavigationItem[]
+  updateTask({
+    id,
+    actualEndDate,
+    name,
+    folderId,
+  }: {
+    id: string
+    actualEndDate?: number | null
+    name?: string
+    folderId?: string
+  }): Promise<void>
 }
 const initialData = [
   {
@@ -13,9 +26,17 @@ const initialData = [
     children: [{ text: '' }],
   },
 ]
-export default function NoteView({ task }: Props) {
+export default function NoteView({ task, navigation, updateTask }: Props) {
   const [value, setValue] = useState<Descendant[]>(initialData)
   const [shouldRefreshEditor, setShouldRefreshEditor] = useState(false)
+
+  const folderOptions = navigation.map((nav) => {
+    return {
+      value: nav.id,
+      label: nav.name,
+    }
+  })
+  const currentFolder = navigation.find((nav) => nav.id === task?.folderId)
 
   // EFFECTS
 
@@ -55,12 +76,44 @@ export default function NoteView({ task }: Props) {
             <div>Top Part</div>
           </div>
           {!shouldRefreshEditor && (
-            <div className="h-auto overflow-y-auto flex flex-1 flex-col border-t border-b pr-5 pl-5 py-5">
+            <div className="h-auto overflow-y-auto flex flex-1 flex-col border-t pr-5 pl-5 py-5">
               <RichTextEditor value={value} setValue={setValue} />
             </div>
           )}
-          <div className="h-20 flex flex-col align-middle justify-center mx-auto">
-            <div>Bottom Part</div>
+          <div className="flex flex-col align-middle justify-center p-3">
+            <div className="w-1/2 cursor-pointer">
+              <Select
+                onChange={(value) => {
+                  updateTask({ id: task.id, folderId: value!.value })
+                }}
+                options={folderOptions}
+                menuPlacement="top"
+                maxMenuHeight={200}
+                value={{
+                  value: task.folderId,
+                  label: currentFolder?.name,
+                }}
+                isSearchable={false}
+                isClearable={false}
+                className="text-xs w-32 ring-0"
+                styles={{
+                  control: (provided, state) => ({
+                    ...provided,
+                    height: 20,
+                    border: 0,
+                    boxShadow: '0',
+                  }),
+                  dropdownIndicator: (provided, state) => ({
+                    ...provided,
+                    display: 'none',
+                  }),
+                  indicatorSeparator: (provided, state) => ({
+                    ...provided,
+                    display: 'none',
+                  }),
+                }}
+              />
+            </div>
           </div>
         </div>
       )}

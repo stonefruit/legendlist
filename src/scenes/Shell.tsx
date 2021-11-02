@@ -94,6 +94,7 @@ export default function Shell() {
         navigator={navigationWithIcons[navIndex]}
         selectedNavId={navigationWithIcons[navIndex].id}
         onClickDeleteFolder={onClickDeleteFolder}
+        navigation={navigation}
       />
     </div>
   )

@@ -15,11 +15,13 @@ type Props = {
   navigator: NavigationItem
   selectedNavId: string
   onClickDeleteFolder(id: string): Promise<void>
+  navigation: NavigationItem[]
 }
 export default function TaskView({
   navigator,
   selectedNavId,
   onClickDeleteFolder,
+  navigation,
 }: Props) {
   const [tasks, setTasks] = useState<Task[]>([])
   const [activeTaskId, setActiveTaskId] = useState<string | null>(null)
@@ -32,6 +34,12 @@ export default function TaskView({
 
   const refreshTasks = async () => {
     const dbTasks = await models.Task.find({ folderId: selectedNavId })
+    const wasActiveTaskRemoved =
+      dbTasks.findIndex((task) => task.id === activeTaskId) === -1
+    if (wasActiveTaskRemoved) {
+      setActiveTask(null)
+      setActiveTaskId(null)
+    }
     setTasks(dbTasks)
   }
 
@@ -54,12 +62,14 @@ export default function TaskView({
     id,
     actualEndDate,
     name,
+    folderId,
   }: {
     id: string
     actualEndDate?: number | null
     name?: string
+    folderId?: string
   }) => {
-    await models.Task.update({ id, actualEndDate, name })
+    await models.Task.update({ id, actualEndDate, name, folderId })
     await refreshTasks()
   }
 
@@ -184,7 +194,11 @@ export default function TaskView({
           </div>
         </div>
       </div>
-      <NoteView task={activeTask} />
+      <NoteView
+        task={activeTask}
+        navigation={navigation}
+        updateTask={updateTask}
+      />
     </div>
   )
 }

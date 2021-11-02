@@ -7,10 +7,12 @@ type Props = {
     id,
     actualEndDate,
     name,
+    folderId,
   }: {
     id: string
     actualEndDate?: number | null
     name?: string
+    folderId?: string
   }): Promise<void>
   activeTaskId: string | null
   selectActiveTask(id: string | null): void
