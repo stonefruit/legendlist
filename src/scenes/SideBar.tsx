@@ -6,10 +6,14 @@ import { PlusIcon } from '@heroicons/react/solid'
 type Props = {
   navigation: NavigationItem[]
   changeCurrentNavigation(id: string): void
+  onClickAddFolder(): void
+  selectedNavId: string
 }
 export default function SideBar({
   navigation,
   changeCurrentNavigation,
+  onClickAddFolder,
+  selectedNavId,
 }: Props) {
   const onClickNavigator = (id: string) => () => {
     changeCurrentNavigation(id)
@@ -26,7 +30,10 @@ export default function SideBar({
         <div className="mt-5 flex-1 flex flex-col">
           <div className="flex justify-between px-2 pb-4 items-center">
             <div>Folders</div>
-            <button className="bg-yellow-200 rounded-md p-1 border border-yellow-400 cursor-pointer hover:bg-yellow-100 active:bg-white h-6 w-6 outline-none">
+            <button
+              onClick={onClickAddFolder}
+              className="bg-yellow-200 rounded-md p-1 border border-yellow-400 cursor-pointer hover:bg-yellow-100 active:bg-white h-6 w-6 outline-none"
+            >
               <PlusIcon className="h-full w-full" />
             </button>
           </div>
@@ -36,7 +43,7 @@ export default function SideBar({
                 key={item.id}
                 onClick={onClickNavigator(item.id)}
                 className={classNames(
-                  item.current
+                  item.id === selectedNavId
                     ? 'bg-yellow-500 text-white cursor-default'
                     : 'text-yellow-500 hover:bg-yellow-200 cursor-pointer',
                   'group flex items-center px-2 py-2 text-sm font-medium rounded-md'
@@ -45,7 +52,9 @@ export default function SideBar({
                 {item.icon && (
                   <item.icon
                     className={classNames(
-                      item.current ? 'text-white' : 'text-yellow-500',
+                      item.id === selectedNavId
+                        ? 'text-white'
+                        : 'text-yellow-500',
                       'mr-3 flex-shrink-0 h-6 w-6'
                     )}
                     aria-hidden="true"
@@ -53,10 +62,10 @@ export default function SideBar({
                 )}
                 {!item.icon && <div className="mr-3 flex-shrink-0 h-6 w-6" />}
                 <input
-                  disabled={!item.current}
+                  disabled={item.id !== selectedNavId}
                   type="text"
                   className={classNames(
-                    item.current
+                    item.id === selectedNavId
                       ? 'bg-yellow-500 group-hover:bg-yellow-500 text-white cursor-text'
                       : 'group-hover:bg-yellow-200 text-yellow-500 bg-yellow-100 cursor-pointer',
                     ' placeholder-gray-400 pr-6 break-words border-0 bg-yellow-50 p-0 m-0 focus:ring-transparent w-full resize-none outline-none'

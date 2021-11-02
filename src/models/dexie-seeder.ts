@@ -1,12 +1,12 @@
 import { DexieDatabase } from './dexie-db'
 
 const seeder = async (db: DexieDatabase) => {
-  const allFolder = await db.Folder.get('ALL')
-  if (!allFolder) {
+  const inboxFolder = await db.Folder.get('INBOX')
+  if (!inboxFolder) {
     const now = Date.now()
     await db.Folder.add({
-      id: 'ALL',
-      name: 'All',
+      id: 'INBOX',
+      name: 'Inbox',
       createdAt: now,
       modifiedAt: now,
     })

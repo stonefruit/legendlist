@@ -13,7 +13,7 @@ const create = async ({
   plannedStartDate,
 }: TaskCreateAttributes): Promise<string> => {
   const id = uuidv4()
-  const createdAt = Date.now()
+  const now = Date.now()
   await db.Task.put({
     id: uuidv4(),
     name: name || id,
@@ -23,8 +23,8 @@ const create = async ({
     actualStartDate,
     plannedEndDate,
     plannedStartDate,
-    createdAt,
-    modifiedAt: createdAt,
+    createdAt: now,
+    modifiedAt: now,
   })
   return id
 }

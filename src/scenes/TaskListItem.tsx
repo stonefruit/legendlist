@@ -60,12 +60,13 @@ export default function TaskListItem({
       </div>
       <div className={'ml-3 text-sm w-full'}>
         <input
+          disabled={!isActive}
           type="text"
           className={classNames(
             isActive
-              ? 'bg-yellow-200 group-hover:bg-yellow-200'
-              : 'group-hover:bg-yellow-100',
-            ' placeholder-gray-400 pr-6 break-words border-0 bg-yellow-50 p-0 m-0 focus:ring-transparent w-full resize-none outline-none cursor-text font-medium text-gray-700'
+              ? 'bg-yellow-200 group-hover:bg-yellow-200 cursor-text'
+              : 'group-hover:bg-yellow-100 cursor-pointer',
+            ' placeholder-gray-400 pr-6 break-words border-0 bg-yellow-50 p-0 m-0 focus:ring-transparent w-full resize-none outline-none font-medium text-gray-700'
           )}
           placeholder="What would you like to call this item?"
           onChange={onChangeName}

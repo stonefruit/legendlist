@@ -84,6 +84,10 @@ export type NavigationItem = {
 }
 
 export type TaskCreateAttributes = Omit<Task, 'id' | 'createdAt' | 'modifiedAt'>
+export type FolderCreateAttributes = Omit<
+  Folder,
+  'id' | 'createdAt' | 'modifiedAt'
+>
 
 export type CustomElement = { type: string; children: CustomText[] }
 export type CustomText = { text: string }
