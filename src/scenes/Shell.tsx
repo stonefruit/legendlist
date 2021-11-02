@@ -29,53 +29,33 @@ const assignIcons = (navigation: NavigationItem[]) => {
 export default function Shell() {
   const [navigation, setNavigation] = useState<NavigationItem[]>([])
   const [shouldRefresh, setShouldRefresh] = useState(true)
+  const [navIndex, setNavIndex] = useState(0)
+
+  const navigationWithIcons = assignIcons(navigation)
+
+  // FUNCTIONS
 
   const onClickAddFolder = async () => {
     await models.Folder.create({ name: 'New Folder' })
     setShouldRefresh(true)
   }
-
   const onClickDeleteFolder = async (id: string) => {
     await models.Folder.destroy({ id })
+    setNavIndex(0)
     setShouldRefresh(true)
   }
-
-  const navCurrentIndex = navigation.findIndex((navigator) => navigator.current)
-  const navIndex = navCurrentIndex > -1 ? navCurrentIndex : 0
-
   const changeCurrentNavigation = (id: string) => {
-    const selectedNavigatorIndex = navigation.findIndex(
-      (navigator) => navigator.id === id
-    )
-    let newNavigation: NavigationItem[] = JSON.parse(JSON.stringify(navigation))
-    if (selectedNavigatorIndex >= 0) {
-      newNavigation = newNavigation.map((navigator) => {
-        if (navigator.id === id) {
-          navigator.current = true
-        } else {
-          navigator.current = false
-        }
-        return navigator
-      })
-    } else {
-      newNavigation = newNavigation.map((navigator) => {
-        if (navigator.id === 'HOME') {
-          navigator.current = true
-        } else {
-          navigator.current = false
-        }
-        return navigator
-      })
-    }
-
-    setNavigation(newNavigation)
+    const newIndex = navigation.findIndex((navigator) => navigator.id === id)
+    const newNavIndex = newIndex > -1 ? newIndex : 0
+    setNavIndex(newNavIndex)
   }
 
-  const navigationWithIcons = assignIcons(navigation)
   const updateFolder = async ({ id, name }: { id: string; name?: string }) => {
     await models.Folder.update({ id, name })
     setShouldRefresh(true)
   }
+
+  // EFFECTS
 
   useEffect(() => {
     if (shouldRefresh) {
