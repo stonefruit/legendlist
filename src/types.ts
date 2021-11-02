@@ -5,6 +5,8 @@ import { ReactEditor } from 'slate-react'
 
 export type Task = {
   id: string
+  folderId: string
+  orderInFolder: number
   name: string
   content: Descendant[]
   priority: number
@@ -57,15 +59,6 @@ export type PrecedingTask = {
 export type Folder = {
   id: string
   name: string
-  createdAt: number
-  modifiedAt: number
-}
-
-export type FolderTask = {
-  id: string
-  folderId: string
-  taskId: string
-  order: number
   createdAt: number
   modifiedAt: number
 }

@@ -2,42 +2,12 @@ import { useEffect, useState } from 'react'
 import { NavigationItem, Task, TaskCreateAttributes } from '../types'
 import AddTaskBar from './AddTaskBar'
 import TaskList from './TaskList.'
-import * as db from '../models'
 import NoteView from './NoteView'
 import * as models from '../models'
 import { CheckIcon, TrashIcon, XIcon } from '@heroicons/react/solid'
+import { taskSorter } from '../utils'
 
 const ReservedNavIds = { INBOX: 'INBOX', HOME: 'HOME', COMPLETED: 'COMPLETED' }
-
-const taskFilterer = (tasks: Task[], { navId }: { navId: string }): Task[] => {
-  if (navId === ReservedNavIds.INBOX) {
-    return tasks
-  }
-  if (navId === ReservedNavIds.HOME) {
-    return tasks.filter((task) => {
-      return !task.actualEndDate
-    })
-  }
-  if (navId === ReservedNavIds.COMPLETED) {
-    return tasks.filter((task) => {
-      return task.actualEndDate
-    })
-  }
-  return []
-}
-
-const taskSorter = (tasks: Task[]): Task[] => {
-  const sorter = (taskA: Task, taskB: Task) => {
-    if (taskA.createdAt < taskB.createdAt) {
-      return 1
-    } else if (taskA.createdAt > taskB.createdAt) {
-      return -1
-    } else {
-      return 0
-    }
-  }
-  return tasks.sort(sorter)
-}
 
 type TrashState = 'INACTIVE' | 'ACTIVE' | 'CONFIRM'
 
@@ -55,17 +25,19 @@ export default function TaskView({
   const [activeTaskId, setActiveTaskId] = useState<string | null>(null)
   const [activeTask, setActiveTask] = useState<Task | null>(null)
   const [trashState, setTrashState] = useState<TrashState>('INACTIVE')
-  const [totalFilteredTasks, setTotalFilteredTasks] = useState(0)
-  const filteredTasks = taskFilterer(tasks, { navId: selectedNavId })
-  taskSorter(filteredTasks)
+  const [totalTasks, setTotalTasks] = useState(0)
+  taskSorter(tasks)
 
   const refreshTasks = async () => {
-    const dbTasks = await db.Task.find()
+    const dbTasks = await models.Task.find({ folderId: selectedNavId })
     setTasks(dbTasks)
   }
 
   useEffect(() => {
     setActiveTask(null)
+    setActiveTaskId(null)
+    refreshTasks()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedNavId])
 
   useEffect(() => {
@@ -76,18 +48,18 @@ export default function TaskView({
   }, [])
 
   useEffect(() => {
-    if (filteredTasks.length !== totalFilteredTasks) {
-      setTotalFilteredTasks(filteredTasks.length)
+    if (tasks.length !== totalTasks) {
+      setTotalTasks(tasks.length)
     }
-  }, [filteredTasks, totalFilteredTasks])
+  }, [tasks, totalTasks])
 
   useEffect(() => {
-    if (totalFilteredTasks > 0) {
+    if (totalTasks > 0) {
       setTrashState('INACTIVE')
     } else {
       setTrashState('ACTIVE')
     }
-  }, [totalFilteredTasks])
+  }, [totalTasks])
 
   useEffect(() => {
     const runAsync = async () => {
@@ -106,8 +78,10 @@ export default function TaskView({
   }, [activeTaskId])
 
   const addTask = async ({ name }: TaskCreateAttributes) => {
-    await db.Task.create({
+    await models.Task.create({
       name,
+      folderId: selectedNavId,
+      orderInFolder: 0,
       content: [],
       priority: 0,
       actualEndDate: null,
@@ -127,7 +101,7 @@ export default function TaskView({
     actualEndDate?: number | null
     name?: string
   }) => {
-    await db.Task.update({ id, actualEndDate, name })
+    await models.Task.update({ id, actualEndDate, name })
     await refreshTasks()
   }
 
@@ -186,7 +160,7 @@ export default function TaskView({
           </div>
           <AddTaskBar addTask={addTask} />
           <TaskList
-            tasks={filteredTasks}
+            tasks={tasks}
             updateTask={updateTask}
             selectActiveTask={selectActiveTask}
             activeTaskId={activeTaskId}

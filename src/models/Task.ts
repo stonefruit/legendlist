@@ -4,6 +4,8 @@ import { Task, TaskCreateAttributes } from '../types'
 import { Descendant } from 'slate'
 
 const create = async ({
+  folderId,
+  orderInFolder,
   name,
   priority,
   content,
@@ -16,6 +18,8 @@ const create = async ({
   const now = Date.now()
   await db.Task.put({
     id: uuidv4(),
+    folderId,
+    orderInFolder,
     name: name || id,
     priority,
     content,
@@ -33,23 +37,32 @@ const get = async ({ id }: { id: string }): Promise<Task | undefined> => {
   return await db.Task.get(id)
 }
 
-const find = async (): Promise<Task[]> => {
-  return await db.Task.orderBy('createdAt').toArray()
+const find = async ({ folderId }: Partial<Task>): Promise<Task[]> => {
+  const whereValues = {
+    ...(folderId === undefined ? {} : { folderId }),
+  }
+  return await db.Task.where(whereValues).toArray()
 }
 
 const update = async ({
   id,
+  folderId,
+  orderInFolder,
   actualEndDate,
   content,
   name,
 }: {
   id: string
+  folderId?: string
+  orderInFolder?: number
   actualEndDate?: number | null
   content?: Descendant[]
   name?: string
 }): Promise<boolean> => {
   try {
     const updateValues = {
+      ...(folderId === undefined ? {} : { folderId }),
+      ...(orderInFolder === undefined ? {} : { orderInFolder }),
       ...(actualEndDate === undefined ? {} : { actualEndDate }),
       ...(content === undefined ? {} : { content }),
       ...(name === undefined ? {} : { name }),
