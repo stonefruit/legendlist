@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 import { NavigationItem, Task, TaskCreateAttributes } from '../types'
 import AddTaskBar from './AddTaskBar'
-import TaskList from './TaskList.'
 import NoteView from './NoteView'
 import * as models from '../models'
 import { CheckIcon, TrashIcon, XIcon } from '@heroicons/react/solid'
 import { taskSorter } from '../utils'
+import TaskListItem from './TaskListItem'
 
 const ReservedNavIds = { INBOX: 'INBOX', HOME: 'HOME', COMPLETED: 'COMPLETED' }
 
@@ -28,54 +28,12 @@ export default function TaskView({
   const [totalTasks, setTotalTasks] = useState(0)
   taskSorter(tasks)
 
+  // FUNCTIONS
+
   const refreshTasks = async () => {
     const dbTasks = await models.Task.find({ folderId: selectedNavId })
     setTasks(dbTasks)
   }
-
-  useEffect(() => {
-    setActiveTask(null)
-    setActiveTaskId(null)
-    refreshTasks()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedNavId])
-
-  useEffect(() => {
-    const runAsync = async () => {
-      await refreshTasks()
-    }
-    runAsync()
-  }, [])
-
-  useEffect(() => {
-    if (tasks.length !== totalTasks) {
-      setTotalTasks(tasks.length)
-    }
-  }, [tasks, totalTasks])
-
-  useEffect(() => {
-    if (totalTasks > 0) {
-      setTrashState('INACTIVE')
-    } else {
-      setTrashState('ACTIVE')
-    }
-  }, [totalTasks])
-
-  useEffect(() => {
-    const runAsync = async () => {
-      if (activeTaskId === null) {
-        setActiveTask(null)
-        return
-      }
-      const updatedTask = await models.Task.get({ id: activeTaskId })
-      if (!updatedTask) {
-        setActiveTask(null)
-        return
-      }
-      setActiveTask(updatedTask)
-    }
-    runAsync()
-  }, [activeTaskId])
 
   const addTask = async ({ name }: TaskCreateAttributes) => {
     await models.Task.create({
@@ -108,6 +66,55 @@ export default function TaskView({
   const selectActiveTask = (id: string | null) => {
     setActiveTaskId(id)
   }
+
+  // EFFECTS
+
+  useEffect(() => {
+    setActiveTask(null)
+    setActiveTaskId(null)
+    refreshTasks()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedNavId])
+
+  useEffect(() => {
+    const runAsync = async () => {
+      await refreshTasks()
+    }
+    runAsync()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  useEffect(() => {
+    if (tasks.length !== totalTasks) {
+      setTotalTasks(tasks.length)
+    }
+  }, [tasks, totalTasks])
+
+  useEffect(() => {
+    if (totalTasks > 0) {
+      setTrashState('INACTIVE')
+    } else {
+      setTrashState('ACTIVE')
+    }
+  }, [totalTasks])
+
+  useEffect(() => {
+    const runAsync = async () => {
+      if (activeTaskId === null) {
+        setActiveTask(null)
+        return
+      }
+      const updatedTask = await models.Task.get({ id: activeTaskId })
+      if (!updatedTask) {
+        setActiveTask(null)
+        return
+      }
+      setActiveTask(updatedTask)
+    }
+    runAsync()
+  }, [activeTaskId])
+
+  // SUBCOMPONENTS
 
   const ConfirmNavDeleteWidget = () => {
     return (
@@ -159,12 +166,22 @@ export default function TaskView({
             )}
           </div>
           <AddTaskBar addTask={addTask} />
-          <TaskList
-            tasks={tasks}
-            updateTask={updateTask}
-            selectActiveTask={selectActiveTask}
-            activeTaskId={activeTaskId}
-          />
+
+          <div className="mx-auto">
+            <div className="py-4">
+              {tasks.map((task) => {
+                return (
+                  <TaskListItem
+                    key={task.id}
+                    task={task}
+                    updateTask={updateTask}
+                    selectActiveTask={selectActiveTask}
+                    activeTaskId={activeTaskId}
+                  />
+                )
+              })}
+            </div>
+          </div>
         </div>
       </div>
       <NoteView task={activeTask} />

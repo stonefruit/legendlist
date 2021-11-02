@@ -8,6 +8,8 @@ type Props = {
 function AddTaskBar({ addTask }: Props) {
   const [name, setName] = useState('')
 
+  // FUNCTIONS
+
   const validateAndAddTask = async () => {
     if (name) {
       await addTask({ name })

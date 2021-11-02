@@ -17,6 +17,7 @@ export default function SideBar({
   selectedNavId,
   updateFolder,
 }: Props) {
+  // FUNCTIONS
   const onClickNavigator = (id: string) => () => {
     changeCurrentNavigation(id)
   }

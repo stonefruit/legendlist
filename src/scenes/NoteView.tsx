@@ -17,6 +17,8 @@ export default function NoteView({ task }: Props) {
   const [value, setValue] = useState<Descendant[]>(initialData)
   const [shouldRefreshEditor, setShouldRefreshEditor] = useState(false)
 
+  // EFFECTS
+
   useEffect(() => {
     setShouldRefreshEditor(true)
     if (task && task.content && task.content.length > 0) {
