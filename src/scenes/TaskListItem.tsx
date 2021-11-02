@@ -21,6 +21,10 @@ export default function TaskListItem({
   activeTaskId,
   selectActiveTask,
 }: Props) {
+  const isActive = activeTaskId === task.id
+
+  // FUNCTIONS
+
   const onChangeDone = async (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault()
     if (e.target.checked) {
@@ -37,8 +41,6 @@ export default function TaskListItem({
   const onChangeName = async (e: React.ChangeEvent<HTMLInputElement>) => {
     await updateTask({ id: task.id, name: e.target.value })
   }
-
-  const isActive = activeTaskId === task.id
 
   return (
     <div
