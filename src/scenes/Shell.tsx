@@ -40,31 +40,6 @@ export default function Shell() {
     setShouldRefresh(true)
   }
 
-  useEffect(() => {}, [])
-
-  useEffect(() => {
-    if (shouldRefresh) {
-      const runAsync = async () => {
-        const _folders = await models.Folder.find()
-        const allFolders = _folders.map((folder): NavigationItem => {
-          return {
-            id: folder.id,
-            name: folder.name,
-            current: false,
-          }
-        })
-        const navigationWithIcons = allFolders.map((nav) => {
-          nav.icon = nav.icon || FolderIcon
-          return nav
-        })
-        setNavigation(navigationWithIcons)
-      }
-      runAsync()
-      setShouldRefresh(false)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [shouldRefresh])
-
   const navCurrentIndex = navigation.findIndex((navigator) => navigator.current)
   const navIndex = navCurrentIndex > -1 ? navCurrentIndex : 0
 
@@ -92,19 +67,39 @@ export default function Shell() {
         return navigator
       })
     }
-    const navigationWithIcons = newNavigation.map((nav) => {
-      nav.icon = nav.icon || FolderIcon
-      return nav
-    })
-    setNavigation(navigationWithIcons)
+
+    setNavigation(newNavigation)
   }
 
   const navigationWithIcons = assignIcons(navigation)
+  const updateFolder = async ({ id, name }: { id: string; name?: string }) => {
+    await models.Folder.update({ id, name })
+    setShouldRefresh(true)
+  }
+
+  useEffect(() => {
+    if (shouldRefresh) {
+      const runAsync = async () => {
+        const currentSelectedNavId = navigationWithIcons[navIndex]?.id
+        const _folders = await models.Folder.find()
+        const allFolders = _folders.map((folder): NavigationItem => {
+          return {
+            id: folder.id,
+            name: folder.name,
+            current: folder.id === currentSelectedNavId,
+          }
+        })
+        setNavigation(allFolders)
+      }
+      runAsync()
+      setShouldRefresh(false)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shouldRefresh])
 
   if (navigation.length === 0) {
     return null
   }
-
   return (
     <div className="bg-yellow-50 h-screen">
       <MiniSideBar navigation={navigation} />
@@ -113,6 +108,7 @@ export default function Shell() {
         changeCurrentNavigation={changeCurrentNavigation}
         onClickAddFolder={onClickAddFolder}
         selectedNavId={navigationWithIcons[navIndex].id}
+        updateFolder={updateFolder}
       />
       <TaskView
         navigator={navigationWithIcons[navIndex]}

@@ -8,18 +8,22 @@ type Props = {
   changeCurrentNavigation(id: string): void
   onClickAddFolder(): void
   selectedNavId: string
+  updateFolder({ id, name }: { id: string; name?: string }): Promise<void>
 }
 export default function SideBar({
   navigation,
   changeCurrentNavigation,
   onClickAddFolder,
   selectedNavId,
+  updateFolder,
 }: Props) {
   const onClickNavigator = (id: string) => () => {
     changeCurrentNavigation(id)
   }
 
-  const onChangeName = () => {}
+  const onChangeName = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    await updateFolder({ id: selectedNavId, name: e.target.value })
+  }
 
   return (
     <div className="flex w-64 pl-10 flex-col fixed inset-y-0 text-yellow-500 border-r border-yellow-200">

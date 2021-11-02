@@ -61,4 +61,8 @@ const update = async ({
   }
 }
 
-export { create, get, find, update }
+const destroy = async ({ id }: { id: string }): Promise<void> => {
+  return await db.Task.delete(id)
+}
+
+export { create, get, find, update, destroy }
