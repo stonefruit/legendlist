@@ -17,12 +17,14 @@ type Props = {
   }): Promise<void>
   activeTaskId: string | null
   selectActiveTask(id: string | null): void
+  moveTask: (taskId: string, direction: 'UP' | 'DOWN') => Promise<void>
 }
 export default function TaskListItem({
   task,
   updateTask,
   activeTaskId,
   selectActiveTask,
+  moveTask,
 }: Props) {
   const isActive = activeTaskId === task.id
 
@@ -53,7 +55,7 @@ export default function TaskListItem({
       )}
       onClick={onClickTask(task.id)}
     >
-      <div className="flex items-center h-5">
+      <div className="flex items-center h-8">
         <input
           onChange={onChangeDone}
           checked={!!task.actualEndDate}
@@ -71,26 +73,30 @@ export default function TaskListItem({
             isActive
               ? 'bg-yellow-200 group-hover:bg-yellow-200 cursor-text'
               : 'group-hover:bg-yellow-100 cursor-pointer',
-            ' placeholder-gray-400 pr-6 break-words border-0 bg-yellow-50 p-0 m-0 focus:ring-transparent w-full resize-none outline-none font-medium text-gray-700'
+            'placeholder-gray-400 pr-6 break-words border-0 bg-yellow-50 p-0 m-0 focus:ring-transparent w-full resize-none outline-none font-medium text-gray-700'
           )}
           placeholder="What would you like to call this item?"
           onChange={onChangeName}
           value={task.name}
         />
-        <p id="comments-description" className="text-gray-400 text-xs">
+        {/* <p id="comments-description" className="text-gray-400 text-xs">
           {task.orderInFolder}
-        </p>
+        </p> */}
       </div>
-      <div className="flex flex-col">
-        <ChevronUpIcon
-          height={15}
-          className="text-gray-300 hover:text-gray-800"
-        />
-        <ChevronDownIcon
-          height={15}
-          className="text-gray-300 hover:text-gray-800"
-        />
-      </div>
+      {isActive && (
+        <div className="flex flex-col">
+          <ChevronUpIcon
+            height={15}
+            className="text-gray-300 hover:text-gray-800"
+            onClick={() => moveTask(task.id, 'UP')}
+          />
+          <ChevronDownIcon
+            height={15}
+            className="text-gray-300 hover:text-gray-800"
+            onClick={() => moveTask(task.id, 'DOWN')}
+          />
+        </div>
+      )}
     </div>
   )
 }

@@ -105,6 +105,45 @@ export default function TaskView({
     await refreshTasks()
   }
 
+  const reorderTask = async (taskId: string, beforeTaskId: string | null) => {
+    const currentTaskIndex = tasks.findIndex((task) => task.id === taskId)
+    const beforeTaskIndex = tasks.findIndex((task) => task.id === beforeTaskId)
+    let newTaskIndex: number
+    if (beforeTaskIndex > -1) {
+      tasks.splice(beforeTaskIndex, 0, tasks[currentTaskIndex])
+      newTaskIndex = beforeTaskIndex
+    } else {
+      tasks.splice(tasks.length, 0, tasks[currentTaskIndex])
+      newTaskIndex = tasks.length
+    }
+    const taskToRemoveIndex = tasks.findIndex(
+      (task, index) => task.id === taskId && newTaskIndex !== index
+    )
+    tasks.splice(taskToRemoveIndex, 1)
+
+    const tasksToUpdate = tasks.map((task, index) => {
+      task.orderInFolder = index
+      return task
+    })
+    await models.Task.bulkPut(tasksToUpdate)
+    await refreshTasks()
+  }
+
+  const moveTask = async (taskId: string, direction: 'UP' | 'DOWN') => {
+    const currentTaskIndex = tasks.findIndex((task) => task.id === taskId)
+    if (direction === 'UP' && currentTaskIndex !== 0) {
+      await reorderTask(taskId, tasks[currentTaskIndex - 1].id)
+    }
+    if (direction === 'DOWN' && currentTaskIndex !== tasks.length - 1) {
+      const isTaskMovingToLast = currentTaskIndex + 1 === tasks.length - 1
+      if (isTaskMovingToLast) {
+        await reorderTask(taskId, null)
+      } else {
+        await reorderTask(taskId, tasks[currentTaskIndex + 2].id)
+      }
+    }
+  }
+
   const updateTask = async ({
     id,
     actualEndDate,
@@ -116,7 +155,14 @@ export default function TaskView({
     name?: string
     folderId?: string
   }) => {
-    await models.Task.update({ id, actualEndDate, name, folderId })
+    await models.Task.update({
+      id,
+      actualEndDate,
+      name,
+      folderId,
+      // Bring task to top when it is moved to another folder
+      orderInFolder: folderId ? -1 : undefined,
+    })
     await refreshTasks()
   }
 
@@ -235,6 +281,7 @@ export default function TaskView({
                       updateTask={updateTask}
                       selectActiveTask={selectActiveTask}
                       activeTaskId={activeTaskId}
+                      moveTask={moveTask}
                     />
                   </div>
                 )
