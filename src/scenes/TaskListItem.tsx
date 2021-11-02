@@ -1,3 +1,4 @@
+import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/outline'
 import { Task } from '../types'
 import { classNames } from '../utils'
 
@@ -77,8 +78,18 @@ export default function TaskListItem({
           value={task.name}
         />
         <p id="comments-description" className="text-gray-400 text-xs">
-          {task.actualEndDate}
+          {task.orderInFolder}
         </p>
+      </div>
+      <div className="flex flex-col">
+        <ChevronUpIcon
+          height={15}
+          className="text-gray-300 hover:text-gray-800"
+        />
+        <ChevronDownIcon
+          height={15}
+          className="text-gray-300 hover:text-gray-800"
+        />
       </div>
     </div>
   )

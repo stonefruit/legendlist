@@ -28,19 +28,66 @@ export default function TaskView({
   const [activeTask, setActiveTask] = useState<Task | null>(null)
   const [trashState, setTrashState] = useState<TrashState>('INACTIVE')
   const [totalTasks, setTotalTasks] = useState(0)
-  taskSorter(tasks)
+  taskSorter(tasks, 'orderInFolder')
 
   // FUNCTIONS
 
+  const autoReorderTasks = async (_dbTasks: Task[]) => {
+    const dbTasks = JSON.parse(JSON.stringify(_dbTasks)) as Task[]
+    taskSorter(dbTasks, 'orderInFolder', 'ASC')
+
+    let hasChange = false
+    let prevOrder: null | number = null
+    const desiredTasks: Task[] = []
+    let tasksWithSameOrder: Task[] = []
+    for (let i = 0; i < dbTasks.length; i += 1) {
+      const currentTask = dbTasks[i]
+      // Initial setup with first value
+      if (prevOrder === null) {
+        prevOrder = currentTask.orderInFolder
+        tasksWithSameOrder.push(currentTask)
+        continue
+      }
+      if (prevOrder !== currentTask.orderInFolder) {
+        taskSorter(tasksWithSameOrder, 'createdAt', 'DSC')
+        tasksWithSameOrder.forEach((task) => desiredTasks.push(task))
+        tasksWithSameOrder = []
+      }
+      tasksWithSameOrder.push(currentTask)
+      prevOrder = currentTask.orderInFolder
+    }
+    // Handle last group of tasks after loop ends
+    tasksWithSameOrder.forEach((task) => desiredTasks.push(task))
+
+    const orderedTasks = desiredTasks.map((task, index) => {
+      if (!hasChange && dbTasks[index].orderInFolder !== index) {
+        hasChange = true
+      }
+      task.orderInFolder = index
+      return task
+    })
+    if (hasChange) {
+      const tasksToUpdate = orderedTasks.map((task, index) => {
+        task.orderInFolder = index
+        return task
+      })
+      await models.Task.bulkPut(tasksToUpdate)
+      return await models.Task.find({ folderId: selectedNavId })
+    }
+    return dbTasks
+  }
+
   const refreshTasks = async () => {
     const dbTasks = await models.Task.find({ folderId: selectedNavId })
+    const updatedTasks = await autoReorderTasks(dbTasks)
+
     const wasActiveTaskRemoved =
-      dbTasks.findIndex((task) => task.id === activeTaskId) === -1
+      updatedTasks.findIndex((task) => task.id === activeTaskId) === -1
     if (wasActiveTaskRemoved) {
       setActiveTask(null)
       setActiveTaskId(null)
     }
-    setTasks(dbTasks)
+    setTasks(updatedTasks)
   }
 
   const addTask = async ({ name }: TaskCreateAttributes) => {
@@ -181,13 +228,15 @@ export default function TaskView({
             <div className="py-4">
               {tasks.map((task) => {
                 return (
-                  <TaskListItem
-                    key={task.id}
-                    task={task}
-                    updateTask={updateTask}
-                    selectActiveTask={selectActiveTask}
-                    activeTaskId={activeTaskId}
-                  />
+                  <div key={task.id}>
+                    <TaskListItem
+                      key={task.id}
+                      task={task}
+                      updateTask={updateTask}
+                      selectActiveTask={selectActiveTask}
+                      activeTaskId={activeTaskId}
+                    />
+                  </div>
                 )
               })}
             </div>

@@ -74,8 +74,12 @@ const update = async ({
   }
 }
 
+const bulkPut = async (tasks: Task[]) => {
+  await db.Task.bulkPut(tasks)
+}
+
 const destroy = async ({ id }: { id: string }): Promise<void> => {
   return await db.Task.delete(id)
 }
 
-export { create, get, find, update, destroy }
+export { create, get, find, update, destroy, bulkPut }
