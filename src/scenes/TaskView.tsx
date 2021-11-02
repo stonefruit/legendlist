@@ -106,22 +106,25 @@ export default function TaskView({
   }
 
   const reorderTask = async (taskId: string, beforeTaskId: string | null) => {
-    const currentTaskIndex = tasks.findIndex((task) => task.id === taskId)
-    const beforeTaskIndex = tasks.findIndex((task) => task.id === beforeTaskId)
+    const dbTasks = await models.Task.find({ folderId: selectedNavId })
+    const currentTaskIndex = dbTasks.findIndex((task) => task.id === taskId)
+    const beforeTaskIndex = dbTasks.findIndex(
+      (task) => task.id === beforeTaskId
+    )
     let newTaskIndex: number
     if (beforeTaskIndex > -1) {
-      tasks.splice(beforeTaskIndex, 0, tasks[currentTaskIndex])
+      dbTasks.splice(beforeTaskIndex, 0, dbTasks[currentTaskIndex])
       newTaskIndex = beforeTaskIndex
     } else {
-      tasks.splice(tasks.length, 0, tasks[currentTaskIndex])
-      newTaskIndex = tasks.length
+      dbTasks.splice(dbTasks.length, 0, dbTasks[currentTaskIndex])
+      newTaskIndex = dbTasks.length
     }
-    const taskToRemoveIndex = tasks.findIndex(
+    const taskToRemoveIndex = dbTasks.findIndex(
       (task, index) => task.id === taskId && newTaskIndex !== index
     )
-    tasks.splice(taskToRemoveIndex, 1)
+    dbTasks.splice(taskToRemoveIndex, 1)
 
-    const tasksToUpdate = tasks.map((task, index) => {
+    const tasksToUpdate = dbTasks.map((task, index) => {
       task.orderInFolder = index
       return task
     })
