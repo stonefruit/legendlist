@@ -7,7 +7,7 @@ export function classNames(...classes: string[]) {
 const taskSorter = (
   tasks: Task[],
   attribute: string,
-  direction: 'DSC' | 'ASC' = 'ASC'
+  direction: 'DSC' | 'ASC'
 ): Task[] => {
   const sorter = (taskA: Task, taskB: Task) => {
     const valA = (taskA as any)[attribute]

@@ -28,7 +28,7 @@ export default function TaskView({
   const [activeTask, setActiveTask] = useState<Task | null>(null)
   const [trashState, setTrashState] = useState<TrashState>('INACTIVE')
   const [totalTasks, setTotalTasks] = useState(0)
-  taskSorter(tasks, 'orderInFolder')
+  taskSorter(tasks, 'orderInFolder', 'ASC')
 
   // FUNCTIONS
 
@@ -107,6 +107,8 @@ export default function TaskView({
 
   const reorderTask = async (taskId: string, beforeTaskId: string | null) => {
     const dbTasks = await models.Task.find({ folderId: selectedNavId })
+    taskSorter(dbTasks, 'orderInFolder', 'ASC')
+
     const currentTaskIndex = dbTasks.findIndex((task) => task.id === taskId)
     const beforeTaskIndex = dbTasks.findIndex(
       (task) => task.id === beforeTaskId
