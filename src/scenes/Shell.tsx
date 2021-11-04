@@ -10,6 +10,7 @@ import TaskView from './TaskView'
 import MiniSideBar from './MiniSideBar'
 import { NavigationItem } from '../types'
 import * as models from '../models'
+import ImportExport from './ImportExport'
 
 const assignIcons = (navigation: NavigationItem[]) => {
   return navigation.map((nav) => {
@@ -30,6 +31,7 @@ export default function Shell() {
   const [navigation, setNavigation] = useState<NavigationItem[]>([])
   const [shouldRefresh, setShouldRefresh] = useState(true)
   const [navIndex, setNavIndex] = useState(0)
+  const [activity, setActivity] = useState<'TASK' | 'IMPORT/EXPORT'>('TASK')
 
   const navigationWithIcons = assignIcons(navigation)
 
@@ -82,20 +84,25 @@ export default function Shell() {
   }
   return (
     <div className="bg-yellow-50 h-screen">
-      <MiniSideBar navigation={navigation} />
-      <SideBar
-        navigation={navigation}
-        changeCurrentNavigation={changeCurrentNavigation}
-        onClickAddFolder={onClickAddFolder}
-        selectedNavId={navigationWithIcons[navIndex].id}
-        updateFolder={updateFolder}
-      />
-      <TaskView
-        navigator={navigationWithIcons[navIndex]}
-        selectedNavId={navigationWithIcons[navIndex].id}
-        onClickDeleteFolder={onClickDeleteFolder}
-        navigation={navigation}
-      />
+      <MiniSideBar activity={activity} setActivity={setActivity} />
+      {activity === 'TASK' && (
+        <SideBar
+          navigation={navigation}
+          changeCurrentNavigation={changeCurrentNavigation}
+          onClickAddFolder={onClickAddFolder}
+          selectedNavId={navigationWithIcons[navIndex].id}
+          updateFolder={updateFolder}
+        />
+      )}
+      {activity === 'TASK' && (
+        <TaskView
+          navigator={navigationWithIcons[navIndex]}
+          selectedNavId={navigationWithIcons[navIndex].id}
+          onClickDeleteFolder={onClickDeleteFolder}
+          navigation={navigation}
+        />
+      )}
+      {activity === 'IMPORT/EXPORT' && <ImportExport />}
     </div>
   )
 }

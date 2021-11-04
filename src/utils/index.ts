@@ -1,6 +1,6 @@
 import { Task } from '../types'
 
-export function classNames(...classes: string[]) {
+const classNames = (...classes: string[]) => {
   return classes.filter(Boolean).join(' ')
 }
 
@@ -23,4 +23,10 @@ const taskSorter = (
   return tasks.sort(sorter)
 }
 
-export { taskSorter }
+const delay = (milliseconds: number) => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => resolve(true), milliseconds)
+  })
+}
+
+export { taskSorter, classNames, delay }

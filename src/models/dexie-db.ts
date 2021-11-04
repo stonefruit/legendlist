@@ -10,6 +10,8 @@ import {
 } from '../types'
 import seeder from './dexie-seeder'
 
+export const mainDbName = 'LegendListDatabase'
+
 export class DexieDatabase extends Dexie {
   Task: Dexie.Table<Task, string>
   TaskVersion: Dexie.Table<TaskVersion, string>
@@ -19,8 +21,8 @@ export class DexieDatabase extends Dexie {
   PrecedingTask: Dexie.Table<PrecedingTask, string>
   Folder: Dexie.Table<Folder, string>
 
-  constructor() {
-    super('LegendListDatabase')
+  constructor(dbName: string) {
+    super(dbName)
     this.version(1).stores({
       Task: '&id, folderId, orderInFolder, name, content, priority, plannedStartDate, plannedEndDate, actualStartDate, actualEndDate, createdAt, modifiedAt',
       TaskVersion:
@@ -41,7 +43,7 @@ export class DexieDatabase extends Dexie {
     this.Folder = this.table('Folder')
   }
 }
-const db = new DexieDatabase()
+const db = new DexieDatabase(mainDbName)
 
 db.on('ready', () => seeder(db))
 
