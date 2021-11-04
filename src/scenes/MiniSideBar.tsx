@@ -11,7 +11,7 @@ type Props = {
 }
 export default function MiniSideBar({ activity, setActivity }: Props) {
   return (
-    <div className="flex w-10 flex-col fixed inset-y-0 z-40">
+    <div className="flex w-10 flex-col fixed inset-y-0 z-40 opacity-90">
       <div className="flex flex-col flex-grow bg-yellow-500 overflow-y-auto">
         <div className="mt-5 flex-1 flex flex-col">
           <nav className="flex pb-4 space-y-1 flex-col justify-between h-full">

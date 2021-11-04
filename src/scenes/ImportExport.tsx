@@ -120,26 +120,39 @@ export default function ImportExport() {
   }, [importedContent])
 
   return (
-    <div className="flex w-full pl-10 flex-col fixed inset-y-0 items-center">
+    <div className="flex w-full pl-10 flex-col fixed inset-y-0 items-center bg-yellow-100 opacity-80">
       <div className="h-20 flex items-center justify-center text-3xl">
         Import Export
       </div>
       <div className="m-5">Current DB Schema Version: {db.verno}</div>
+      <div className="h-20 flex items-center justify-center text-xl">
+        Export
+      </div>
       <div className="h-10">
         {!isExportReady && (
-          <button className="border" onClick={onClickPrepareExport}>
+          <button
+            className="border hover:bg-yellow-200"
+            onClick={onClickPrepareExport}
+          >
             Prepare Export
           </button>
         )}
         {isExportReady && (
           <button className="border">
-            <a className="block" href={fileContentString} download={fileName}>
+            <a
+              className="block hover:bg-yellow-200"
+              href={fileContentString}
+              download={fileName}
+            >
               Export
             </a>
           </button>
         )}
       </div>
-      <div className="flex justify-center cursor-pointer items-center h-20 w-full my-10 border-dashed border-2 hover:bg-gray-100">
+      <div className="h-20 flex items-center justify-center text-xl">
+        Import
+      </div>
+      <div className="flex justify-center cursor-pointer items-center h-20 w-full my-10 border-dashed border-2 hover:bg-yellow-200">
         {!isCheckingImportedData && (
           <MyDropzone setImportedContent={setImportedContent} />
         )}
@@ -147,7 +160,7 @@ export default function ImportExport() {
       <div
         className={classNames(
           isImportReady ? 'cursor-pointer' : 'text-gray-400 cursor-not-allowed',
-          'border'
+          'border hover:bg-yellow-200'
         )}
         onClick={onClickImport}
       >
@@ -155,7 +168,12 @@ export default function ImportExport() {
       </div>
       <div>{checkImportErrorText}</div>
       {wasImportSuccessful && (
-        <div className="text-xl text-green-600 m-5">Import was successful!</div>
+        <div
+          className="text-xl text-green-600 m-5 cursor-pointer hover:bg-yellow-200 border"
+          onClick={() => window.location.reload()}
+        >
+          Import was successful! Click to reload app now.
+        </div>
       )}
     </div>
   )

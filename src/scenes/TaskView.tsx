@@ -168,6 +168,10 @@ export default function TaskView({
       // Bring task to top when it is moved to another folder
       orderInFolder: folderId ? -1 : undefined,
     })
+    const updatedTask = await models.Task.get({ id })
+    if (updatedTask) {
+      setActiveTask(updatedTask)
+    }
     await refreshTasks()
   }
 
@@ -262,8 +266,8 @@ export default function TaskView({
   }
 
   return (
-    <div className="flex flex-row">
-      <div className="pl-64 flex flex-col flex-1 h-screen overflow-y-auto">
+    <div className="ml-64 flex flex-row bg-yellow-50 opacity-90">
+      <div className="flex flex-col flex-1 h-screen overflow-y-auto">
         <div className="py-6">
           <div className="max-w-7xl mx-auto px-8 flex justify-between items-center">
             <h1 className="text-2xl font-semibold text-gray-900">

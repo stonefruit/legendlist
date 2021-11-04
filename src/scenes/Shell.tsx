@@ -11,6 +11,7 @@ import MiniSideBar from './MiniSideBar'
 import { NavigationItem } from '../types'
 import * as models from '../models'
 import ImportExport from './ImportExport'
+import hillBackground from '../assets/hillBackground'
 
 const assignIcons = (navigation: NavigationItem[]) => {
   return navigation.map((nav) => {
@@ -83,7 +84,13 @@ export default function Shell() {
     return null
   }
   return (
-    <div className="bg-yellow-50 h-screen">
+    <div
+      className="h-screen"
+      style={{
+        backgroundImage: `url(${hillBackground})`,
+        backgroundSize: 'cover',
+      }}
+    >
       <MiniSideBar activity={activity} setActivity={setActivity} />
       {activity === 'TASK' && (
         <SideBar

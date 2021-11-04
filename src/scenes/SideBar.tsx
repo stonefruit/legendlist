@@ -27,7 +27,7 @@ export default function SideBar({
   }
 
   return (
-    <div className="flex w-64 pl-10 flex-col fixed inset-y-0 text-yellow-500 border-r border-yellow-200">
+    <div className="flex w-64 pl-10 flex-col fixed z-30 inset-y-0 text-yellow-500 border-r border-yellow-200 opacity-80">
       <div className="flex flex-col flex-grow pt-5 bg-yellow-100 overflow-y-auto">
         <div className="flex items-center flex-shrink-0 px-4 mx-auto">
           <LegendListLogo height={80} />

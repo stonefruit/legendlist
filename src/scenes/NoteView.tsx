@@ -66,17 +66,19 @@ export default function NoteView({ task, navigation, updateTask }: Props) {
   }, [value])
 
   return (
-    <div className="flex flex-col flex-1 w-64 border-l h-screen justify-center align-middle overflow-y-hidden">
+    <div className="flex flex-col flex-1 w-64 border-l h-screen justify-center overflow-y-hidden">
       {!task && (
         <div className="flex justify-center">Task Notes will appear here</div>
       )}
       {task && (
-        <div className="bg-white h-screen flex flex-1 flex-col">
+        <div className="h-screen flex flex-1 flex-col">
           <div className="h-20 flex flex-col align-middle justify-center mx-auto">
-            <div>Top Part</div>
+            <div className="flex items-center justify-center text-center text-xl p-5">
+              {task.name}
+            </div>
           </div>
           {!shouldRefreshEditor && (
-            <div className="h-auto overflow-y-auto flex flex-1 flex-col border-t pr-5 pl-5 py-5">
+            <div className="h-auto overflow-y-auto flex flex-1 flex-col border-t pr-5 pl-5 pb-5">
               <RichTextEditor value={value} setValue={setValue} />
             </div>
           )}
@@ -102,6 +104,13 @@ export default function NoteView({ task, navigation, updateTask }: Props) {
                     height: 20,
                     border: 0,
                     boxShadow: '0',
+                    backgroundColor:
+                      'rgba(255, 251, 235, var(--tw-bg-opacity))',
+                    cursor: 'pointer',
+                    '&:hover': {
+                      backgroundColor:
+                        'rgba(254, 243, 199, var(--tw-bg-opacity))',
+                    },
                   }),
                   dropdownIndicator: (provided, state) => ({
                     ...provided,

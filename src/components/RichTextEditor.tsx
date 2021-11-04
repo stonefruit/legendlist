@@ -232,7 +232,9 @@ const BlockButton = ({ format, icon }) => {
         toggleBlock(editor, format)
       }}
     >
-      {icon({ height: 32, width: 32 })}
+      <div className="flex items-center justify-center h-full w-full">
+        {icon({ height: 32, width: 32 })}
+      </div>
     </Button>
   )
 }
@@ -247,7 +249,7 @@ const MarkButton = ({ format, icon }) => {
         toggleMark(editor, format)
       }}
     >
-      <div className="flex align-middle justify-center h-full w-full">
+      <div className="flex items-center justify-center h-full w-full">
         {icon({ height: 32, width: 32 })}
       </div>
     </Button>

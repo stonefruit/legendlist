@@ -29,8 +29,8 @@ export const Button = React.forwardRef(
       ref={ref}
       className={cx(
         className,
-        active && 'bg-gray-200',
-        'p-2 rounded-md w-12 h-12 flex align-middle justify-center',
+        active && 'shadow',
+        'rounded-md w-10 h-10 flex align-middle justify-center',
         'cursor-pointer'
       )}
     />
@@ -178,9 +178,9 @@ export const Toolbar = React.forwardRef(
         className,
         css`
           position: relative;
-          padding: 1px 18px 17px;
+          padding: 5px 18px 5px;
           margin: 0 -20px;
-          border-bottom: 2px solid #eee;
+          border-bottom: 1px solid #eee;
           margin-bottom: 20px;
         `
       )}
