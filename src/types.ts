@@ -10,6 +10,7 @@ export type Task = {
   name: string
   content: Descendant[]
   priority: number
+  filePaths: string[] | null
   plannedStartDate: number | null
   plannedEndDate: number | null
   actualStartDate: number | null

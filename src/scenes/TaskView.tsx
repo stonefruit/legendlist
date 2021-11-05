@@ -101,6 +101,7 @@ export default function TaskView({
       actualStartDate: null,
       plannedEndDate: null,
       plannedStartDate: null,
+      filePaths: [],
     })
     await refreshTasks()
   }
@@ -154,11 +155,13 @@ export default function TaskView({
     actualEndDate,
     name,
     folderId,
+    filePaths,
   }: {
     id: string
     actualEndDate?: number | null
     name?: string
     folderId?: string
+    filePaths?: string[]
   }) => {
     await models.Task.update({
       id,
@@ -167,6 +170,7 @@ export default function TaskView({
       folderId,
       // Bring task to top when it is moved to another folder
       orderInFolder: folderId ? -1 : undefined,
+      filePaths,
     })
     const updatedTask = await models.Task.get({ id })
     if (updatedTask) {

@@ -4,6 +4,7 @@ import { Descendant } from 'slate'
 import RichTextEditor from '../components/RichTextEditor'
 import { NavigationItem, Task } from '../types'
 import * as models from '../models'
+import NoteViewFilePaths from './NoteViewFilePaths'
 
 type Props = {
   task: Task | null
@@ -13,11 +14,13 @@ type Props = {
     actualEndDate,
     name,
     folderId,
+    filePaths,
   }: {
     id: string
     actualEndDate?: number | null
     name?: string
     folderId?: string
+    filePaths?: string[]
   }): Promise<void>
 }
 const initialData = [
@@ -77,11 +80,12 @@ export default function NoteView({ task, navigation, updateTask }: Props) {
               {task.name}
             </div>
           </div>
-          {!shouldRefreshEditor && (
-            <div className="h-auto overflow-y-auto flex flex-1 flex-col border-t pr-5 pl-5 pb-5">
+          <div className="h-auto overflow-y-auto flex flex-1 flex-col border-t pr-5 pl-5 pb-5">
+            {!shouldRefreshEditor && (
               <RichTextEditor value={value} setValue={setValue} />
-            </div>
-          )}
+            )}
+          </div>
+          <NoteViewFilePaths updateTask={updateTask} task={task} />
           <div className="flex flex-col align-middle justify-center p-3">
             <div className="w-1/2 cursor-pointer">
               <Select
