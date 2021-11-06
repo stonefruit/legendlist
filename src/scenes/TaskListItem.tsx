@@ -57,6 +57,7 @@ export default function TaskListItem({
     >
       <div className="flex items-center h-8">
         <input
+          onClick={(e) => e.stopPropagation()}
           onChange={onChangeDone}
           checked={!!task.actualEndDate}
           id={task.id}
@@ -83,7 +84,7 @@ export default function TaskListItem({
           {task.orderInFolder}
         </p> */}
       </div>
-      {isActive && (
+      {isActive && !task.actualEndDate && (
         <div className="flex flex-col">
           <ChevronUpIcon
             height={15}

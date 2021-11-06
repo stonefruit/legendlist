@@ -6,6 +6,7 @@ import * as models from '../models'
 import { CheckIcon, TrashIcon, XIcon } from '@heroicons/react/solid'
 import { taskSorter } from '../utils'
 import TaskListItem from './TaskListItem'
+import { ChevronDownIcon } from '@heroicons/react/outline'
 
 const ReservedNavIds = { INBOX: 'INBOX', HOME: 'HOME', COMPLETED: 'COMPLETED' }
 
@@ -28,6 +29,7 @@ export default function TaskView({
   const [activeTask, setActiveTask] = useState<Task | null>(null)
   const [trashState, setTrashState] = useState<TrashState>('INACTIVE')
   const [totalTasks, setTotalTasks] = useState(0)
+  const [showCompleted, setShowCompleted] = useState(false)
   taskSorter(tasks, 'orderInFolder', 'ASC')
 
   // FUNCTIONS
@@ -163,17 +165,26 @@ export default function TaskView({
     folderId?: string
     filePaths?: string[]
   }) => {
+    // Bring task to top when it is moved to another folder
+    const isMovingFolder = !!folderId
+    const isSettingToUncompleted = actualEndDate === null
+    const shouldBringTaskToTop = isMovingFolder || isSettingToUncompleted
+    const orderInFolder = shouldBringTaskToTop ? -1 : undefined
+    const taskMovedFromElsewhere = shouldBringTaskToTop || actualEndDate
+
     await models.Task.update({
       id,
       actualEndDate,
       name,
       folderId,
-      // Bring task to top when it is moved to another folder
-      orderInFolder: folderId ? -1 : undefined,
+      orderInFolder,
       filePaths,
     })
     const updatedTask = await models.Task.get({ id })
-    if (updatedTask) {
+    if (taskMovedFromElsewhere) {
+      setActiveTask(null)
+      setActiveTaskId(null)
+    } else if (updatedTask) {
       setActiveTask(updatedTask)
     }
     await refreshTasks()
@@ -183,11 +194,17 @@ export default function TaskView({
     setActiveTaskId(id)
   }
 
+  const completedTasks = tasks.filter((task) => task.actualEndDate)
+  const uncompletedTasks = tasks.filter((task) => !task.actualEndDate)
+  taskSorter(completedTasks, 'actualEndDate', 'DSC')
+
   // EFFECTS
 
   useEffect(() => {
+    // Reset state
     setActiveTask(null)
     setActiveTaskId(null)
+    setShowCompleted(false)
     refreshTasks()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedNavId])
@@ -229,6 +246,12 @@ export default function TaskView({
     }
     runAsync()
   }, [activeTaskId])
+
+  useEffect(() => {
+    if (completedTasks.length === 0) {
+      setShowCompleted(false)
+    }
+  }, [completedTasks])
 
   // SUBCOMPONENTS
 
@@ -285,7 +308,7 @@ export default function TaskView({
 
           <div className="mx-auto">
             <div className="py-4">
-              {tasks.map((task) => {
+              {uncompletedTasks.map((task) => {
                 return (
                   <div key={task.id}>
                     <TaskListItem
@@ -300,6 +323,48 @@ export default function TaskView({
                 )
               })}
             </div>
+
+            <div className="max-w-7xl mt-4 mx-auto px-8 flex items-center">
+              {!showCompleted && completedTasks.length > 0 && (
+                <h1
+                  className="font-semibold text-gray-400 text-sm cursor-pointer hover:text-black"
+                  onClick={() => setShowCompleted(true)}
+                >
+                  Show Completed&nbsp;({completedTasks.length})
+                </h1>
+              )}
+              {showCompleted && (
+                <>
+                  <h1 className="text-lg font-semibold text-gray-900">
+                    Completed
+                  </h1>
+                  <div
+                    className="ml-2 h-5 w-5 flex items-center cursor-pointer hover:from-indigo-300"
+                    onClick={() => setShowCompleted(false)}
+                  >
+                    {<ChevronDownIcon />}
+                  </div>
+                </>
+              )}
+            </div>
+            {showCompleted && (
+              <div className="py-4">
+                {completedTasks.map((task) => {
+                  return (
+                    <div key={task.id}>
+                      <TaskListItem
+                        key={task.id}
+                        task={task}
+                        updateTask={updateTask}
+                        selectActiveTask={selectActiveTask}
+                        activeTaskId={activeTaskId}
+                        moveTask={moveTask}
+                      />
+                    </div>
+                  )
+                })}
+              </div>
+            )}
           </div>
         </div>
       </div>
