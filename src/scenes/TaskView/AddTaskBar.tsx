@@ -37,6 +37,7 @@ function AddTaskBar({ addTask }: Props) {
         <div className="flex-1 flex">
           <div className="relative w-full text-gray-400 focus-within:text-gray-300">
             <div
+              id="add-button"
               onClick={onClickAddTask}
               className={classNames(
                 name && 'cursor-pointer',
@@ -54,7 +55,7 @@ function AddTaskBar({ addTask }: Props) {
             <input
               value={name}
               onChange={onChangeContent}
-              id="search-field"
+              id="new-task-text-field"
               className="text-sm block bg-gray-100 w-full h-full pl-6 pr-3 py-2 border-transparent focus:text-gray-900 placeholder-gray-400 focus:outline-none focus:placeholder-gray-300 focus:ring-0 focus:border-transparent"
               placeholder="Add Task. Press Enter to save."
               type="addTask"

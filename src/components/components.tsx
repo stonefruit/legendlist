@@ -1,7 +1,7 @@
 // @ts-nocheck
 import React, { Ref, PropsWithChildren } from 'react'
 import ReactDOM from 'react-dom'
-import { cx, css } from 'emotion'
+import { cx, css } from '@emotion/css'
 
 interface BaseProps {
   className: string
