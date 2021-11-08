@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
-import { ChevronDownIcon } from '@heroicons/react/outline'
 import * as models from '../../models'
 import { NavigationItem, Task, TaskCreateAttributes } from '../../types'
-import { taskSorter } from '../../utils'
 import NoteView from '../NoteView'
 import AddTaskBar from './AddTaskBar'
 import ConfirmNavDeleteWidget from './ConfirmNavDeleteWidget'
 import TaskListItem from './TaskListItem'
+import CompletedTasks from './CompletedTasks'
+import { autoReorderTasks, taskSorter } from './helpers'
 
 const ReservedNavIds = { INBOX: 'INBOX', HOME: 'HOME', COMPLETED: 'COMPLETED' }
 
@@ -34,54 +34,9 @@ export default function TaskView({
 
   // FUNCTIONS
 
-  const autoReorderTasks = async (_dbTasks: Task[]) => {
-    const dbTasks = JSON.parse(JSON.stringify(_dbTasks)) as Task[]
-    taskSorter(dbTasks, 'orderInFolder', 'ASC')
-
-    let hasChange = false
-    let prevOrder: null | number = null
-    const desiredTasks: Task[] = []
-    let tasksWithSameOrder: Task[] = []
-    for (let i = 0; i < dbTasks.length; i += 1) {
-      const currentTask = dbTasks[i]
-      // Initial setup with first value
-      if (prevOrder === null) {
-        prevOrder = currentTask.orderInFolder
-        tasksWithSameOrder.push(currentTask)
-        continue
-      }
-      if (prevOrder !== currentTask.orderInFolder) {
-        taskSorter(tasksWithSameOrder, 'createdAt', 'DSC')
-        tasksWithSameOrder.forEach((task) => desiredTasks.push(task))
-        tasksWithSameOrder = []
-      }
-      tasksWithSameOrder.push(currentTask)
-      prevOrder = currentTask.orderInFolder
-    }
-    // Handle last group of tasks after loop ends
-    tasksWithSameOrder.forEach((task) => desiredTasks.push(task))
-
-    const orderedTasks = desiredTasks.map((task, index) => {
-      if (!hasChange && dbTasks[index].orderInFolder !== index) {
-        hasChange = true
-      }
-      task.orderInFolder = index
-      return task
-    })
-    if (hasChange) {
-      const tasksToUpdate = orderedTasks.map((task, index) => {
-        task.orderInFolder = index
-        return task
-      })
-      await models.Task.bulkPut(tasksToUpdate)
-      return await models.Task.find({ folderId: selectedNavId })
-    }
-    return dbTasks
-  }
-
   const refreshTasks = async () => {
     const dbTasks = await models.Task.find({ folderId: selectedNavId })
-    const updatedTasks = await autoReorderTasks(dbTasks)
+    const updatedTasks = await autoReorderTasks(dbTasks, selectedNavId)
 
     const wasActiveTaskRemoved =
       updatedTasks.findIndex((task) => task.id === activeTaskId) === -1
@@ -260,8 +215,6 @@ export default function TaskView({
     }
   }, [showCompleted])
 
-  // SUBCOMPONENTS
-
   return (
     <div className="ml-64 flex flex-row bg-yellow-50 opacity-90">
       <div className="flex flex-col flex-1 h-screen overflow-y-auto">
@@ -298,48 +251,15 @@ export default function TaskView({
                 )
               })}
             </div>
-
-            <div className="max-w-7xl mt-4 mx-auto px-8 flex items-center">
-              {!showCompleted && completedTasks.length > 0 && (
-                <h1
-                  className="font-semibold text-gray-400 text-sm cursor-pointer hover:text-black"
-                  onClick={() => setShowCompleted(true)}
-                >
-                  Show Completed&nbsp;({completedTasks.length})
-                </h1>
-              )}
-              {showCompleted && (
-                <>
-                  <h1 className="text-lg font-semibold text-gray-900">
-                    Completed
-                  </h1>
-                  <div
-                    className="ml-2 h-5 w-5 flex items-center cursor-pointer hover:from-indigo-300"
-                    onClick={() => setShowCompleted(false)}
-                  >
-                    {<ChevronDownIcon />}
-                  </div>
-                </>
-              )}
-            </div>
-            {showCompleted && (
-              <div className="py-4">
-                {completedTasks.map((task) => {
-                  return (
-                    <div key={task.id}>
-                      <TaskListItem
-                        key={task.id}
-                        task={task}
-                        updateTask={updateTask}
-                        selectActiveTask={selectActiveTask}
-                        activeTaskId={activeTaskId}
-                        moveTask={moveTask}
-                      />
-                    </div>
-                  )
-                })}
-              </div>
-            )}
+            <CompletedTasks
+              showCompleted={showCompleted}
+              completedTasks={completedTasks}
+              setShowCompleted={setShowCompleted}
+              updateTask={updateTask}
+              selectActiveTask={selectActiveTask}
+              activeTaskId={activeTaskId}
+              moveTask={moveTask}
+            />
           </div>
         </div>
       </div>
