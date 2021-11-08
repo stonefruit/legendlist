@@ -41,7 +41,8 @@
     "build": "craco build",
     "test": "craco test",
     "eject": "react-scripts eject",
-    "bake": "bash build-single-file.sh"
+    "bake": "bash build-single-file.sh",
+    "cake": "bash build-single-file-new-version.sh"
   },
   "eslintConfig": {
     "extends": [

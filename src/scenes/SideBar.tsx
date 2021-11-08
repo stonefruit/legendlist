@@ -83,6 +83,9 @@ export default function SideBar({
             ))}
           </nav>
         </div>
+        <div className="text-xs flex items-center justify-center text-gray-400 mb-2">
+          __BUILD__
+        </div>
       </div>
     </div>
   )
