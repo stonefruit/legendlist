@@ -253,6 +253,13 @@ export default function TaskView({
     }
   }, [completedTasks])
 
+  useEffect(() => {
+    if (!showCompleted) {
+      setActiveTask(null)
+      setActiveTaskId(null)
+    }
+  }, [showCompleted])
+
   // SUBCOMPONENTS
 
   const ConfirmNavDeleteWidget = () => {
