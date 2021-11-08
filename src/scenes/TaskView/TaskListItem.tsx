@@ -1,6 +1,6 @@
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/outline'
-import { Task } from '../types'
-import { classNames } from '../utils'
+import { Task } from '../../types'
+import { classNames } from '../../utils'
 
 type Props = {
   task: Task

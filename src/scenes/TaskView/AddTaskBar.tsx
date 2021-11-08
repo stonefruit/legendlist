@@ -1,6 +1,6 @@
-import { PlusIcon } from '@heroicons/react/solid'
 import { useState } from 'react'
-import { classNames } from '../utils'
+import { PlusIcon } from '@heroicons/react/solid'
+import { classNames } from '../../utils'
 
 type Props = {
   addTask(task: { name: string }): Promise<void>

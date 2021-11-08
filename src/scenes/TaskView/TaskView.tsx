@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
-import { NavigationItem, Task, TaskCreateAttributes } from '../types'
-import AddTaskBar from './AddTaskBar'
-import NoteView from './NoteView'
-import * as models from '../models'
-import { CheckIcon, TrashIcon, XIcon } from '@heroicons/react/solid'
-import { taskSorter } from '../utils'
-import TaskListItem from './TaskListItem'
 import { ChevronDownIcon } from '@heroicons/react/outline'
+import * as models from '../../models'
+import { NavigationItem, Task, TaskCreateAttributes } from '../../types'
+import { taskSorter } from '../../utils'
+import NoteView from '../NoteView'
+import AddTaskBar from './AddTaskBar'
+import ConfirmNavDeleteWidget from './ConfirmNavDeleteWidget'
+import TaskListItem from './TaskListItem'
 
 const ReservedNavIds = { INBOX: 'INBOX', HOME: 'HOME', COMPLETED: 'COMPLETED' }
 
@@ -262,43 +262,6 @@ export default function TaskView({
 
   // SUBCOMPONENTS
 
-  const ConfirmNavDeleteWidget = () => {
-    return (
-      <div>
-        {trashState === 'ACTIVE' && (
-          <button
-            onClick={() => setTrashState('CONFIRM')}
-            className="bg-yellow-100 text-yellow-400 rounded-md p-1 border border-yellow-200 cursor-pointer hover:bg-yellow-50 active:bg-white h-6 w-6 outline-none"
-          >
-            <TrashIcon className="h-full w-full" />
-          </button>
-        )}
-        {trashState === 'CONFIRM' && (
-          <div className="flex justify-center items-center">
-            <div className="text-sm">Confirm?</div>
-            <button
-              onClick={() => {
-                setTrashState('ACTIVE')
-              }}
-              className="ml-1 bg-yellow-100 text-yellow-400 rounded-md p-1 border border-yellow-200 cursor-pointer hover:bg-yellow-50 active:bg-white h-6 w-6 outline-none"
-            >
-              <XIcon className="h-full w-full" />
-            </button>
-            <button
-              onClick={() => {
-                setTrashState('ACTIVE')
-                onClickDeleteFolder(selectedNavId)
-              }}
-              className="ml-1 bg-yellow-100 text-yellow-400 rounded-md p-1 border border-yellow-200 cursor-pointer hover:bg-yellow-50 active:bg-white h-6 w-6 outline-none"
-            >
-              <CheckIcon className="h-full w-full" />
-            </button>
-          </div>
-        )}
-      </div>
-    )
-  }
-
   return (
     <div className="ml-64 flex flex-row bg-yellow-50 opacity-90">
       <div className="flex flex-col flex-1 h-screen overflow-y-auto">
@@ -308,7 +271,12 @@ export default function TaskView({
               {navigator.name}
             </h1>
             {!(ReservedNavIds as any)[navigator.id] && (
-              <ConfirmNavDeleteWidget />
+              <ConfirmNavDeleteWidget
+                trashState={trashState}
+                setTrashState={setTrashState}
+                onClickDeleteFolder={onClickDeleteFolder}
+                selectedNavId={selectedNavId}
+              />
             )}
           </div>
           <AddTaskBar addTask={addTask} />
