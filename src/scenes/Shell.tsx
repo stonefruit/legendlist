@@ -1,17 +1,17 @@
+import { useEffect, useState } from 'react'
 import {
   HomeIcon,
   AcademicCapIcon,
   FolderIcon,
   InboxInIcon,
 } from '@heroicons/react/outline'
-import { useEffect, useState } from 'react'
+import hillBackground from '../assets/hillBackground'
+import * as models from '../models'
+import { NavigationItem } from '../types'
+import ImportExport from './ImportExport'
+import MiniSideBar from './MiniSideBar'
 import SideBar from './SideBar'
 import TaskView from './TaskView'
-import MiniSideBar from './MiniSideBar'
-import { NavigationItem } from '../types'
-import * as models from '../models'
-import ImportExport from './ImportExport'
-import hillBackground from '../assets/hillBackground'
 
 const assignIcons = (navigation: NavigationItem[]) => {
   return navigation.map((nav) => {
@@ -63,13 +63,11 @@ export default function Shell() {
   useEffect(() => {
     if (shouldRefresh) {
       const runAsync = async () => {
-        const currentSelectedNavId = navigationWithIcons[navIndex]?.id
         const _folders = await models.Folder.find()
         const allFolders = _folders.map((folder): NavigationItem => {
           return {
             id: folder.id,
             name: folder.name,
-            current: folder.id === currentSelectedNavId,
           }
         })
         setNavigation(allFolders)

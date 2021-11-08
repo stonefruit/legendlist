@@ -3,7 +3,7 @@ import AddTaskBar from '../AddTaskBar'
 
 const { act } = TestRenderer
 
-test('Link changes the class when hovered', async () => {
+test('AddTaskBar', async () => {
   const component = TestRenderer.create(<AddTaskBar addTask={async () => {}} />)
   const testInstance = component.root
   let tree = component.toJSON() as any

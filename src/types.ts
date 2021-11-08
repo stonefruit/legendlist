@@ -74,7 +74,6 @@ export type NavigationItem = {
   id: string
   name: string
   icon?: (props: React.SVGProps<SVGSVGElement>) => JSX.Element
-  current: boolean
 }
 
 export type TaskCreateAttributes = Omit<Task, 'id' | 'createdAt' | 'modifiedAt'>

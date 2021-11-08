@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Link changes the class when hovered 1`] = `
+exports[`AddTaskBar 1`] = `
 <div
   className="flex mt-2 h-9 bg-gray-100 border border-opacity-0 focus-within:border-opacity-100 border-gray-200 focus-within:border-yellow-500 mx-5 rounded-lg"
 >
@@ -48,7 +48,7 @@ exports[`Link changes the class when hovered 1`] = `
 </div>
 `;
 
-exports[`Link changes the class when hovered 2`] = `
+exports[`AddTaskBar 2`] = `
 <div
   className="flex mt-2 h-9 bg-gray-100 border border-opacity-0 focus-within:border-opacity-100 border-gray-200 focus-within:border-yellow-500 mx-5 rounded-lg"
 >
@@ -96,7 +96,7 @@ exports[`Link changes the class when hovered 2`] = `
 </div>
 `;
 
-exports[`Link changes the class when hovered 3`] = `
+exports[`AddTaskBar 3`] = `
 <div
   className="flex mt-2 h-9 bg-gray-100 border border-opacity-0 focus-within:border-opacity-100 border-gray-200 focus-within:border-yellow-500 mx-5 rounded-lg"
 >
@@ -144,7 +144,7 @@ exports[`Link changes the class when hovered 3`] = `
 </div>
 `;
 
-exports[`Link changes the class when hovered 4`] = `
+exports[`AddTaskBar 4`] = `
 <div
   className="flex mt-2 h-9 bg-gray-100 border border-opacity-0 focus-within:border-opacity-100 border-gray-200 focus-within:border-yellow-500 mx-5 rounded-lg"
 >
@@ -191,3 +191,4 @@ exports[`Link changes the class when hovered 4`] = `
   </div>
 </div>
 `;
+
