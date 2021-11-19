@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import { Task } from '../../../types'
 import { taskSorter } from './utils/taskSorter'
 import * as models from '../../../models'
@@ -6,8 +7,7 @@ export const autoReorderTasks = async (
   _dbTasks: Task[],
   selectedNavId: string
 ) => {
-  const dbTasks = JSON.parse(JSON.stringify(_dbTasks)) as Task[]
-  taskSorter(dbTasks, 'orderInFolder', 'ASC')
+  const dbTasks = taskSorter(_.cloneDeep(_dbTasks), 'orderInFolder', 'ASC')
 
   let hasChange = false
   let prevOrder: null | number = null
@@ -22,7 +22,7 @@ export const autoReorderTasks = async (
       continue
     }
     if (prevOrder !== currentTask.orderInFolder) {
-      taskSorter(tasksWithSameOrder, 'createdAt', 'DSC')
+      tasksWithSameOrder = taskSorter(tasksWithSameOrder, 'createdAt', 'DSC')
       tasksWithSameOrder.forEach((task) => desiredTasks.push(task))
       tasksWithSameOrder = []
     }

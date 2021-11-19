@@ -1,10 +1,15 @@
+import _ from 'lodash'
 import { Task } from '../../../../types'
 
+/**
+ * Provides copy of sorted tasks
+ */
 export const taskSorter = (
-  tasks: Task[],
+  _tasks: Task[],
   attribute: string,
   direction: 'DSC' | 'ASC'
 ): Task[] => {
+  const tasks = _.cloneDeep(_tasks)
   const sorter = (taskA: Task, taskB: Task) => {
     const valA = (taskA as any)[attribute]
     const valB = (taskB as any)[attribute]

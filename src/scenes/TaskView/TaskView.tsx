@@ -7,6 +7,7 @@ import ConfirmNavDeleteWidget from './ConfirmNavDeleteWidget'
 import TaskListItem from './TaskListItem'
 import CompletedTasks from './CompletedTasks'
 import { autoReorderTasks, taskSorter } from './helpers'
+import { prepareTasksToUpdate } from './helpers/prepareTasksToUpdate'
 
 const ReservedNavIds = { INBOX: 'INBOX', HOME: 'HOME', COMPLETED: 'COMPLETED' }
 
@@ -29,8 +30,9 @@ export default function TaskView({
   const [trashState, setTrashState] = useState<TrashState>('INACTIVE')
   const [totalTasks, setTotalTasks] = useState(0)
   const [showCompleted, setShowCompleted] = useState(false)
-  taskSorter(tasks, 'orderInFolder', 'ASC')
-  const activeTask = tasks.find((task) => task.id === activeTaskId) || null
+  const sortedTasks = taskSorter(tasks, 'orderInFolder', 'ASC')
+  const activeTask =
+    sortedTasks.find((task) => task.id === activeTaskId) || null
 
   // FUNCTIONS
 
@@ -65,44 +67,22 @@ export default function TaskView({
 
   const reorderTask = async (taskId: string, beforeTaskId: string | null) => {
     const dbTasks = await models.Task.find({ folderId: selectedNavId })
-    taskSorter(dbTasks, 'orderInFolder', 'ASC')
-
-    const currentTaskIndex = dbTasks.findIndex((task) => task.id === taskId)
-    const beforeTaskIndex = dbTasks.findIndex(
-      (task) => task.id === beforeTaskId
-    )
-    let newTaskIndex: number
-    if (beforeTaskIndex > -1) {
-      dbTasks.splice(beforeTaskIndex, 0, dbTasks[currentTaskIndex])
-      newTaskIndex = beforeTaskIndex
-    } else {
-      dbTasks.splice(dbTasks.length, 0, dbTasks[currentTaskIndex])
-      newTaskIndex = dbTasks.length
-    }
-    const taskToRemoveIndex = dbTasks.findIndex(
-      (task, index) => task.id === taskId && newTaskIndex !== index
-    )
-    dbTasks.splice(taskToRemoveIndex, 1)
-
-    const tasksToUpdate = dbTasks.map((task, index) => {
-      task.orderInFolder = index
-      return task
-    })
+    const tasksToUpdate = prepareTasksToUpdate(dbTasks, taskId, beforeTaskId)
     await models.Task.bulkPut(tasksToUpdate)
     await refreshTasks()
   }
 
   const moveTask = async (taskId: string, direction: 'UP' | 'DOWN') => {
-    const currentTaskIndex = tasks.findIndex((task) => task.id === taskId)
+    const currentTaskIndex = sortedTasks.findIndex((task) => task.id === taskId)
     if (direction === 'UP' && currentTaskIndex !== 0) {
-      await reorderTask(taskId, tasks[currentTaskIndex - 1].id)
+      await reorderTask(taskId, sortedTasks[currentTaskIndex - 1].id)
     }
-    if (direction === 'DOWN' && currentTaskIndex !== tasks.length - 1) {
-      const isTaskMovingToLast = currentTaskIndex + 1 === tasks.length - 1
+    if (direction === 'DOWN' && currentTaskIndex !== sortedTasks.length - 1) {
+      const isTaskMovingToLast = currentTaskIndex + 1 === sortedTasks.length - 1
       if (isTaskMovingToLast) {
         await reorderTask(taskId, null)
       } else {
-        await reorderTask(taskId, tasks[currentTaskIndex + 2].id)
+        await reorderTask(taskId, sortedTasks[currentTaskIndex + 2].id)
       }
     }
   }
@@ -148,9 +128,13 @@ export default function TaskView({
     setActiveTaskId(id)
   }
 
-  const completedTasks = tasks.filter((task) => task.actualEndDate)
-  const uncompletedTasks = tasks.filter((task) => !task.actualEndDate)
-  taskSorter(completedTasks, 'actualEndDate', 'DSC')
+  const completedTasks = sortedTasks.filter((task) => task.actualEndDate)
+  const uncompletedTasks = sortedTasks.filter((task) => !task.actualEndDate)
+  const sortedCompletedTasks = taskSorter(
+    completedTasks,
+    'actualEndDate',
+    'DSC'
+  )
 
   // EFFECTS
 
@@ -171,10 +155,10 @@ export default function TaskView({
   }, [])
 
   useEffect(() => {
-    if (tasks.length !== totalTasks) {
-      setTotalTasks(tasks.length)
+    if (sortedTasks.length !== totalTasks) {
+      setTotalTasks(sortedTasks.length)
     }
-  }, [tasks, totalTasks])
+  }, [sortedTasks, totalTasks])
 
   useEffect(() => {
     if (totalTasks > 0) {
@@ -201,10 +185,10 @@ export default function TaskView({
   }, [activeTaskId])
 
   useEffect(() => {
-    if (completedTasks.length === 0) {
+    if (sortedCompletedTasks.length === 0) {
       setShowCompleted(false)
     }
-  }, [completedTasks])
+  }, [sortedCompletedTasks])
 
   useEffect(() => {
     if (!showCompleted) {
@@ -250,7 +234,7 @@ export default function TaskView({
             </div>
             <CompletedTasks
               showCompleted={showCompleted}
-              completedTasks={completedTasks}
+              completedTasks={sortedCompletedTasks}
               setShowCompleted={setShowCompleted}
               updateTask={updateTask}
               selectActiveTask={selectActiveTask}
