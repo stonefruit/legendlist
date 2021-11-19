@@ -6,8 +6,12 @@ import AddTaskBar from './AddTaskBar'
 import ConfirmNavDeleteWidget from './ConfirmNavDeleteWidget'
 import TaskListItem from './TaskListItem'
 import CompletedTasks from './CompletedTasks'
-import { autoReorderTasks, taskSorter } from './helpers'
-import { prepareTasksToUpdate } from './helpers/prepareTasksToUpdate'
+import {
+  autoReorderTasks,
+  taskSorter,
+  checkTaskMovedFromElsewhere,
+  prepareTasksToUpdate,
+} from './helpers'
 
 const ReservedNavIds = { INBOX: 'INBOX', HOME: 'HOME', COMPLETED: 'COMPLETED' }
 
@@ -65,14 +69,13 @@ export default function TaskView({
     setActiveTaskId(newTaskId)
   }
 
-  const reorderTask = async (taskId: string, beforeTaskId: string | null) => {
-    const dbTasks = await models.Task.find({ folderId: selectedNavId })
-    const tasksToUpdate = prepareTasksToUpdate(dbTasks, taskId, beforeTaskId)
-    await models.Task.bulkPut(tasksToUpdate)
-    await refreshTasks()
-  }
-
   const moveTask = async (taskId: string, direction: 'UP' | 'DOWN') => {
+    const reorderTask = async (taskId: string, beforeTaskId: string | null) => {
+      const dbTasks = await models.Task.find({ folderId: selectedNavId })
+      const tasksToUpdate = prepareTasksToUpdate(dbTasks, taskId, beforeTaskId)
+      await models.Task.bulkPut(tasksToUpdate)
+      await refreshTasks()
+    }
     const currentTaskIndex = sortedTasks.findIndex((task) => task.id === taskId)
     if (direction === 'UP' && currentTaskIndex !== 0) {
       await reorderTask(taskId, sortedTasks[currentTaskIndex - 1].id)
@@ -101,11 +104,8 @@ export default function TaskView({
     filePaths?: string[]
   }) => {
     // Bring task to top when it is moved to another folder
-    const isMovingFolder = !!folderId
-    const isSettingToUncompleted = actualEndDate === null
-    const shouldBringTaskToTop = isMovingFolder || isSettingToUncompleted
-    const orderInFolder = shouldBringTaskToTop ? -1 : undefined
-    const taskMovedFromElsewhere = shouldBringTaskToTop || actualEndDate
+    const { orderInFolder, taskMovedFromElsewhere } =
+      checkTaskMovedFromElsewhere(folderId, actualEndDate)
 
     await models.Task.update({
       id,

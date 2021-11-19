@@ -3,12 +3,8 @@ import { Task } from '../../../types'
 import { taskSorter } from './utils/taskSorter'
 import * as models from '../../../models'
 
-export const autoReorderTasks = async (
-  _dbTasks: Task[],
-  selectedNavId: string
-) => {
-  const dbTasks = taskSorter(_.cloneDeep(_dbTasks), 'orderInFolder', 'ASC')
-
+// TODO: add tests
+export const checkForChange = (dbTasks: Task[]) => {
   let hasChange = false
   let prevOrder: null | number = null
   const desiredTasks: Task[] = []
@@ -39,6 +35,17 @@ export const autoReorderTasks = async (
     task.orderInFolder = index
     return task
   })
+  return { hasChange, orderedTasks }
+}
+
+export const autoReorderTasks = async (
+  _dbTasks: Task[],
+  selectedNavId: string
+) => {
+  const dbTasks = taskSorter(_.cloneDeep(_dbTasks), 'orderInFolder', 'ASC')
+
+  let { hasChange, orderedTasks } = checkForChange(dbTasks)
+
   if (hasChange) {
     const tasksToUpdate = orderedTasks.map((task, index) => {
       task.orderInFolder = index
