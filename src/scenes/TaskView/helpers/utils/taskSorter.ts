@@ -2,7 +2,7 @@ import _ from 'lodash'
 import { Task } from '../../../../types'
 
 /**
- * Provides copy of sorted tasks
+ * Provides deep copy of sorted tasks
  */
 export const taskSorter = (
   _tasks: Task[],

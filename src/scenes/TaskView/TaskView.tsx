@@ -217,7 +217,7 @@ export default function TaskView({
 
           <div className="mx-auto">
             <div className="py-4">
-              {uncompletedTasks.map((task) => {
+              {uncompletedTasks.map((task, index) => {
                 return (
                   <div key={task.id}>
                     <TaskListItem
@@ -227,6 +227,8 @@ export default function TaskView({
                       selectActiveTask={selectActiveTask}
                       activeTaskId={activeTaskId}
                       moveTask={moveTask}
+                      isTopOfList={index === 0}
+                      isBottomOfList={uncompletedTasks.length - 1 === index}
                     />
                   </div>
                 )

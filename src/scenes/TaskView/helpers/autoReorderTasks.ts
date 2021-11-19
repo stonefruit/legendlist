@@ -1,52 +1,42 @@
-import _ from 'lodash'
 import { Task } from '../../../types'
 import { taskSorter } from './utils/taskSorter'
 import * as models from '../../../models'
 
-// TODO: add tests
-export const checkForChange = (dbTasks: Task[]) => {
-  let hasChange = false
-  let prevOrder: null | number = null
+/**
+ * Check for order clashes. Also assigns order number based on positioning in array
+ */
+export const checkForOrderChange = (_dbTasks: Task[]) => {
+  const dbTasks = taskSorter(_dbTasks, 'orderInFolder', 'ASC')
+  let hasOrderChange = false
   const desiredTasks: Task[] = []
   let tasksWithSameOrder: Task[] = []
   for (let i = 0; i < dbTasks.length; i += 1) {
     const currentTask = dbTasks[i]
-    // Initial setup with first value
-    if (prevOrder === null) {
-      prevOrder = currentTask.orderInFolder
-      tasksWithSameOrder.push(currentTask)
-      continue
-    }
-    if (prevOrder !== currentTask.orderInFolder) {
+    const nextTask = dbTasks[i + 1]
+    tasksWithSameOrder.push(currentTask)
+    if (nextTask?.orderInFolder !== currentTask.orderInFolder) {
       tasksWithSameOrder = taskSorter(tasksWithSameOrder, 'createdAt', 'DSC')
       tasksWithSameOrder.forEach((task) => desiredTasks.push(task))
       tasksWithSameOrder = []
     }
-    tasksWithSameOrder.push(currentTask)
-    prevOrder = currentTask.orderInFolder
   }
-  // Handle last group of tasks after loop ends
-  tasksWithSameOrder.forEach((task) => desiredTasks.push(task))
-
   const orderedTasks = desiredTasks.map((task, index) => {
-    if (!hasChange && dbTasks[index].orderInFolder !== index) {
-      hasChange = true
+    if (dbTasks[index].orderInFolder !== index) {
+      hasOrderChange = true
     }
     task.orderInFolder = index
     return task
   })
-  return { hasChange, orderedTasks }
+  return { hasOrderChange, orderedTasks }
 }
 
 export const autoReorderTasks = async (
-  _dbTasks: Task[],
+  dbTasks: Task[],
   selectedNavId: string
 ) => {
-  const dbTasks = taskSorter(_.cloneDeep(_dbTasks), 'orderInFolder', 'ASC')
+  let { hasOrderChange, orderedTasks } = checkForOrderChange(dbTasks)
 
-  let { hasChange, orderedTasks } = checkForChange(dbTasks)
-
-  if (hasChange) {
+  if (hasOrderChange) {
     const tasksToUpdate = orderedTasks.map((task, index) => {
       task.orderInFolder = index
       return task
@@ -54,5 +44,5 @@ export const autoReorderTasks = async (
     await models.Task.bulkPut(tasksToUpdate)
     return await models.Task.find({ folderId: selectedNavId })
   }
-  return dbTasks
+  return orderedTasks
 }

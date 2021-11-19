@@ -19,6 +19,8 @@ type Props = {
   activeTaskId: string | null
   selectActiveTask(id: string | null): void
   moveTask: (taskId: string, direction: 'UP' | 'DOWN') => Promise<void>
+  isTopOfList?: boolean
+  isBottomOfList?: boolean
 }
 export default function TaskListItem({
   task,
@@ -26,6 +28,8 @@ export default function TaskListItem({
   activeTaskId,
   selectActiveTask,
   moveTask,
+  isTopOfList,
+  isBottomOfList,
 }: Props) {
   // Note that name is used so that the react controlled input acts more normally.
   // If async function is used, cursor jumps to end of the word.
@@ -100,12 +104,18 @@ export default function TaskListItem({
         <div className="flex flex-col">
           <ChevronUpIcon
             height={15}
-            className="text-gray-300 hover:text-gray-800"
+            className={classNames(
+              isTopOfList ? 'invisible' : '',
+              'text-gray-300 hover:text-gray-800'
+            )}
             onClick={() => moveTask(task.id, 'UP')}
           />
           <ChevronDownIcon
             height={15}
-            className="text-gray-300 hover:text-gray-800"
+            className={classNames(
+              isBottomOfList ? 'invisible' : '',
+              'text-gray-300 hover:text-gray-800'
+            )}
             onClick={() => moveTask(task.id, 'DOWN')}
           />
         </div>
