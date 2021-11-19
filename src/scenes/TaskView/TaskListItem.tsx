@@ -1,4 +1,5 @@
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/outline'
+import { useEffect, useState } from 'react'
 import { Task } from '../../types'
 import { classNames } from '../../utils'
 
@@ -26,6 +27,10 @@ export default function TaskListItem({
   selectActiveTask,
   moveTask,
 }: Props) {
+  // Note that name is used so that the react controlled input acts more normally.
+  // If async function is used, cursor jumps to end of the word.
+  // This still happens if you type very fast.
+  const [name, setName] = useState('')
   const isActive = activeTaskId === task.id
 
   // FUNCTIONS
@@ -44,8 +49,15 @@ export default function TaskListItem({
   }
 
   const onChangeName = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    setName(e.target.value)
     await updateTask({ id: task.id, name: e.target.value })
   }
+
+  // EFFECTS
+
+  useEffect(() => {
+    setName(task.name)
+  }, [task.name])
 
   return (
     <div
@@ -78,7 +90,7 @@ export default function TaskListItem({
           )}
           placeholder="What would you like to call this item?"
           onChange={onChangeName}
-          value={task.name}
+          value={name}
         />
         {/* <p id="comments-description" className="text-gray-400 text-xs">
           {task.orderInFolder}
