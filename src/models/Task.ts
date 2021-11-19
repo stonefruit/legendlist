@@ -18,7 +18,7 @@ const create = async ({
   const id = uuidv4()
   const now = Date.now()
   await db.Task.put({
-    id: uuidv4(),
+    id,
     folderId,
     orderInFolder,
     name: name || id,

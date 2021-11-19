@@ -26,11 +26,11 @@ export default function TaskView({
 }: Props) {
   const [tasks, setTasks] = useState<Task[]>([])
   const [activeTaskId, setActiveTaskId] = useState<string | null>(null)
-  const [activeTask, setActiveTask] = useState<Task | null>(null)
   const [trashState, setTrashState] = useState<TrashState>('INACTIVE')
   const [totalTasks, setTotalTasks] = useState(0)
   const [showCompleted, setShowCompleted] = useState(false)
   taskSorter(tasks, 'orderInFolder', 'ASC')
+  const activeTask = tasks.find((task) => task.id === activeTaskId) || null
 
   // FUNCTIONS
 
@@ -41,14 +41,13 @@ export default function TaskView({
     const wasActiveTaskRemoved =
       updatedTasks.findIndex((task) => task.id === activeTaskId) === -1
     if (wasActiveTaskRemoved) {
-      setActiveTask(null)
       setActiveTaskId(null)
     }
     setTasks(updatedTasks)
   }
 
   const addTask = async ({ name }: TaskCreateAttributes) => {
-    await models.Task.create({
+    const newTaskId = await models.Task.create({
       name,
       folderId: selectedNavId,
       orderInFolder: 0,
@@ -61,6 +60,7 @@ export default function TaskView({
       filePaths: [],
     })
     await refreshTasks()
+    setActiveTaskId(newTaskId)
   }
 
   const reorderTask = async (taskId: string, beforeTaskId: string | null) => {
@@ -137,10 +137,9 @@ export default function TaskView({
     })
     const updatedTask = await models.Task.get({ id })
     if (taskMovedFromElsewhere) {
-      setActiveTask(null)
       setActiveTaskId(null)
     } else if (updatedTask) {
-      setActiveTask(updatedTask)
+      setActiveTaskId(updatedTask.id)
     }
     await refreshTasks()
   }
@@ -157,7 +156,6 @@ export default function TaskView({
 
   useEffect(() => {
     // Reset state
-    setActiveTask(null)
     setActiveTaskId(null)
     setShowCompleted(false)
     refreshTasks()
@@ -189,15 +187,15 @@ export default function TaskView({
   useEffect(() => {
     const runAsync = async () => {
       if (activeTaskId === null) {
-        setActiveTask(null)
+        setActiveTaskId(null)
         return
       }
       const updatedTask = await models.Task.get({ id: activeTaskId })
       if (!updatedTask) {
-        setActiveTask(null)
+        setActiveTaskId(null)
         return
       }
-      setActiveTask(updatedTask)
+      setActiveTaskId(updatedTask.id)
     }
     runAsync()
   }, [activeTaskId])
@@ -210,7 +208,6 @@ export default function TaskView({
 
   useEffect(() => {
     if (!showCompleted) {
-      setActiveTask(null)
       setActiveTaskId(null)
     }
   }, [showCompleted])
