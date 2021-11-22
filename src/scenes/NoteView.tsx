@@ -63,7 +63,9 @@ export default function NoteView({ task, navigation, updateTask }: Props) {
   const contentString = JSON.stringify(content)
   useEffect(() => {
     const runAsync = async () => {
-      if (task) {
+      const taskContentString = JSON.stringify(task?.content)
+      const taskContentChanged = taskContentString !== contentString
+      if (task && taskContentChanged) {
         console.log({ value: content, id: task.id })
         await updateTask({ id: task.id, content: content })
       }

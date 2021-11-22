@@ -116,10 +116,12 @@ export default function TaskView({
       content,
     })
     const updatedTask = await models.Task.get({ id })
+    const taskStillInFolder = updatedTask && updatedTask.folderId === folderId
+    const setToUncompletedOrOtherValueChanged = !actualEndDate
     if (
       updatedTask &&
-      updatedTask.folderId === folderId &&
-      !updatedTask.actualEndDate
+      taskStillInFolder &&
+      setToUncompletedOrOtherValueChanged
     ) {
       setActiveTaskId(updatedTask.id)
     } else {
