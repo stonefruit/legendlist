@@ -19,6 +19,7 @@ type Props = {
     folderId?: string | undefined
     filePaths?: string[] | undefined
   }) => Promise<void>
+  deleteTask(id: string): Promise<void>
   selectActiveTask: (id: string | null) => void
   activeTaskId: string | null
   moveTask: (taskId: string, direction: 'UP' | 'DOWN') => Promise<void>
@@ -28,6 +29,7 @@ export default function CompletedTasks({
   completedTasks,
   setShowCompleted,
   updateTask,
+  deleteTask,
   selectActiveTask,
   activeTaskId,
   moveTask,
@@ -64,6 +66,7 @@ export default function CompletedTasks({
                   key={task.id}
                   task={task}
                   updateTask={updateTask}
+                  deleteTask={deleteTask}
                   selectActiveTask={selectActiveTask}
                   activeTaskId={activeTaskId}
                   moveTask={moveTask}

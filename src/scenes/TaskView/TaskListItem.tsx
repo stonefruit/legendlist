@@ -1,4 +1,8 @@
-import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/outline'
+import {
+  ChevronDownIcon,
+  ChevronUpIcon,
+  TrashIcon,
+} from '@heroicons/react/outline'
 import { useEffect, useState } from 'react'
 import { Task } from '../../types'
 import { classNames } from '../../utils'
@@ -16,6 +20,7 @@ type Props = {
     name?: string
     folderId?: string
   }): Promise<void>
+  deleteTask(id: string): Promise<void>
   activeTaskId: string | null
   selectActiveTask(id: string | null): void
   moveTask: (taskId: string, direction: 'UP' | 'DOWN') => Promise<void>
@@ -25,6 +30,7 @@ type Props = {
 export default function TaskListItem({
   task,
   updateTask,
+  deleteTask,
   activeTaskId,
   selectActiveTask,
   moveTask,
@@ -67,11 +73,34 @@ export default function TaskListItem({
     <div
       className={classNames(
         isActive ? 'bg-yellow-200' : 'hover:bg-yellow-100',
-        'flex px-5 py-3 cursor-pointer border-b group items-center'
+        'flex px-3 py-3 cursor-pointer border-b group items-center'
       )}
       onClick={onClickTask(task.id)}
     >
-      <div className="flex items-center h-8">
+      <div
+        className={classNames(
+          isActive && !task.actualEndDate ? '' : 'invisible',
+          'flex flex-col'
+        )}
+      >
+        <ChevronUpIcon
+          height={15}
+          className={classNames(
+            isTopOfList ? 'invisible' : '',
+            'text-gray-300 hover:text-gray-800'
+          )}
+          onClick={() => moveTask(task.id, 'UP')}
+        />
+        <ChevronDownIcon
+          height={15}
+          className={classNames(
+            isBottomOfList ? 'invisible' : '',
+            'text-gray-300 hover:text-gray-800'
+          )}
+          onClick={() => moveTask(task.id, 'DOWN')}
+        />
+      </div>
+      <div className="flex items-center h-8 pl-3">
         <input
           onClick={(e) => e.stopPropagation()}
           onChange={onChangeDone}
@@ -100,26 +129,16 @@ export default function TaskListItem({
           {task.orderInFolder}
         </p> */}
       </div>
-      {isActive && !task.actualEndDate && (
-        <div className="flex flex-col">
-          <ChevronUpIcon
-            height={15}
-            className={classNames(
-              isTopOfList ? 'invisible' : '',
-              'text-gray-300 hover:text-gray-800'
-            )}
-            onClick={() => moveTask(task.id, 'UP')}
-          />
-          <ChevronDownIcon
-            height={15}
-            className={classNames(
-              isBottomOfList ? 'invisible' : '',
-              'text-gray-300 hover:text-gray-800'
-            )}
-            onClick={() => moveTask(task.id, 'DOWN')}
-          />
-        </div>
-      )}
+      <div className="flex flex-row items-center justify-center">
+        <TrashIcon
+          height={15}
+          className={classNames(
+            isActive ? '' : 'invisible',
+            'text-gray-300 hover:text-gray-800'
+          )}
+          onClick={() => deleteTask(task.id)}
+        />
+      </div>
     </div>
   )
 }

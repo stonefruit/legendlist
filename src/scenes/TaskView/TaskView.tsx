@@ -124,6 +124,11 @@ export default function TaskView({
     await refreshTasks()
   }
 
+  const deleteTask = async (id: string) => {
+    await models.Task.destroy({ id })
+    await refreshTasks()
+  }
+
   const selectActiveTask = (id: string | null) => {
     setActiveTaskId(id)
   }
@@ -224,6 +229,7 @@ export default function TaskView({
                       key={task.id}
                       task={task}
                       updateTask={updateTask}
+                      deleteTask={deleteTask}
                       selectActiveTask={selectActiveTask}
                       activeTaskId={activeTaskId}
                       moveTask={moveTask}
@@ -239,6 +245,7 @@ export default function TaskView({
               completedTasks={sortedCompletedTasks}
               setShowCompleted={setShowCompleted}
               updateTask={updateTask}
+              deleteTask={deleteTask}
               selectActiveTask={selectActiveTask}
               activeTaskId={activeTaskId}
               moveTask={moveTask}
