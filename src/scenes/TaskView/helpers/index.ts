@@ -1,4 +1,4 @@
 export { autoReorderTasks } from './autoReorderTasks'
 export { taskSorter } from './utils/taskSorter'
-export { checkTaskMovedFromElsewhere } from './checkTaskMovedFromElsewhere'
+export { checkTaskMovedToElsewhere } from './checkTaskMovedToElsewhere'
 export { prepareTasksToUpdate } from './prepareTasksToUpdate'

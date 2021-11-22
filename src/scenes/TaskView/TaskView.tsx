@@ -9,7 +9,7 @@ import CompletedTasks from './CompletedTasks'
 import {
   autoReorderTasks,
   taskSorter,
-  checkTaskMovedFromElsewhere,
+  checkTaskMovedToElsewhere,
   prepareTasksToUpdate,
 } from './helpers'
 
@@ -104,22 +104,22 @@ export default function TaskView({
     filePaths?: string[]
   }) => {
     // Bring task to top when it is moved to another folder
-    const { orderInFolder, taskMovedFromElsewhere } =
-      checkTaskMovedFromElsewhere(folderId, actualEndDate)
-
+    const { shouldBringTaskToTop, shouldTaskBeActive } =
+      checkTaskMovedToElsewhere(folderId, actualEndDate)
+    console.log({ shouldBringTaskToTop, shouldTaskBeActive })
     await models.Task.update({
       id,
       actualEndDate,
       name,
       folderId,
-      orderInFolder,
+      orderInFolder: shouldBringTaskToTop ? -1 : undefined,
       filePaths,
     })
     const updatedTask = await models.Task.get({ id })
-    if (taskMovedFromElsewhere) {
-      setActiveTaskId(null)
-    } else if (updatedTask) {
+    if (shouldTaskBeActive && updatedTask) {
       setActiveTaskId(updatedTask.id)
+    } else {
+      setActiveTaskId(null)
     }
     await refreshTasks()
   }
