@@ -3,7 +3,6 @@ import Select from 'react-select'
 import { Descendant } from 'slate'
 import RichTextEditor from '../components/RichTextEditor'
 import { NavigationItem, Task } from '../types'
-import * as models from '../models'
 import NoteViewFilePaths from './NoteViewFilePaths'
 
 type Props = {
@@ -15,12 +14,14 @@ type Props = {
     name,
     folderId,
     filePaths,
+    content,
   }: {
     id: string
     actualEndDate?: number | null
     name?: string
     folderId?: string
     filePaths?: string[]
+    content?: Descendant[]
   }): Promise<void>
 }
 const initialData = [
@@ -30,7 +31,7 @@ const initialData = [
   },
 ]
 export default function NoteView({ task, navigation, updateTask }: Props) {
-  const [value, setValue] = useState<Descendant[]>(initialData)
+  const [content, setContent] = useState<Descendant[]>(initialData)
   const [shouldRefreshEditor, setShouldRefreshEditor] = useState(false)
 
   const folderOptions = navigation.map((nav) => {
@@ -46,11 +47,12 @@ export default function NoteView({ task, navigation, updateTask }: Props) {
   useEffect(() => {
     setShouldRefreshEditor(true)
     if (task && task.content && task.content.length > 0) {
-      setValue(task.content)
+      setContent(task.content)
     } else {
-      setValue(initialData)
+      setContent(initialData)
     }
-  }, [task])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [task?.id])
 
   useEffect(() => {
     if (shouldRefreshEditor) {
@@ -58,15 +60,17 @@ export default function NoteView({ task, navigation, updateTask }: Props) {
     }
   }, [shouldRefreshEditor])
 
+  const contentString = JSON.stringify(content)
   useEffect(() => {
     const runAsync = async () => {
       if (task) {
-        await models.Task.update({ id: task.id, content: value })
+        console.log({ value: content, id: task.id })
+        await updateTask({ id: task.id, content: content })
       }
     }
     runAsync()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value])
+  }, [contentString])
 
   return (
     <div className="flex flex-col flex-1 w-64 border-l h-screen justify-center overflow-y-hidden">
@@ -82,7 +86,7 @@ export default function NoteView({ task, navigation, updateTask }: Props) {
           </div>
           <div className="h-auto overflow-y-auto flex flex-1 flex-col border-t pr-5 pl-5 pb-5">
             {!shouldRefreshEditor && (
-              <RichTextEditor value={value} setValue={setValue} />
+              <RichTextEditor value={content} setValue={setContent} />
             )}
           </div>
           <NoteViewFilePaths updateTask={updateTask} task={task} />

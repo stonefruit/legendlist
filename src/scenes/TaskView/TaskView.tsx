@@ -7,6 +7,7 @@ import ConfirmNavDeleteWidget from './ConfirmNavDeleteWidget'
 import TaskListItem from './TaskListItem'
 import CompletedTasks from './CompletedTasks'
 import { autoReorderTasks, taskSorter, prepareTasksToUpdate } from './helpers'
+import { Descendant } from 'slate'
 
 const ReservedNavIds = { INBOX: 'INBOX', HOME: 'HOME', COMPLETED: 'COMPLETED' }
 
@@ -91,12 +92,14 @@ export default function TaskView({
     name,
     folderId: newFolderId,
     filePaths,
+    content,
   }: {
     id: string
     actualEndDate?: number | null
     name?: string
     folderId?: string
     filePaths?: string[]
+    content?: Descendant[]
   }) => {
     const isMovingFolder = !!newFolderId
     const isSettingToUncompleted = actualEndDate === null
@@ -110,6 +113,7 @@ export default function TaskView({
       folderId: newFolderId,
       orderInFolder: shouldBringTaskToTop ? -1 : undefined,
       filePaths,
+      content,
     })
     const updatedTask = await models.Task.get({ id })
     if (
