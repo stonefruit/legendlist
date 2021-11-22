@@ -58,12 +58,13 @@ export default function AddFilePath({ updateTask, task }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [prevTaskId, task.id])
 
+  const filePathsString = JSON.stringify(filePaths)
   useEffect(() => {
     if (prevTaskId === task.id) {
       updateTask({ id: task.id, filePaths })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filePaths])
+  }, [filePathsString])
 
   return (
     <div className="px-5">

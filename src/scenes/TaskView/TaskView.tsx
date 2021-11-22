@@ -6,12 +6,7 @@ import AddTaskBar from './AddTaskBar'
 import ConfirmNavDeleteWidget from './ConfirmNavDeleteWidget'
 import TaskListItem from './TaskListItem'
 import CompletedTasks from './CompletedTasks'
-import {
-  autoReorderTasks,
-  taskSorter,
-  checkTaskMovedToElsewhere,
-  prepareTasksToUpdate,
-} from './helpers'
+import { autoReorderTasks, taskSorter, prepareTasksToUpdate } from './helpers'
 
 const ReservedNavIds = { INBOX: 'INBOX', HOME: 'HOME', COMPLETED: 'COMPLETED' }
 
@@ -25,7 +20,7 @@ type Props = {
 }
 export default function TaskView({
   navigator,
-  selectedNavId,
+  selectedNavId: folderId,
   onClickDeleteFolder,
   navigation,
 }: Props) {
@@ -41,8 +36,8 @@ export default function TaskView({
   // FUNCTIONS
 
   const refreshTasks = async () => {
-    const dbTasks = await models.Task.find({ folderId: selectedNavId })
-    const updatedTasks = await autoReorderTasks(dbTasks, selectedNavId)
+    const dbTasks = await models.Task.find({ folderId })
+    const updatedTasks = await autoReorderTasks(dbTasks, folderId)
 
     const wasActiveTaskRemoved =
       updatedTasks.findIndex((task) => task.id === activeTaskId) === -1
@@ -55,7 +50,7 @@ export default function TaskView({
   const addTask = async ({ name }: TaskCreateAttributes) => {
     const newTaskId = await models.Task.create({
       name,
-      folderId: selectedNavId,
+      folderId,
       orderInFolder: 0,
       content: [],
       priority: 0,
@@ -71,7 +66,7 @@ export default function TaskView({
 
   const moveTask = async (taskId: string, direction: 'UP' | 'DOWN') => {
     const reorderTask = async (taskId: string, beforeTaskId: string | null) => {
-      const dbTasks = await models.Task.find({ folderId: selectedNavId })
+      const dbTasks = await models.Task.find({ folderId })
       const tasksToUpdate = prepareTasksToUpdate(dbTasks, taskId, beforeTaskId)
       await models.Task.bulkPut(tasksToUpdate)
       await refreshTasks()
@@ -94,7 +89,7 @@ export default function TaskView({
     id,
     actualEndDate,
     name,
-    folderId,
+    folderId: newFolderId,
     filePaths,
   }: {
     id: string
@@ -103,20 +98,25 @@ export default function TaskView({
     folderId?: string
     filePaths?: string[]
   }) => {
-    // Bring task to top when it is moved to another folder
-    const { shouldBringTaskToTop, shouldTaskBeActive } =
-      checkTaskMovedToElsewhere(folderId, actualEndDate)
-    console.log({ shouldBringTaskToTop, shouldTaskBeActive })
+    const isMovingFolder = !!newFolderId
+    const isSettingToUncompleted = actualEndDate === null
+    const shouldBringTaskToTop =
+      (isMovingFolder && !actualEndDate) || isSettingToUncompleted
+
     await models.Task.update({
       id,
       actualEndDate,
       name,
-      folderId,
+      folderId: newFolderId,
       orderInFolder: shouldBringTaskToTop ? -1 : undefined,
       filePaths,
     })
     const updatedTask = await models.Task.get({ id })
-    if (shouldTaskBeActive && updatedTask) {
+    if (
+      updatedTask &&
+      updatedTask.folderId === folderId &&
+      !updatedTask.actualEndDate
+    ) {
       setActiveTaskId(updatedTask.id)
     } else {
       setActiveTaskId(null)
@@ -144,7 +144,7 @@ export default function TaskView({
     setShowCompleted(false)
     refreshTasks()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedNavId])
+  }, [folderId])
 
   useEffect(() => {
     const runAsync = async () => {
@@ -209,7 +209,7 @@ export default function TaskView({
                 trashState={trashState}
                 setTrashState={setTrashState}
                 onClickDeleteFolder={onClickDeleteFolder}
-                selectedNavId={selectedNavId}
+                selectedNavId={folderId}
               />
             )}
           </div>
