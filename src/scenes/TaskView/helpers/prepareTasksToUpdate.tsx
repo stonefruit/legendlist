@@ -9,42 +9,53 @@ export function prepareTasksToUpdate(
   if (tasks.length === 0) {
     return []
   }
-  const sortedTasks = taskSorter(tasks, 'orderInFolder', 'ASC')
-  let moveToBeforeTaskId: string | null = null
-  let isTaskMovingToLast = false
-  const currentTaskIndex = sortedTasks.findIndex(
-    (task) => task.id === taskToMoveId
+  const sortedTasks: Array<Task | undefined> = taskSorter(
+    tasks,
+    'orderInFolder',
+    'ASC'
   )
+  const currentTaskIndex = sortedTasks.findIndex(
+    (task) => task!.id === taskToMoveId
+  )
+
   const currentTask = sortedTasks[currentTaskIndex]
-  if (direction === 'UP' && currentTaskIndex !== 0) {
-    moveToBeforeTaskId = sortedTasks[currentTaskIndex - 1]?.id
-  }
-  if (direction === 'DOWN' && currentTaskIndex !== sortedTasks.length - 1) {
-    isTaskMovingToLast = currentTaskIndex + 1 === sortedTasks.length - 1
-    if (!isTaskMovingToLast) {
-      moveToBeforeTaskId = sortedTasks[currentTaskIndex + 2]?.id
-    }
-  }
+
+  const isMoveUp = direction === 'UP'
+  const isMoveDown = direction === 'DOWN'
+  const isCurrentlyTopOfList = currentTaskIndex !== 0
+  const isCurrentlyAboveTheBottomOfList =
+    currentTaskIndex !== sortedTasks.length - 1
+
+  const isNextDownLastOnList = currentTaskIndex + 1 === sortedTasks.length - 1
+  let isTaskMovingToLast =
+    isMoveDown && isCurrentlyAboveTheBottomOfList && isNextDownLastOnList
+
+  let moveToBeforeTaskId: string | null =
+    isMoveUp && isCurrentlyTopOfList
+      ? sortedTasks[currentTaskIndex - 1]?.id || null
+      : isMoveDown && isCurrentlyAboveTheBottomOfList && !isTaskMovingToLast
+      ? sortedTasks[currentTaskIndex + 2]?.id || null
+      : null
 
   if (!moveToBeforeTaskId && !isTaskMovingToLast) {
-    return sortedTasks
+    return sortedTasks as Task[]
   }
 
   sortedTasks.splice(currentTaskIndex, 1)
 
   const beforeTaskIndex = sortedTasks.findIndex(
-    (task) => task.id === moveToBeforeTaskId
+    (task) => task!.id === moveToBeforeTaskId
   )
-  if (!isTaskMovingToLast && beforeTaskIndex > -1) {
-    sortedTasks.splice(beforeTaskIndex, 0, currentTask)
-  } else {
+  if (isTaskMovingToLast) {
     sortedTasks.splice(sortedTasks.length, 0, currentTask)
+  } else {
+    sortedTasks.splice(beforeTaskIndex, 0, currentTask)
   }
 
   const tasksToUpdate = sortedTasks.map((task, index) => {
-    task.orderInFolder = index
+    task!.orderInFolder = index
     return task
   })
 
-  return tasksToUpdate
+  return tasksToUpdate as Task[]
 }

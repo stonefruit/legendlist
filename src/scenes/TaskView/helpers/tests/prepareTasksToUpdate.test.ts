@@ -87,4 +87,23 @@ describe('checkForChange', () => {
     expect(prepareTasksToUpdate(tasks, '3', 'UP')).toStrictEqual(expected)
     expect(prepareTasksToUpdate(tasks, '3', 'DOWN')).toStrictEqual(tasks)
   })
+  test('when there are no tasks 5', () => {
+    const tasks: Task[] = [
+      { ...sampleTask, id: '1', orderInFolder: 0 },
+      { ...sampleTask, id: '2', orderInFolder: 1 },
+      { ...sampleTask, id: '3', orderInFolder: 2 },
+    ]
+    const expected1: Task[] = [
+      { ...sampleTask, id: '2', orderInFolder: 0 },
+      { ...sampleTask, id: '1', orderInFolder: 1 },
+      { ...sampleTask, id: '3', orderInFolder: 2 },
+    ]
+    const expected2: Task[] = [
+      { ...sampleTask, id: '1', orderInFolder: 0 },
+      { ...sampleTask, id: '3', orderInFolder: 1 },
+      { ...sampleTask, id: '2', orderInFolder: 2 },
+    ]
+    expect(prepareTasksToUpdate(tasks, '2', 'UP')).toStrictEqual(expected1)
+    expect(prepareTasksToUpdate(tasks, '2', 'DOWN')).toStrictEqual(expected2)
+  })
 })
