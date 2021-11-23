@@ -2,15 +2,17 @@ import { Task } from '../../../types'
 import { taskSorter } from '.'
 
 export function prepareTasksToUpdate(
-  dbTasks: Task[],
-  taskId: string,
-  beforeTaskId: string | null
+  tasks: Task[],
+  taskToMoveId: string,
+  moveToBeforeTaskId: string | null
 ) {
-  const sortedDbTasks = taskSorter(dbTasks, 'orderInFolder', 'ASC')
+  const sortedDbTasks = taskSorter(tasks, 'orderInFolder', 'ASC')
 
-  const currentTaskIndex = sortedDbTasks.findIndex((task) => task.id === taskId)
+  const currentTaskIndex = sortedDbTasks.findIndex(
+    (task) => task.id === taskToMoveId
+  )
   const beforeTaskIndex = sortedDbTasks.findIndex(
-    (task) => task.id === beforeTaskId
+    (task) => task.id === moveToBeforeTaskId
   )
   let newTaskIndex: number
   if (beforeTaskIndex > -1) {
@@ -25,7 +27,7 @@ export function prepareTasksToUpdate(
     newTaskIndex = sortedDbTasks.length
   }
   const taskToRemoveIndex = sortedDbTasks.findIndex(
-    (task, index) => task.id === taskId && newTaskIndex !== index
+    (task, index) => task.id === taskToMoveId && newTaskIndex !== index
   )
   sortedDbTasks.splice(taskToRemoveIndex, 1)
 

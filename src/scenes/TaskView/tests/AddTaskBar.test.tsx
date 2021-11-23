@@ -28,4 +28,8 @@ test('AddTaskBar', async () => {
   })
   tree = component.toJSON()
   expect(tree).toMatchSnapshot()
+  const addTaskTextField2 = testInstance.findByProps({
+    id: 'new-task-text-field',
+  })
+  expect(addTaskTextField2.props.value).toBe('')
 })

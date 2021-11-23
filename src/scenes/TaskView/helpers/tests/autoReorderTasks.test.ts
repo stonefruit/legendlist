@@ -1,5 +1,5 @@
-import { Task } from '../../../types'
-import { checkForOrderChange } from './autoReorderTasks'
+import { Task } from '../../../../types'
+import { checkForOrderChange } from '../autoReorderTasks'
 
 const sampleTask: Task = {
   id: 'id',

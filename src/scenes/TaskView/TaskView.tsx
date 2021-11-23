@@ -66,9 +66,16 @@ export default function TaskView({
   }
 
   const moveTask = async (taskId: string, direction: 'UP' | 'DOWN') => {
-    const reorderTask = async (taskId: string, beforeTaskId: string | null) => {
+    const reorderTask = async (
+      taskIdToMove: string,
+      moveToBeforeTaskId: string | null
+    ) => {
       const dbTasks = await models.Task.find({ folderId })
-      const tasksToUpdate = prepareTasksToUpdate(dbTasks, taskId, beforeTaskId)
+      const tasksToUpdate = prepareTasksToUpdate(
+        dbTasks,
+        taskIdToMove,
+        moveToBeforeTaskId
+      )
       await models.Task.bulkPut(tasksToUpdate)
       await refreshTasks()
     }
