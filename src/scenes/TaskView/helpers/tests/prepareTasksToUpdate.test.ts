@@ -1,5 +1,5 @@
 import { Task } from '../../../../types'
-import { checkForOrderChange } from '../autoReorderTasks'
+import { prepareTasksToUpdate } from '../prepareTasksToUpdate'
 
 const sampleTask: Task = {
   id: 'id',
@@ -20,140 +20,71 @@ const sampleTask: Task = {
 describe('checkForChange', () => {
   test('when there are no tasks', () => {
     const tasks: Task[] = []
-    expect(checkForOrderChange(tasks)).toStrictEqual({
-      hasOrderChange: false,
-      orderedTasks: [],
-    })
+    expect(prepareTasksToUpdate(tasks, '', 'UP')).toStrictEqual([])
   })
-  test('when there is one task with initial orderInFolder', () => {
-    const tasks: Task[] = [
-      {
-        ...sampleTask,
-        orderInFolder: 0,
-      },
-    ]
-    expect(checkForOrderChange(tasks)).toStrictEqual({
-      hasOrderChange: false,
-      orderedTasks: [{ ...sampleTask, orderInFolder: 0 }],
-    })
+  test('when there are no tasks1', () => {
+    const tasks: Task[] = [{ ...sampleTask }]
+    expect(prepareTasksToUpdate(tasks, '', 'UP')).toStrictEqual([
+      { ...sampleTask },
+    ])
   })
-  test('when there is one task with invalid orderInFolder', () => {
+  test('when there are no tasks2', () => {
     const tasks: Task[] = [
-      {
-        ...sampleTask,
-        orderInFolder: 1,
-      },
+      { ...sampleTask, id: '1', orderInFolder: 0 },
+      { ...sampleTask, id: '2', orderInFolder: 1 },
     ]
-    expect(checkForOrderChange(tasks)).toStrictEqual({
-      hasOrderChange: true,
-      orderedTasks: [{ ...sampleTask, orderInFolder: 0 }],
-    })
+    const expected: Task[] = [
+      { ...sampleTask, id: '2', orderInFolder: 0 },
+      { ...sampleTask, id: '1', orderInFolder: 1 },
+    ]
+    expect(prepareTasksToUpdate(tasks, '1', 'UP')).toStrictEqual(tasks)
+    expect(prepareTasksToUpdate(tasks, '1', 'DOWN')).toStrictEqual(expected)
   })
-  test('when there is 2 tasks with correct orderInFolder', () => {
+  test('when there are no tasks 3', () => {
     const tasks: Task[] = [
-      {
-        ...sampleTask,
-        id: 'test1',
-        orderInFolder: 0,
-      },
-      {
-        ...sampleTask,
-        id: 'test2',
-        orderInFolder: 1,
-      },
+      { ...sampleTask, id: '1', orderInFolder: 0 },
+      { ...sampleTask, id: '2', orderInFolder: 1 },
+      { ...sampleTask, id: '3', orderInFolder: 2 },
     ]
-    expect(checkForOrderChange(tasks)).toStrictEqual({
-      hasOrderChange: false,
-      orderedTasks: [
-        {
-          ...sampleTask,
-          id: 'test1',
-          orderInFolder: 0,
-        },
-        {
-          ...sampleTask,
-          id: 'test2',
-          orderInFolder: 1,
-        },
-      ],
-    })
+    const expected: Task[] = [
+      { ...sampleTask, id: '2', orderInFolder: 0 },
+      { ...sampleTask, id: '1', orderInFolder: 1 },
+      { ...sampleTask, id: '3', orderInFolder: 2 },
+    ]
+    expect(prepareTasksToUpdate(tasks, '1', 'UP')).toStrictEqual(tasks)
+    expect(prepareTasksToUpdate(tasks, '1', 'DOWN')).toStrictEqual(expected)
   })
-  test('when there is 2 tasks with same orderInFolder', () => {
+  test('when there are no tasks 3a', () => {
     const tasks: Task[] = [
-      {
-        ...sampleTask,
-        id: 'test2',
-        orderInFolder: 0,
-        createdAt: 2,
-      },
-      {
-        ...sampleTask,
-        id: 'test1',
-        orderInFolder: 0,
-        createdAt: 1,
-      },
+      { ...sampleTask, id: '2', orderInFolder: 0 },
+      { ...sampleTask, id: '1', orderInFolder: 1 },
+      { ...sampleTask, id: '3', orderInFolder: 2 },
     ]
-    expect(checkForOrderChange(tasks)).toStrictEqual({
-      hasOrderChange: true,
-      orderedTasks: [
-        {
-          ...sampleTask,
-          id: 'test2',
-          orderInFolder: 0,
-          createdAt: 2,
-        },
-        {
-          ...sampleTask,
-          id: 'test1',
-          orderInFolder: 1,
-          createdAt: 1,
-        },
-      ],
-    })
+    const expected1: Task[] = [
+      { ...sampleTask, id: '1', orderInFolder: 0 },
+      { ...sampleTask, id: '2', orderInFolder: 1 },
+      { ...sampleTask, id: '3', orderInFolder: 2 },
+    ]
+    const expected2: Task[] = [
+      { ...sampleTask, id: '2', orderInFolder: 0 },
+      { ...sampleTask, id: '3', orderInFolder: 1 },
+      { ...sampleTask, id: '1', orderInFolder: 2 },
+    ]
+    expect(prepareTasksToUpdate(tasks, '1', 'UP')).toStrictEqual(expected1)
+    expect(prepareTasksToUpdate(tasks, '1', 'DOWN')).toStrictEqual(expected2)
   })
-  test('when there is 3 tasks with same orderInFolder', () => {
+  test('when there are no tasks 4', () => {
     const tasks: Task[] = [
-      {
-        ...sampleTask,
-        id: 'test2',
-        orderInFolder: 0,
-        createdAt: 2,
-      },
-      {
-        ...sampleTask,
-        id: 'test3',
-        orderInFolder: 0,
-        createdAt: 3,
-      },
-      {
-        ...sampleTask,
-        id: 'test1',
-        orderInFolder: 0,
-        createdAt: 1,
-      },
+      { ...sampleTask, id: '1', orderInFolder: 0 },
+      { ...sampleTask, id: '2', orderInFolder: 1 },
+      { ...sampleTask, id: '3', orderInFolder: 2 },
     ]
-    expect(checkForOrderChange(tasks)).toStrictEqual({
-      hasOrderChange: true,
-      orderedTasks: [
-        {
-          ...sampleTask,
-          id: 'test3',
-          orderInFolder: 0,
-          createdAt: 3,
-        },
-        {
-          ...sampleTask,
-          id: 'test2',
-          orderInFolder: 1,
-          createdAt: 2,
-        },
-        {
-          ...sampleTask,
-          id: 'test1',
-          orderInFolder: 2,
-          createdAt: 1,
-        },
-      ],
-    })
+    const expected: Task[] = [
+      { ...sampleTask, id: '1', orderInFolder: 0 },
+      { ...sampleTask, id: '3', orderInFolder: 1 },
+      { ...sampleTask, id: '2', orderInFolder: 2 },
+    ]
+    expect(prepareTasksToUpdate(tasks, '3', 'UP')).toStrictEqual(expected)
+    expect(prepareTasksToUpdate(tasks, '3', 'DOWN')).toStrictEqual(tasks)
   })
 })

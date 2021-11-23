@@ -43,7 +43,7 @@ const find = async ({ folderId }: Partial<Task>): Promise<Task[]> => {
   const whereValues = {
     ...(folderId === undefined ? {} : { folderId }),
   }
-  return await db.Task.where(whereValues).toArray()
+  return db.Task.where(whereValues).toArray()
 }
 
 const update = async ({

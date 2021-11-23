@@ -4,36 +4,47 @@ import { taskSorter } from '.'
 export function prepareTasksToUpdate(
   tasks: Task[],
   taskToMoveId: string,
-  moveToBeforeTaskId: string | null
+  direction: 'UP' | 'DOWN'
 ) {
-  const sortedDbTasks = taskSorter(tasks, 'orderInFolder', 'ASC')
-
-  const currentTaskIndex = sortedDbTasks.findIndex(
+  if (tasks.length === 0) {
+    return []
+  }
+  const sortedTasks = taskSorter(tasks, 'orderInFolder', 'ASC')
+  let moveToBeforeTaskId: string | null = null
+  let isTaskMovingToLast = false
+  const currentTaskIndex = sortedTasks.findIndex(
     (task) => task.id === taskToMoveId
   )
-  const beforeTaskIndex = sortedDbTasks.findIndex(
+  const currentTask = sortedTasks[currentTaskIndex]
+  if (direction === 'UP' && currentTaskIndex !== 0) {
+    moveToBeforeTaskId = sortedTasks[currentTaskIndex - 1]?.id
+  }
+  if (direction === 'DOWN' && currentTaskIndex !== sortedTasks.length - 1) {
+    isTaskMovingToLast = currentTaskIndex + 1 === sortedTasks.length - 1
+    if (!isTaskMovingToLast) {
+      moveToBeforeTaskId = sortedTasks[currentTaskIndex + 2]?.id
+    }
+  }
+
+  if (!moveToBeforeTaskId && !isTaskMovingToLast) {
+    return sortedTasks
+  }
+
+  sortedTasks.splice(currentTaskIndex, 1)
+
+  const beforeTaskIndex = sortedTasks.findIndex(
     (task) => task.id === moveToBeforeTaskId
   )
-  let newTaskIndex: number
-  if (beforeTaskIndex > -1) {
-    sortedDbTasks.splice(beforeTaskIndex, 0, sortedDbTasks[currentTaskIndex])
-    newTaskIndex = beforeTaskIndex
+  if (!isTaskMovingToLast && beforeTaskIndex > -1) {
+    sortedTasks.splice(beforeTaskIndex, 0, currentTask)
   } else {
-    sortedDbTasks.splice(
-      sortedDbTasks.length,
-      0,
-      sortedDbTasks[currentTaskIndex]
-    )
-    newTaskIndex = sortedDbTasks.length
+    sortedTasks.splice(sortedTasks.length, 0, currentTask)
   }
-  const taskToRemoveIndex = sortedDbTasks.findIndex(
-    (task, index) => task.id === taskToMoveId && newTaskIndex !== index
-  )
-  sortedDbTasks.splice(taskToRemoveIndex, 1)
 
-  const tasksToUpdate = sortedDbTasks.map((task, index) => {
+  const tasksToUpdate = sortedTasks.map((task, index) => {
     task.orderInFolder = index
     return task
   })
+
   return tasksToUpdate
 }

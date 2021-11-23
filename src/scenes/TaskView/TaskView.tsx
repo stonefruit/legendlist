@@ -65,32 +65,17 @@ export default function TaskView({
     setActiveTaskId(newTaskId)
   }
 
-  const moveTask = async (taskId: string, direction: 'UP' | 'DOWN') => {
-    const reorderTask = async (
-      taskIdToMove: string,
-      moveToBeforeTaskId: string | null
-    ) => {
-      const dbTasks = await models.Task.find({ folderId })
-      const tasksToUpdate = prepareTasksToUpdate(
-        dbTasks,
-        taskIdToMove,
-        moveToBeforeTaskId
-      )
-      await models.Task.bulkPut(tasksToUpdate)
-      await refreshTasks()
-    }
-    const currentTaskIndex = sortedTasks.findIndex((task) => task.id === taskId)
-    if (direction === 'UP' && currentTaskIndex !== 0) {
-      await reorderTask(taskId, sortedTasks[currentTaskIndex - 1].id)
-    }
-    if (direction === 'DOWN' && currentTaskIndex !== sortedTasks.length - 1) {
-      const isTaskMovingToLast = currentTaskIndex + 1 === sortedTasks.length - 1
-      if (isTaskMovingToLast) {
-        await reorderTask(taskId, null)
-      } else {
-        await reorderTask(taskId, sortedTasks[currentTaskIndex + 2].id)
-      }
-    }
+  const moveTask = async (taskIdToMove: string, direction: 'UP' | 'DOWN') => {
+    const dbTasks = await models.Task.find({ folderId })
+    const dbUncompletedTasks = dbTasks.filter((task) => !task.actualEndDate)
+    const tasksToUpdate = prepareTasksToUpdate(
+      dbUncompletedTasks,
+      taskIdToMove,
+      direction
+    )
+
+    await models.Task.bulkPut(tasksToUpdate)
+    await refreshTasks()
   }
 
   const updateTask = async ({
