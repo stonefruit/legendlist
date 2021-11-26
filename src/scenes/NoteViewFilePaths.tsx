@@ -102,12 +102,11 @@ export default function AddFilePath({ updateTask, task }: Props) {
       )}
       <div className="max-h-40 overflow-auto mt-1">
         {filePaths.map((filePath, index) => (
-          <div
-            key={index}
-            onClick={() => onClickRemove(index)}
-            className="flex items-center cursor-pointer"
-          >
-            <div className="h-4 w-4 border rounded-lg bg-white hover:bg-gray-200 mr-1 cursor-pointer">
+          <div key={index} className="flex items-center">
+            <div
+              className="h-4 w-4 border rounded-lg bg-white hover:bg-gray-200 mr-1 cursor-pointer"
+              onClick={() => onClickRemove(index)}
+            >
               <XIcon className="w-full h-full" />
             </div>
             <div>{filePath}</div>
