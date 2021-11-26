@@ -7,11 +7,12 @@ import {
 } from '@heroicons/react/outline'
 import hillBackground from '../assets/hillBackground'
 import * as models from '../models'
-import { NavigationItem } from '../types'
+import { Activity, NavigationItem } from '../types'
 import ImportExport from './ImportExport'
 import MiniSideBar from './MiniSideBar'
 import SideBar from './SideBar'
 import TaskView from './TaskView'
+import Search from './Search/Search'
 
 const assignIcons = (navigation: NavigationItem[]) => {
   return navigation.map((nav) => {
@@ -32,7 +33,7 @@ export default function Shell() {
   const [navigation, setNavigation] = useState<NavigationItem[]>([])
   const [shouldRefresh, setShouldRefresh] = useState(true)
   const [navIndex, setNavIndex] = useState(0)
-  const [activity, setActivity] = useState<'TASK' | 'IMPORT/EXPORT'>('TASK')
+  const [activity, setActivity] = useState<Activity>('TASK')
 
   const navigationWithIcons = assignIcons(navigation)
 
@@ -107,6 +108,7 @@ export default function Shell() {
           navigation={navigation}
         />
       )}
+      {activity === 'SEARCH' && <Search navigation={navigation} />}
       {activity === 'IMPORT/EXPORT' && <ImportExport />}
     </div>
   )

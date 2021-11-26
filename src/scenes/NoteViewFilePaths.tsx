@@ -5,7 +5,7 @@ import { Task } from '../types'
 
 type Props = {
   task: Task
-  updateTask({
+  updateTask?: ({
     id,
     actualEndDate,
     name,
@@ -17,7 +17,7 @@ type Props = {
     name?: string
     folderId?: string
     filePaths?: string[]
-  }): Promise<void>
+  }) => Promise<void>
 }
 export default function AddFilePath({ updateTask, task }: Props) {
   const [showInput, setShowInput] = useState(false)
@@ -60,6 +60,9 @@ export default function AddFilePath({ updateTask, task }: Props) {
 
   const filePathsString = JSON.stringify(filePaths)
   useEffect(() => {
+    if (!updateTask) {
+      return
+    }
     const taskFilePathsString = JSON.stringify(task?.filePaths)
     const taskContentChanged = taskFilePathsString !== filePathsString
     if (prevTaskId === task.id && taskContentChanged) {
@@ -76,13 +79,15 @@ export default function AddFilePath({ updateTask, task }: Props) {
         >
           File Paths
         </div>
-        <div
-          onClick={() => setShowInput(!showInput)}
-          className="h-4 w-4 border rounded-lg bg-white hover:bg-gray-200 ml-2 cursor-pointer"
-        >
-          {!showInput && <PlusIcon className="w-full h-full" />}
-          {showInput && <MinusIcon className="w-full h-full" />}
-        </div>
+        {updateTask && (
+          <div
+            onClick={() => setShowInput(!showInput)}
+            className="h-4 w-4 border rounded-lg bg-white hover:bg-gray-200 ml-2 cursor-pointer"
+          >
+            {!showInput && <PlusIcon className="w-full h-full" />}
+            {showInput && <MinusIcon className="w-full h-full" />}
+          </div>
+        )}
       </div>
       {showInput && (
         <div>
@@ -102,13 +107,21 @@ export default function AddFilePath({ updateTask, task }: Props) {
       )}
       <div className="max-h-40 overflow-auto mt-1">
         {filePaths.map((filePath, index) => (
-          <div key={index} className="flex items-center">
-            <div
-              className="h-4 w-4 border rounded-lg bg-white hover:bg-gray-200 mr-1 cursor-pointer"
-              onClick={() => onClickRemove(index)}
-            >
-              <XIcon className="w-full h-full" />
-            </div>
+          <div
+            key={index}
+            className={classNames(
+              updateTask ? '' : 'ml-5',
+              'flex items-center'
+            )}
+          >
+            {updateTask && (
+              <div
+                className="h-4 w-4 border rounded-lg bg-white hover:bg-gray-200 mr-1 cursor-pointer"
+                onClick={() => onClickRemove(index)}
+              >
+                <XIcon className="w-full h-full" />
+              </div>
+            )}
             <div>{filePath}</div>
           </div>
         ))}

@@ -9,7 +9,7 @@ import { classNames } from '../../utils'
 
 type Props = {
   task: Task
-  updateTask({
+  updateTask?: ({
     id,
     actualEndDate,
     name,
@@ -19,11 +19,11 @@ type Props = {
     actualEndDate?: number | null
     name?: string
     folderId?: string
-  }): Promise<void>
-  deleteTask(id: string): Promise<void>
+  }) => Promise<void>
+  deleteTask?: (id: string) => Promise<void>
   activeTaskId: string | null
-  selectActiveTask(id: string | null): void
-  moveTask: (taskId: string, direction: 'UP' | 'DOWN') => Promise<void>
+  selectActiveTask: (id: string | null) => void
+  moveTask?: (taskId: string, direction: 'UP' | 'DOWN') => Promise<void>
   isTopOfList?: boolean
   isBottomOfList?: boolean
 }
@@ -46,6 +46,9 @@ export default function TaskListItem({
   // FUNCTIONS
 
   const onChangeDone = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!updateTask) {
+      return
+    }
     e.preventDefault()
     if (e.target.checked) {
       await updateTask({ id: task.id, actualEndDate: Date.now() })
@@ -59,6 +62,9 @@ export default function TaskListItem({
   }
 
   const onChangeName = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!updateTask) {
+      return
+    }
     setName(e.target.value)
     await updateTask({ id: task.id, name: e.target.value })
   }
@@ -69,14 +75,10 @@ export default function TaskListItem({
     setName(task.name)
   }, [task.name])
 
-  return (
-    <div
-      className={classNames(
-        isActive ? 'bg-yellow-200' : 'hover:bg-yellow-100',
-        'flex px-3 py-3 cursor-pointer border-b group items-center'
-      )}
-      onClick={onClickTask(task.id)}
-    >
+  // SUB COMPONENTS
+
+  const MoveUpAndDown = () => {
+    return (
       <div
         className={classNames(
           isActive && !task.actualEndDate ? '' : 'invisible',
@@ -89,7 +91,12 @@ export default function TaskListItem({
             isTopOfList ? 'invisible' : '',
             'text-gray-300 hover:text-gray-800'
           )}
-          onClick={() => moveTask(task.id, 'UP')}
+          onClick={() => {
+            if (!moveTask) {
+              return
+            }
+            moveTask(task.id, 'UP')
+          }}
         />
         <ChevronDownIcon
           height={15}
@@ -97,9 +104,19 @@ export default function TaskListItem({
             isBottomOfList ? 'invisible' : '',
             'text-gray-300 hover:text-gray-800'
           )}
-          onClick={() => moveTask(task.id, 'DOWN')}
+          onClick={() => {
+            if (!moveTask) {
+              return
+            }
+            moveTask(task.id, 'DOWN')
+          }}
         />
       </div>
+    )
+  }
+
+  const CompleteCheckbox = () => {
+    return (
       <div className="flex items-center h-8 pl-3">
         <input
           onClick={(e) => e.stopPropagation()}
@@ -111,24 +128,11 @@ export default function TaskListItem({
           className="focus:ring-yellow-500 hover:bg-yellow-200 h-4 w-4 text-yellow-600 border-gray-300 rounded cursor-pointer"
         />
       </div>
-      <div className={'ml-3 text-sm w-full'}>
-        <input
-          disabled={!isActive}
-          type="text"
-          className={classNames(
-            isActive
-              ? 'bg-yellow-200 group-hover:bg-yellow-200 cursor-text'
-              : 'group-hover:bg-yellow-100 cursor-pointer',
-            'placeholder-gray-400 pr-6 break-words border-0 bg-yellow-50 p-0 m-0 focus:ring-transparent w-full resize-none outline-none font-medium text-gray-700'
-          )}
-          placeholder="What would you like to call this item?"
-          onChange={onChangeName}
-          value={name}
-        />
-        {/* <p id="comments-description" className="text-gray-400 text-xs">
-          {task.orderInFolder}
-        </p> */}
-      </div>
+    )
+  }
+
+  const DeleteButton = () => {
+    return (
       <div className="flex flex-row items-center justify-center">
         <TrashIcon
           height={15}
@@ -136,9 +140,44 @@ export default function TaskListItem({
             isActive ? '' : 'invisible',
             'text-gray-300 hover:text-gray-800'
           )}
-          onClick={() => deleteTask(task.id)}
+          onClick={() => {
+            if (!deleteTask) {
+              return
+            }
+            deleteTask(task.id)
+          }}
         />
       </div>
+    )
+  }
+
+  return (
+    <div
+      className={classNames(
+        isActive ? 'bg-yellow-200' : 'hover:bg-yellow-100',
+        'flex px-3 py-3 cursor-pointer border-b group items-center'
+      )}
+      onClick={onClickTask(task.id)}
+    >
+      {moveTask && <MoveUpAndDown />}
+      {updateTask && <CompleteCheckbox />}
+      <div className={'ml-3 text-sm w-full'}>
+        <input
+          disabled={!isActive || !updateTask}
+          type="text"
+          className={classNames(
+            isActive
+              ? 'bg-yellow-200 group-hover:bg-yellow-200'
+              : 'group-hover:bg-yellow-100',
+            isActive && updateTask ? 'cursor-text' : 'cursor-pointer',
+            'placeholder-gray-400 pr-6 break-words border-0 bg-yellow-50 p-0 m-0 focus:ring-transparent w-full resize-none outline-none font-medium text-gray-700'
+          )}
+          placeholder="What would you like to call this item?"
+          onChange={onChangeName}
+          value={name}
+        />
+      </div>
+      {deleteTask && <DeleteButton />}
     </div>
   )
 }

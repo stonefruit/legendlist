@@ -101,3 +101,5 @@ export type SvgIconProps = {
   width?: number
   fill?: string
 }
+
+export type Activity = 'TASK' | 'IMPORT/EXPORT' | 'SEARCH'

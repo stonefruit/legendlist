@@ -3,12 +3,13 @@ import Select from 'react-select'
 import { Descendant } from 'slate'
 import RichTextEditor from '../components/RichTextEditor'
 import { NavigationItem, Task } from '../types'
+import { classNames } from '../utils'
 import NoteViewFilePaths from './NoteViewFilePaths'
 
 type Props = {
   task: Task | null
   navigation: NavigationItem[]
-  updateTask({
+  updateTask?: ({
     id,
     actualEndDate,
     name,
@@ -22,7 +23,7 @@ type Props = {
     folderId?: string
     filePaths?: string[]
     content?: Descendant[]
-  }): Promise<void>
+  }) => Promise<void>
 }
 const initialData = [
   {
@@ -62,6 +63,9 @@ export default function NoteView({ task, navigation, updateTask }: Props) {
 
   const contentString = JSON.stringify(content)
   useEffect(() => {
+    if (!updateTask) {
+      return
+    }
     const runAsync = async () => {
       const taskContentString = JSON.stringify(task?.content)
       const taskContentChanged = taskContentString !== contentString
@@ -86,16 +90,34 @@ export default function NoteView({ task, navigation, updateTask }: Props) {
               {task.name}
             </div>
           </div>
-          <div className="h-auto overflow-y-auto flex flex-1 flex-col border-t pr-5 pl-5 pb-5">
+          <div
+            className={classNames(
+              updateTask ? '' : 'pt-5',
+              'h-auto overflow-y-auto flex flex-1 flex-col border-t pr-5 pl-5 pb-5'
+            )}
+          >
             {!shouldRefreshEditor && (
-              <RichTextEditor value={content} setValue={setContent} />
+              <RichTextEditor
+                value={content}
+                setValue={setContent}
+                readOnly={!updateTask}
+              />
             )}
           </div>
           <NoteViewFilePaths updateTask={updateTask} task={task} />
           <div className="flex flex-col align-middle justify-center p-3">
-            <div className="w-1/2 cursor-pointer">
+            <div
+              className={classNames(
+                updateTask ? 'cursor-pointer' : '',
+                'w-1/2'
+              )}
+            >
               <Select
+                isDisabled={!updateTask}
                 onChange={(value) => {
+                  if (!updateTask) {
+                    return
+                  }
                   updateTask({ id: task.id, folderId: value!.value })
                 }}
                 options={folderOptions}

@@ -36,58 +36,63 @@ const HOTKEYS = {
 
 const LIST_TYPES = ['numbered-list', 'bulleted-list']
 
-const RichTextEditor = ({ value, setValue }) => {
+const RichTextEditor = ({ value, setValue, readOnly }) => {
   const renderElement = useCallback((props) => <Element {...props} />, [])
   const renderLeaf = useCallback((props) => <Leaf {...props} />, [])
   const editor = useMemo(() => withHistory(withReact(createEditor())), [])
   return (
     <Slate editor={editor} value={value} onChange={(val) => setValue(val)}>
-      <Toolbar>
-        <MarkButton
-          format="bold"
-          icon={() => BoldIcon({ width: 15, height: 15, fill: 'black' })}
-        />
-        <MarkButton
-          format="italic"
-          icon={() => ItalicIcon({ width: 20, height: 20, fill: 'black' })}
-        />
-        <MarkButton
-          format="underline"
-          icon={() => UnderlineIcon({ width: 20, height: 20, fill: 'black' })}
-        />
-        <MarkButton
-          format="code"
-          icon={() => CodeIcon({ width: 20, height: 20, fill: 'black' })}
-        />
-        <div className="w-3" />
-        <BlockButton
-          format="heading-one"
-          icon={() => H1Icon({ width: 32, height: 32, fill: 'black' })}
-        />
-        <BlockButton
-          format="heading-two"
-          icon={() => H2Icon({ width: 32, height: 32, fill: 'black' })}
-        />
-        <BlockButton
-          format="block-quote"
-          icon={() => QuoteIcon({ width: 20, height: 20, fill: 'black' })}
-        />
-        <BlockButton
-          format="numbered-list"
-          icon={() => OrderedListIcon({ width: 20, height: 20, fill: 'black' })}
-        />
-        <BlockButton
-          format="bulleted-list"
-          icon={() =>
-            UnorderedListIcon({ width: 20, height: 20, fill: 'black' })
-          }
-        />
-      </Toolbar>
+      {!readOnly && (
+        <Toolbar>
+          <MarkButton
+            format="bold"
+            icon={() => BoldIcon({ width: 15, height: 15, fill: 'black' })}
+          />
+          <MarkButton
+            format="italic"
+            icon={() => ItalicIcon({ width: 20, height: 20, fill: 'black' })}
+          />
+          <MarkButton
+            format="underline"
+            icon={() => UnderlineIcon({ width: 20, height: 20, fill: 'black' })}
+          />
+          <MarkButton
+            format="code"
+            icon={() => CodeIcon({ width: 20, height: 20, fill: 'black' })}
+          />
+          <div className="w-3" />
+          <BlockButton
+            format="heading-one"
+            icon={() => H1Icon({ width: 32, height: 32, fill: 'black' })}
+          />
+          <BlockButton
+            format="heading-two"
+            icon={() => H2Icon({ width: 32, height: 32, fill: 'black' })}
+          />
+          <BlockButton
+            format="block-quote"
+            icon={() => QuoteIcon({ width: 20, height: 20, fill: 'black' })}
+          />
+          <BlockButton
+            format="numbered-list"
+            icon={() =>
+              OrderedListIcon({ width: 20, height: 20, fill: 'black' })
+            }
+          />
+          <BlockButton
+            format="bulleted-list"
+            icon={() =>
+              UnorderedListIcon({ width: 20, height: 20, fill: 'black' })
+            }
+          />
+        </Toolbar>
+      )}
       <Editable
+        readOnly={readOnly}
         className="h-full overflow-y-auto pb-20"
         renderElement={renderElement}
         renderLeaf={renderLeaf}
-        placeholder="Enter some rich text…"
+        placeholder={readOnly ? '' : 'Enter some rich text…'}
         onKeyDown={(event) => {
           for (const hotkey in HOTKEYS) {
             if (isHotkey(hotkey, event as any)) {

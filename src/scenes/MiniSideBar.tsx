@@ -1,13 +1,15 @@
+import { SearchIcon } from '@heroicons/react/outline'
 import {
   BellIcon,
   BadgeCheckIcon,
   DocumentDownloadIcon,
 } from '@heroicons/react/solid'
+import { Activity } from '../types'
 import { classNames } from '../utils'
 
 type Props = {
-  activity: 'TASK' | 'IMPORT/EXPORT'
-  setActivity: React.Dispatch<React.SetStateAction<'TASK' | 'IMPORT/EXPORT'>>
+  activity: Activity
+  setActivity: React.Dispatch<React.SetStateAction<Activity>>
 }
 export default function MiniSideBar({ activity, setActivity }: Props) {
   return (
@@ -33,6 +35,15 @@ export default function MiniSideBar({ activity, setActivity }: Props) {
                 onClick={() => setActivity('IMPORT/EXPORT')}
               >
                 <DocumentDownloadIcon className="h-6 w-6" color="white" />
+              </div>
+              <div
+                className={classNames(
+                  activity === 'SEARCH' ? 'bg-yellow-800' : '',
+                  'mx-auto h-6 py-5 w-full flex items-center justify-center cursor-pointer hover:bg-yellow-800'
+                )}
+                onClick={() => setActivity('SEARCH')}
+              >
+                <SearchIcon className="h-6 w-6" color="white" />
               </div>
             </div>
             <div className="mx-auto h-6 w-6">
