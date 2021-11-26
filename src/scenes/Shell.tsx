@@ -13,6 +13,7 @@ import MiniSideBar from './MiniSideBar'
 import SideBar from './SideBar'
 import TaskView from './TaskView'
 import Search from './Search/Search'
+import Files from './Files'
 
 const assignIcons = (navigation: NavigationItem[]) => {
   return navigation.map((nav) => {
@@ -110,6 +111,7 @@ export default function Shell() {
       )}
       {activity === 'SEARCH' && <Search navigation={navigation} />}
       {activity === 'IMPORT/EXPORT' && <ImportExport />}
+      {activity === 'FILES' && <Files />}
     </div>
   )
 }

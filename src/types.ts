@@ -102,4 +102,4 @@ export type SvgIconProps = {
   fill?: string
 }
 
-export type Activity = 'TASK' | 'IMPORT/EXPORT' | 'SEARCH'
+export type Activity = 'TASK' | 'IMPORT/EXPORT' | 'SEARCH' | 'FILES'

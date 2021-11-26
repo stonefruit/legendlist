@@ -1,4 +1,4 @@
-import { SearchIcon } from '@heroicons/react/outline'
+import { SearchIcon, FolderIcon } from '@heroicons/react/outline'
 import {
   BellIcon,
   BadgeCheckIcon,
@@ -27,15 +27,7 @@ export default function MiniSideBar({ activity, setActivity }: Props) {
               >
                 <BadgeCheckIcon className="h-6 w-6" color="white" />
               </div>
-              <div
-                className={classNames(
-                  activity === 'IMPORT/EXPORT' ? 'bg-yellow-800' : '',
-                  'mx-auto h-6 py-5 w-full flex items-center justify-center cursor-pointer hover:bg-yellow-800'
-                )}
-                onClick={() => setActivity('IMPORT/EXPORT')}
-              >
-                <DocumentDownloadIcon className="h-6 w-6" color="white" />
-              </div>
+
               <div
                 className={classNames(
                   activity === 'SEARCH' ? 'bg-yellow-800' : '',
@@ -44,6 +36,24 @@ export default function MiniSideBar({ activity, setActivity }: Props) {
                 onClick={() => setActivity('SEARCH')}
               >
                 <SearchIcon className="h-6 w-6" color="white" />
+              </div>
+              <div
+                className={classNames(
+                  activity === 'FILES' ? 'bg-yellow-800' : '',
+                  'mx-auto h-6 py-5 w-full flex items-center justify-center cursor-pointer hover:bg-yellow-800'
+                )}
+                onClick={() => setActivity('FILES')}
+              >
+                <FolderIcon className="h-6 w-6" color="white" />
+              </div>
+              <div
+                className={classNames(
+                  activity === 'IMPORT/EXPORT' ? 'bg-yellow-800' : '',
+                  'mx-auto h-6 py-5 w-full flex items-center justify-center cursor-pointer hover:bg-yellow-800'
+                )}
+                onClick={() => setActivity('IMPORT/EXPORT')}
+              >
+                <DocumentDownloadIcon className="h-6 w-6" color="white" />
               </div>
             </div>
             <div className="mx-auto h-6 w-6">
