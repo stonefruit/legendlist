@@ -3,6 +3,7 @@ import {
   ChevronUpIcon,
   TrashIcon,
 } from '@heroicons/react/outline'
+import { FolderIcon } from '@heroicons/react/solid'
 import { useEffect, useState } from 'react'
 import { Task } from '../../types'
 import { classNames } from '../../utils'
@@ -42,6 +43,7 @@ export default function TaskListItem({
   // This still happens if you type very fast.
   const [name, setName] = useState('')
   const isActive = activeTaskId === task.id
+  const hasFiles = task.filePaths ? task.filePaths.length > 0 : false
 
   // FUNCTIONS
 
@@ -151,6 +153,14 @@ export default function TaskListItem({
     )
   }
 
+  const HasFilesIcon = () => {
+    return (
+      <div className="flex flex-row items-center">
+        <FolderIcon height={15} className={classNames('text-gray-400')} />
+      </div>
+    )
+  }
+
   return (
     <div
       className={classNames(
@@ -176,6 +186,7 @@ export default function TaskListItem({
           onChange={onChangeName}
           value={name}
         />
+        {hasFiles && <HasFilesIcon />}
       </div>
       {deleteTask && <DeleteButton />}
     </div>
