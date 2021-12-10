@@ -1,6 +1,7 @@
 import {
   ChevronDownIcon,
   ChevronUpIcon,
+  MenuIcon,
   TrashIcon,
 } from '@heroicons/react/outline'
 import { FolderIcon } from '@heroicons/react/solid'
@@ -73,36 +74,43 @@ export default function TaskListItem({
     return (
       <div
         className={classNames(
-          isActive && !task.actualEndDate ? '' : 'invisible',
+          !task.actualEndDate ? '' : 'invisible',
           'flex flex-col'
         )}
       >
-        <ChevronUpIcon
-          height={15}
-          className={classNames(
-            isTopOfList ? 'invisible' : '',
-            'text-gray-300 hover:text-gray-800'
-          )}
-          onClick={() => {
-            if (!moveTask) {
-              return
-            }
-            moveTask(task.id, 'UP')
-          }}
-        />
-        <ChevronDownIcon
-          height={15}
-          className={classNames(
-            isBottomOfList ? 'invisible' : '',
-            'text-gray-300 hover:text-gray-800'
-          )}
-          onClick={() => {
-            if (!moveTask) {
-              return
-            }
-            moveTask(task.id, 'DOWN')
-          }}
-        />
+        {isActive && moveTask && (
+          <>
+            <ChevronUpIcon
+              height={15}
+              className={classNames(
+                !isActive || isTopOfList ? 'invisible' : '',
+                'text-gray-300 hover:text-gray-800'
+              )}
+              onClick={() => {
+                if (!moveTask) {
+                  return
+                }
+                moveTask(task.id, 'UP')
+              }}
+            />
+            <ChevronDownIcon
+              height={15}
+              className={classNames(
+                !isActive || isBottomOfList ? 'invisible' : '',
+                'text-gray-300 hover:text-gray-800'
+              )}
+              onClick={() => {
+                if (!moveTask) {
+                  return
+                }
+                moveTask(task.id, 'DOWN')
+              }}
+            />
+          </>
+        )}
+        {!isActive && updateTask && (
+          <MenuIcon height={15} className="text-gray-300 hover:text-gray-800" />
+        )}
       </div>
     )
   }
@@ -159,7 +167,7 @@ export default function TaskListItem({
       )}
       onClick={onClickTask(task.id)}
     >
-      {moveTask && <MoveUpAndDown />}
+      {<MoveUpAndDown />}
       {updateTask && <CompleteCheckbox />}
       <div className={'ml-3 text-sm w-full'}>
         <input

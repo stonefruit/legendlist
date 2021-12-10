@@ -121,9 +121,9 @@ export default function NoteView({ task, navigation, updateTask }: Props) {
                 startDate={plannedStartDate}
                 endDate={plannedStartDate ? plannedEndDate : null}
                 dateFormat="dd MMM yyyy"
-                isClearable
                 className="w-36 h-6 rounded-md border-gray-200"
-                disabled={!plannedEndDate}
+                disabled={!plannedEndDate || !updateTask}
+                isClearable={!!updateTask}
               />
             </div>
           </div>
@@ -137,8 +137,9 @@ export default function NoteView({ task, navigation, updateTask }: Props) {
                 startDate={plannedStartDate}
                 endDate={plannedEndDate}
                 dateFormat="dd MMM yyyy"
-                isClearable
+                isClearable={!!updateTask}
                 className="w-36 h-6 rounded-md border-gray-200"
+                disabled={!updateTask}
               />
             </div>
           </div>

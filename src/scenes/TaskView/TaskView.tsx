@@ -1,4 +1,11 @@
 import { useEffect, useState } from 'react'
+import _ from 'lodash'
+import {
+  DragDropContext,
+  Draggable,
+  Droppable,
+  DropResult,
+} from 'react-beautiful-dnd'
 import * as models from '../../models'
 import {
   NavigationItem,
@@ -132,6 +139,20 @@ export default function TaskView({
     setActiveTaskId(id)
   }
 
+  const onDragEnd = async (result: DropResult) => {
+    if (!result.destination) return
+    console.log({ result, uncompletedTasks })
+    const items = _.cloneDeep(uncompletedTasks)
+    const [reorderedItem] = items.splice(result.source.index, 1)
+    items.splice(result.destination.index, 0, reorderedItem)
+    const reorderedItems = items.map((item, index) => {
+      item.orderInFolder = index
+      return item
+    })
+    await models.Task.bulkPut(reorderedItems)
+    await refreshTasks()
+  }
+
   const completedTasks = sortedTasks.filter((task) => task.actualEndDate)
   const uncompletedTasks = sortedTasks.filter((task) => !task.actualEndDate)
   const sortedCompletedTasks = taskSorter(
@@ -220,25 +241,46 @@ export default function TaskView({
           <AddTaskBar addTask={addTask} />
 
           <div className="mx-auto">
-            <div className="py-4">
-              {uncompletedTasks.map((task, index) => {
-                return (
-                  <div key={task.id}>
-                    <TaskListItem
-                      key={task.id}
-                      task={task}
-                      updateTask={updateTask}
-                      deleteTask={deleteTask}
-                      selectActiveTask={selectActiveTask}
-                      activeTaskId={activeTaskId}
-                      moveTask={moveTask}
-                      isTopOfList={index === 0}
-                      isBottomOfList={uncompletedTasks.length - 1 === index}
-                    />
+            <DragDropContext onDragEnd={onDragEnd}>
+              <Droppable droppableId="tasks">
+                {(provided) => (
+                  <div className="py-4" ref={provided.innerRef}>
+                    {provided.placeholder}
+                    {uncompletedTasks.map((task, index) => {
+                      return (
+                        <Draggable
+                          key={task.id}
+                          index={index}
+                          draggableId={task.id}
+                        >
+                          {(provided) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                            >
+                              <TaskListItem
+                                key={task.id}
+                                task={task}
+                                updateTask={updateTask}
+                                deleteTask={deleteTask}
+                                selectActiveTask={selectActiveTask}
+                                activeTaskId={activeTaskId}
+                                moveTask={moveTask}
+                                isTopOfList={index === 0}
+                                isBottomOfList={
+                                  uncompletedTasks.length - 1 === index
+                                }
+                              />
+                            </div>
+                          )}
+                        </Draggable>
+                      )
+                    })}
                   </div>
-                )
-              })}
-            </div>
+                )}
+              </Droppable>
+            </DragDropContext>
             <CompletedTasks
               showCompleted={showCompleted}
               completedTasks={sortedCompletedTasks}
