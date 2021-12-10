@@ -5,22 +5,12 @@ import {
 } from '@heroicons/react/outline'
 import { FolderIcon } from '@heroicons/react/solid'
 import { useEffect, useState } from 'react'
-import { Task } from '../../types'
+import { Task, UpdateTask } from '../../types'
 import { classNames } from '../../utils'
 
 type Props = {
   task: Task
-  updateTask?: ({
-    id,
-    actualEndDate,
-    name,
-    folderId,
-  }: {
-    id: string
-    actualEndDate?: number | null
-    name?: string
-    folderId?: string
-  }) => Promise<void>
+  updateTask?: UpdateTask
   deleteTask?: (id: string) => Promise<void>
   activeTaskId: string | null
   selectActiveTask: (id: string | null) => void

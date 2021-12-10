@@ -1,13 +1,17 @@
 import { useEffect, useState } from 'react'
 import * as models from '../../models'
-import { NavigationItem, Task, TaskCreateAttributes } from '../../types'
+import {
+  NavigationItem,
+  Task,
+  TaskCreateAttributes,
+  UpdateTaskParams,
+} from '../../types'
 import NoteView from '../NoteView'
 import AddTaskBar from './AddTaskBar'
 import ConfirmNavDeleteWidget from './ConfirmNavDeleteWidget'
 import TaskListItem from './TaskListItem'
 import CompletedTasks from './CompletedTasks'
 import { autoReorderTasks, taskSorter, prepareTasksToUpdate } from './helpers'
-import { Descendant } from 'slate'
 
 const ReservedNavIds = { INBOX: 'INBOX', HOME: 'HOME', COMPLETED: 'COMPLETED' }
 
@@ -85,14 +89,9 @@ export default function TaskView({
     folderId: newFolderId,
     filePaths,
     content,
-  }: {
-    id: string
-    actualEndDate?: number | null
-    name?: string
-    folderId?: string
-    filePaths?: string[]
-    content?: Descendant[]
-  }) => {
+    plannedEndDate,
+    plannedStartDate,
+  }: UpdateTaskParams) => {
     const isMovingFolder = !!newFolderId
     const isSettingToUncompleted = actualEndDate === null
     const shouldBringTaskToTop =
@@ -106,6 +105,8 @@ export default function TaskView({
       orderInFolder: shouldBringTaskToTop ? -1 : undefined,
       filePaths,
       content,
+      plannedEndDate,
+      plannedStartDate,
     })
     const updatedTask = await models.Task.get({ id })
     const taskStillInFolder = updatedTask && updatedTask.folderId === folderId

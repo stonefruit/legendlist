@@ -57,6 +57,8 @@ const update = async ({
   content,
   name,
   filePaths,
+  plannedStartDate,
+  plannedEndDate,
 }: {
   id: string
   folderId?: string
@@ -65,6 +67,8 @@ const update = async ({
   content?: Descendant[]
   name?: string
   filePaths?: string[]
+  plannedStartDate?: number | null
+  plannedEndDate?: number | null
 }): Promise<boolean> => {
   try {
     const updateValues = {
@@ -74,6 +78,8 @@ const update = async ({
       ...(content === undefined ? {} : { content }),
       ...(name === undefined ? {} : { name }),
       ...(filePaths === undefined ? {} : { filePaths }),
+      ...(plannedStartDate === undefined ? {} : { plannedStartDate }),
+      ...(plannedEndDate === undefined ? {} : { plannedEndDate }),
     }
     await db.Task.update(id, updateValues)
     return true

@@ -103,3 +103,25 @@ export type SvgIconProps = {
 }
 
 export type Activity = 'TASK' | 'IMPORT/EXPORT' | 'SEARCH' | 'FILES'
+
+export type UpdateTaskParams = {
+  id: string
+  actualEndDate?: number | null
+  name?: string
+  folderId?: string
+  filePaths?: string[]
+  content?: Descendant[]
+  plannedEndDate?: number | null
+  plannedStartDate?: number | null
+}
+
+export type UpdateTask = ({
+  id,
+  actualEndDate,
+  name,
+  folderId,
+  filePaths,
+  content,
+  plannedEndDate,
+  plannedStartDate,
+}: UpdateTaskParams) => Promise<void>

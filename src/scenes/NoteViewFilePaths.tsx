@@ -1,23 +1,11 @@
 import { useEffect, useState } from 'react'
 import { MinusIcon, PlusIcon, XIcon } from '@heroicons/react/outline'
 import { classNames } from '../utils'
-import { Task } from '../types'
+import { Task, UpdateTask } from '../types'
 
 type Props = {
   task: Task
-  updateTask?: ({
-    id,
-    actualEndDate,
-    name,
-    folderId,
-    filePaths,
-  }: {
-    id: string
-    actualEndDate?: number | null
-    name?: string
-    folderId?: string
-    filePaths?: string[]
-  }) => Promise<void>
+  updateTask?: UpdateTask
 }
 export default function AddFilePath({ updateTask, task }: Props) {
   const [showInput, setShowInput] = useState(false)

@@ -1,29 +1,17 @@
 import { useEffect, useState } from 'react'
 import Select from 'react-select'
 import { Descendant } from 'slate'
+import DatePicker from 'react-datepicker'
+
 import RichTextEditor from '../components/RichTextEditor'
-import { NavigationItem, Task } from '../types'
+import { NavigationItem, Task, UpdateTask } from '../types'
 import { classNames } from '../utils'
 import NoteViewFilePaths from './NoteViewFilePaths'
 
 type Props = {
   task: Task | null
   navigation: NavigationItem[]
-  updateTask?: ({
-    id,
-    actualEndDate,
-    name,
-    folderId,
-    filePaths,
-    content,
-  }: {
-    id: string
-    actualEndDate?: number | null
-    name?: string
-    folderId?: string
-    filePaths?: string[]
-    content?: Descendant[]
-  }) => Promise<void>
+  updateTask?: UpdateTask
 }
 const initialData = [
   {
@@ -42,6 +30,43 @@ export default function NoteView({ task, navigation, updateTask }: Props) {
     }
   })
   const currentFolder = navigation.find((nav) => nav.id === task?.folderId)
+
+  const plannedStartDate = task?.plannedStartDate
+    ? new Date(task.plannedStartDate)
+    : null
+  const plannedEndDate = task?.plannedEndDate
+    ? new Date(task.plannedEndDate)
+    : null
+
+  const onChangeStartDate = (
+    date: Date | [Date | null, Date | null] | null
+  ) => {
+    if (!task || !updateTask) {
+      return
+    }
+    if (date instanceof Date) {
+      updateTask({ id: task.id, plannedStartDate: +date })
+      if (plannedEndDate && plannedEndDate < date) {
+        updateTask({ id: task.id, plannedEndDate: +date })
+      }
+    } else if (date === null) {
+      updateTask({ id: task.id, plannedStartDate: null })
+    }
+  }
+
+  const onChangeEndDate = (date: Date | [Date | null, Date | null] | null) => {
+    if (!task || !updateTask) {
+      return
+    }
+    if (date instanceof Date) {
+      updateTask({ id: task.id, plannedEndDate: +date })
+      if (plannedStartDate && plannedStartDate > date) {
+        updateTask({ id: task.id, plannedStartDate: +date })
+      }
+    } else if (date === null) {
+      updateTask({ id: task.id, plannedStartDate: null, plannedEndDate: null })
+    }
+  }
 
   // EFFECTS
 
@@ -70,13 +95,57 @@ export default function NoteView({ task, navigation, updateTask }: Props) {
       const taskContentString = JSON.stringify(task?.content)
       const taskContentChanged = taskContentString !== contentString
       if (task && taskContentChanged) {
-        console.log({ value: content, id: task.id })
         await updateTask({ id: task.id, content: content })
       }
     }
     runAsync()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contentString])
+
+  const DatePickerWidget = () => {
+    return (
+      <div className="flex flex-col justify-center items-end my-2">
+        <div className="flex">
+          <div
+            className={classNames(
+              plannedEndDate ? '' : 'invisible',
+              'flex items-center'
+            )}
+          >
+            <div className="mr-2 text-xs">Start Date:</div>
+            <div>
+              <DatePicker
+                selected={plannedStartDate}
+                onChange={onChangeStartDate}
+                selectsStart
+                startDate={plannedStartDate}
+                endDate={plannedStartDate ? plannedEndDate : null}
+                dateFormat="dd MMM yyyy"
+                isClearable
+                className="w-36 h-6 rounded-md border-gray-200"
+                disabled={!plannedEndDate}
+              />
+            </div>
+          </div>
+          <div className="flex items-center ml-6 mr-2">
+            <div className="mr-2 text-xs">End Date:</div>
+            <div>
+              <DatePicker
+                selected={plannedEndDate}
+                onChange={onChangeEndDate}
+                selectsEnd
+                startDate={plannedStartDate}
+                endDate={plannedEndDate}
+                dateFormat="dd MMM yyyy"
+                isClearable
+                className="w-36 h-6 rounded-md border-gray-200"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col flex-1 w-64 border-l h-screen justify-center overflow-y-hidden">
@@ -85,7 +154,8 @@ export default function NoteView({ task, navigation, updateTask }: Props) {
       )}
       {task && (
         <div className="h-screen flex flex-1 flex-col">
-          <div className="h-20 flex flex-col align-middle justify-center mx-auto">
+          <DatePickerWidget />
+          <div className="h-16 flex flex-col align-middle justify-center mx-auto border-t w-full">
             <div className="flex items-center justify-center text-center text-xl p-5">
               {task.name}
             </div>
