@@ -45,12 +45,18 @@ export default function TaskView({
   const activeTask =
     sortedTasks.find((task) => task.id === activeTaskId) || null
 
+  const completedTasks = sortedTasks.filter((task) => task.actualEndDate)
+  const uncompletedTasks = sortedTasks.filter((task) => !task.actualEndDate)
+  const sortedCompletedTasks = taskSorter(
+    completedTasks,
+    'actualEndDate',
+    'DSC'
+  )
+
   // FUNCTIONS
 
   const refreshTasks = async () => {
-    const dbTasks = await models.Task.find({ folderId })
-    const updatedTasks = await autoReorderTasks(dbTasks, folderId)
-
+    const updatedTasks = await autoReorderTasks(folderId)
     const wasActiveTaskRemoved =
       updatedTasks.findIndex((task) => task.id === activeTaskId) === -1
     if (wasActiveTaskRemoved) {
@@ -139,7 +145,7 @@ export default function TaskView({
     setActiveTaskId(id)
   }
 
-  const onDragEnd = async (result: DropResult) => {
+  const onDragEnd = (result: DropResult) => {
     if (!result.destination) return
     const items = _.cloneDeep(uncompletedTasks)
     const [reorderedItem] = items.splice(result.source.index, 1)
@@ -148,17 +154,10 @@ export default function TaskView({
       item.orderInFolder = index
       return item
     })
-    await models.Task.bulkPut(reorderedItems)
-    await refreshTasks()
+    models.Task.bulkPut(reorderedItems)
+    const allTasks = [...reorderedItems, ...completedTasks]
+    setTasks(allTasks)
   }
-
-  const completedTasks = sortedTasks.filter((task) => task.actualEndDate)
-  const uncompletedTasks = sortedTasks.filter((task) => !task.actualEndDate)
-  const sortedCompletedTasks = taskSorter(
-    completedTasks,
-    'actualEndDate',
-    'DSC'
-  )
 
   // EFFECTS
 

@@ -7,7 +7,6 @@ import * as models from '../../../models'
  */
 export const checkForOrderChange = (_dbTasks: Task[]) => {
   const dbTasks = taskSorter(_dbTasks, 'orderInFolder', 'ASC')
-  let hasOrderChange = false
   const desiredTasks: Task[] = []
   let tasksWithSameOrder: Task[] = []
   for (let i = 0; i < dbTasks.length; i += 1) {
@@ -21,28 +20,19 @@ export const checkForOrderChange = (_dbTasks: Task[]) => {
     }
   }
   const orderedTasks = desiredTasks.map((task, index) => {
-    if (dbTasks[index].orderInFolder !== index) {
-      hasOrderChange = true
-    }
     task.orderInFolder = index
     return task
   })
-  return { hasOrderChange, orderedTasks }
+  return orderedTasks
 }
 
-export const autoReorderTasks = async (
-  dbTasks: Task[],
-  selectedNavId: string
-) => {
-  let { hasOrderChange, orderedTasks } = checkForOrderChange(dbTasks)
-
-  if (hasOrderChange) {
-    const tasksToUpdate = orderedTasks.map((task, index) => {
-      task.orderInFolder = index
-      return task
-    })
-    await models.Task.bulkPut(tasksToUpdate)
-    return await models.Task.find({ folderId: selectedNavId })
-  }
+export const autoReorderTasks = async (folderId: string) => {
+  const dbTasks = await models.Task.find({ folderId })
+  let orderedTasks = checkForOrderChange(dbTasks)
+  const tasksWithCorrectOrder = orderedTasks.map((task, index) => {
+    task.orderInFolder = index
+    return task
+  })
+  await models.Task.bulkPut(tasksWithCorrectOrder)
   return orderedTasks
 }
