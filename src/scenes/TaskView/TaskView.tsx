@@ -141,7 +141,6 @@ export default function TaskView({
 
   const onDragEnd = async (result: DropResult) => {
     if (!result.destination) return
-    console.log({ result, uncompletedTasks })
     const items = _.cloneDeep(uncompletedTasks)
     const [reorderedItem] = items.splice(result.source.index, 1)
     items.splice(result.destination.index, 0, reorderedItem)

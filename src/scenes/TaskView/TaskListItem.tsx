@@ -6,6 +6,7 @@ import {
 } from '@heroicons/react/outline'
 import { FolderIcon } from '@heroicons/react/solid'
 import { useEffect, useState } from 'react'
+import { format } from 'date-fns'
 import { Task, UpdateTask } from '../../types'
 import { classNames } from '../../utils'
 
@@ -153,8 +154,21 @@ export default function TaskListItem({
 
   const HasFilesIcon = () => {
     return (
-      <div className="flex flex-row items-center">
+      <div className="flex flex-row items-center mr-2">
         <FolderIcon height={15} className={classNames('text-gray-400')} />
+      </div>
+    )
+  }
+
+  const StartEndDates = () => {
+    return (
+      <div className="flex text-xs text-gray-500">
+        {task.plannedStartDate && (
+          <div>{format(task.plannedStartDate, 'dd MMM yyyy')}&nbsp;-&nbsp;</div>
+        )}
+        {task.plannedEndDate && (
+          <div>{format(task.plannedEndDate, 'dd MMM yyyy')}</div>
+        )}
       </div>
     )
   }
@@ -184,7 +198,10 @@ export default function TaskListItem({
           onChange={onChangeName}
           value={name}
         />
-        {hasFiles && <HasFilesIcon />}
+        <div className="flex ">
+          {hasFiles && <HasFilesIcon />}
+          <StartEndDates />
+        </div>
       </div>
       {deleteTask && <DeleteButton />}
     </div>
