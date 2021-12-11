@@ -23,7 +23,7 @@ export class DexieDatabase extends Dexie {
 
   constructor(dbName: string) {
     super(dbName)
-    this.version(2).stores({
+    this.version(3).stores({
       Task: '&id, folderId, orderInFolder, name, content, priority, plannedStartDate, plannedEndDate, actualStartDate, actualEndDate, createdAt, modifiedAt',
       TaskVersion:
         '&id, taskId, name, content, priority, plannedStartDate, plannedEndDate, actualStartDate, actualEndDate, createdAt, modifiedAt',

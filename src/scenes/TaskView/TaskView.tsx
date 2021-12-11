@@ -20,7 +20,12 @@ import TaskListItem from './TaskListItem'
 import CompletedTasks from './CompletedTasks'
 import { autoReorderTasks, taskSorter, prepareTasksToUpdate } from './helpers'
 
-const ReservedNavIds = { INBOX: 'INBOX', HOME: 'HOME', COMPLETED: 'COMPLETED' }
+const ReservedNavIds = {
+  INBOX: 'INBOX',
+  HOME: 'HOME',
+  COMPLETED: 'COMPLETED',
+  NEXT_3_DAYS: 'NEXT_3_DAYS',
+}
 
 type TrashState = 'INACTIVE' | 'ACTIVE' | 'CONFIRM'
 
@@ -41,7 +46,11 @@ export default function TaskView({
   const [trashState, setTrashState] = useState<TrashState>('INACTIVE')
   const [totalTasks, setTotalTasks] = useState(0)
   const [showCompleted, setShowCompleted] = useState(false)
-  const sortedTasks = taskSorter(tasks, 'orderInFolder', 'ASC')
+
+  const isNext3DaysFilter = navigator.id === 'NEXT_3_DAYS'
+  const sortedTasks = isNext3DaysFilter
+    ? taskSorter(tasks, 'plannedEndDate', 'ASC')
+    : taskSorter(tasks, 'orderInFolder', 'ASC')
   const activeTask =
     sortedTasks.find((task) => task.id === activeTaskId) || null
 
@@ -56,13 +65,18 @@ export default function TaskView({
   // FUNCTIONS
 
   const refreshTasks = async () => {
-    const updatedTasks = await autoReorderTasks(folderId)
-    const wasActiveTaskRemoved =
-      updatedTasks.findIndex((task) => task.id === activeTaskId) === -1
-    if (wasActiveTaskRemoved) {
-      setActiveTaskId(null)
+    if (isNext3DaysFilter) {
+      const todayTasks = await models.Task.findNext3Days()
+      setTasks(todayTasks)
+    } else {
+      const updatedTasks = await autoReorderTasks(folderId)
+      const wasActiveTaskRemoved =
+        updatedTasks.findIndex((task) => task.id === activeTaskId) === -1
+      if (wasActiveTaskRemoved) {
+        setActiveTaskId(null)
+      }
+      setTasks(updatedTasks)
     }
-    setTasks(updatedTasks)
   }
 
   const addTask = async ({ name }: TaskCreateAttributes) => {
@@ -108,7 +122,8 @@ export default function TaskView({
     const isMovingFolder = !!newFolderId
     const isSettingToUncompleted = actualEndDate === null
     const shouldBringTaskToTop =
-      (isMovingFolder && !actualEndDate) || isSettingToUncompleted
+      !isNext3DaysFilter &&
+      ((isMovingFolder && !actualEndDate) || isSettingToUncompleted)
 
     await models.Task.update({
       id,
@@ -124,13 +139,12 @@ export default function TaskView({
     const updatedTask = await models.Task.get({ id })
     const taskStillInFolder = updatedTask && updatedTask.folderId === folderId
     const setToUncompletedOrOtherValueChanged = !actualEndDate
-    if (
-      updatedTask &&
-      taskStillInFolder &&
-      setToUncompletedOrOtherValueChanged
-    ) {
-      setActiveTaskId(updatedTask.id)
-    } else {
+
+    if (!setToUncompletedOrOtherValueChanged) {
+      setActiveTaskId(null)
+    } else if (isNext3DaysFilter) {
+      //
+    } else if (!(updatedTask && taskStillInFolder)) {
       setActiveTaskId(null)
     }
     await refreshTasks()
@@ -208,6 +222,7 @@ export default function TaskView({
   }, [activeTaskId])
 
   useEffect(() => {
+    // FIXME: When the last completed task is set to complete, active task is reset to null
     if (sortedCompletedTasks.length === 0) {
       setShowCompleted(false)
     }
@@ -236,8 +251,7 @@ export default function TaskView({
               />
             )}
           </div>
-          <AddTaskBar addTask={addTask} />
-
+          {!isNext3DaysFilter && <AddTaskBar addTask={addTask} />}
           <div className="mx-auto">
             <DragDropContext onDragEnd={onDragEnd}>
               <Droppable droppableId="tasks">
@@ -250,6 +264,7 @@ export default function TaskView({
                           key={task.id}
                           index={index}
                           draggableId={task.id}
+                          isDragDisabled={isNext3DaysFilter}
                         >
                           {(provided) => (
                             <div
@@ -264,7 +279,9 @@ export default function TaskView({
                                 deleteTask={deleteTask}
                                 selectActiveTask={selectActiveTask}
                                 activeTaskId={activeTaskId}
-                                moveTask={moveTask}
+                                moveTask={
+                                  isNext3DaysFilter ? undefined : moveTask
+                                }
                                 isTopOfList={index === 0}
                                 isBottomOfList={
                                   uncompletedTasks.length - 1 === index
@@ -287,7 +304,6 @@ export default function TaskView({
               deleteTask={deleteTask}
               selectActiveTask={selectActiveTask}
               activeTaskId={activeTaskId}
-              moveTask={moveTask}
             />
           </div>
         </div>

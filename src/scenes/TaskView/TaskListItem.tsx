@@ -181,7 +181,7 @@ export default function TaskListItem({
       )}
       onClick={onClickTask(task.id)}
     >
-      {<MoveUpAndDown />}
+      {moveTask && <MoveUpAndDown />}
       {updateTask && <CompleteCheckbox />}
       <div className={'ml-3 text-sm w-full'}>
         <input

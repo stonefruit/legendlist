@@ -33,7 +33,9 @@ const assignIcons = (navigation: NavigationItem[]) => {
 export default function Shell() {
   const [navigation, setNavigation] = useState<NavigationItem[]>([])
   const [shouldRefresh, setShouldRefresh] = useState(true)
-  const [navIndex, setNavIndex] = useState(0)
+  const [navIndex, setNavIndex] = useState<number | 'NEXT_3_DAYS'>(
+    'NEXT_3_DAYS'
+  )
   const [activity, setActivity] = useState<Activity>('TASK')
 
   const navigationWithIcons = assignIcons(navigation)
@@ -50,9 +52,13 @@ export default function Shell() {
     setShouldRefresh(true)
   }
   const changeCurrentNavigation = (id: string) => {
-    const newIndex = navigation.findIndex((navigator) => navigator.id === id)
-    const newNavIndex = newIndex > -1 ? newIndex : 0
-    setNavIndex(newNavIndex)
+    if (id === 'NEXT_3_DAYS') {
+      setNavIndex('NEXT_3_DAYS')
+    } else {
+      const newIndex = navigation.findIndex((navigator) => navigator.id === id)
+      const newNavIndex = newIndex > -1 ? newIndex : 0
+      setNavIndex(newNavIndex)
+    }
   }
 
   const updateFolder = async ({ id, name }: { id: string; name?: string }) => {
@@ -83,6 +89,12 @@ export default function Shell() {
   if (navigation.length === 0) {
     return null
   }
+
+  const navigator =
+    navIndex === 'NEXT_3_DAYS'
+      ? { id: 'NEXT_3_DAYS', name: 'Next 3 Days' }
+      : navigationWithIcons[navIndex]
+
   return (
     <div
       className="h-screen"
@@ -97,14 +109,14 @@ export default function Shell() {
           navigation={navigation}
           changeCurrentNavigation={changeCurrentNavigation}
           onClickAddFolder={onClickAddFolder}
-          selectedNavId={navigationWithIcons[navIndex].id}
+          selectedNavId={navigator.id}
           updateFolder={updateFolder}
         />
       )}
       {activity === 'TASK' && (
         <TaskView
-          navigator={navigationWithIcons[navIndex]}
-          selectedNavId={navigationWithIcons[navIndex].id}
+          navigator={navigator}
+          selectedNavId={navigator.id}
           onClickDeleteFolder={onClickDeleteFolder}
           navigation={navigation}
         />

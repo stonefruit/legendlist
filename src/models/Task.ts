@@ -1,5 +1,6 @@
 import db from './dexie-db'
 import { v4 as uuidv4 } from 'uuid'
+import { startOfDay, addDays } from 'date-fns'
 import { Task, TaskCreateAttributes } from '../types'
 import { Descendant } from 'slate'
 
@@ -49,6 +50,21 @@ const find = async ({ folderId }: Partial<Task>): Promise<Task[]> => {
   return db.Task.where(whereValues).toArray()
 }
 
+const findNext3Days = async () => {
+  const startOfToday = +startOfDay(new Date())
+  const startOf4thDay = +addDays(startOfToday, 3)
+  const tasksPlannedInPast = await db.Task.where('plannedEndDate')
+    .below(startOfToday)
+    .toArray()
+  const overdueTasks = tasksPlannedInPast.filter(
+    (task) => task.actualEndDate === null
+  )
+  const next3DaysTasks = await db.Task.where('plannedEndDate')
+    .between(startOfToday, startOf4thDay, true, false)
+    .toArray()
+  return [...overdueTasks, ...next3DaysTasks]
+}
+
 const update = async ({
   id,
   folderId,
@@ -96,4 +112,4 @@ const destroy = async ({ id }: { id: string }): Promise<void> => {
   return await db.Task.delete(id)
 }
 
-export { create, get, find, update, destroy, bulkPut }
+export { create, get, find, update, destroy, bulkPut, findNext3Days }
