@@ -7,7 +7,7 @@ type Props = {
   completedTasks: Task[]
   setShowCompleted: React.Dispatch<React.SetStateAction<boolean>>
   updateTask?: UpdateTask
-  deleteTask(id: string): Promise<void>
+  deleteTask(id: string): void
   selectActiveTask: (id: string | null) => void
   activeTaskId: string | null
 }

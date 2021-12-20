@@ -50,7 +50,9 @@ export default function TaskView({
   const isNext3DaysFilter = navigator.id === 'NEXT_3_DAYS'
   const sortedTasks = isNext3DaysFilter
     ? taskSorter(tasks, 'plannedEndDate', 'ASC')
-    : taskSorter(tasks, 'orderInFolder', 'ASC')
+    : taskSorter(tasks, 'orderInFolder', 'ASC').filter(
+        (task) => task.folderId === navigator.id
+      )
   const activeTask =
     sortedTasks.find((task) => task.id === activeTaskId) || null
 
@@ -150,9 +152,14 @@ export default function TaskView({
     await refreshTasks()
   }
 
-  const deleteTask = async (id: string) => {
-    await models.Task.destroy({ id })
-    await refreshTasks()
+  const deleteTask = (id: string) => {
+    const _tasks = _.cloneDeep(tasks)
+    const updatedTasks = _tasks.filter((task) => task.id !== id)
+    setTasks(updatedTasks)
+    if (activeTaskId === id) {
+      setActiveTaskId(null)
+    }
+    models.Task.destroy({ id })
   }
 
   const selectActiveTask = (id: string | null) => {
