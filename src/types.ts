@@ -79,7 +79,6 @@ export type NavigationItem = {
   icon?: (props: React.SVGProps<SVGSVGElement>) => JSX.Element
 }
 
-export type TaskCreateAttributes = Omit<Task, 'createdAt' | 'modifiedAt'>
 export type FolderCreateAttributes = Omit<
   Folder,
   'id' | 'createdAt' | 'modifiedAt'
@@ -124,4 +123,4 @@ export type UpdateTask = ({
   content,
   plannedEndDate,
   plannedStartDate,
-}: UpdateTaskParams) => Promise<void>
+}: UpdateTaskParams) => void

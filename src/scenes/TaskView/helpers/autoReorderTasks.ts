@@ -1,6 +1,5 @@
 import { Task } from '../../../types'
 import { taskSorter } from './utils/taskSorter'
-import * as models from '../../../models'
 
 /**
  * Check for order clashes. Also assigns order number based on positioning in array
@@ -26,13 +25,11 @@ export const checkForOrderChange = (_dbTasks: Task[]) => {
   return orderedTasks
 }
 
-export const autoReorderTasks = async (folderId: string) => {
-  const dbTasks = await models.Task.find({ folderId })
-  let orderedTasks = checkForOrderChange(dbTasks)
+export const autoReorderTasks = (folderId: string, tasks: Task[]) => {
+  let orderedTasks = checkForOrderChange(tasks)
   const tasksWithCorrectOrder = orderedTasks.map((task, index) => {
     task.orderInFolder = index
     return task
   })
-  await models.Task.bulkPut(tasksWithCorrectOrder)
-  return orderedTasks
+  return tasksWithCorrectOrder
 }

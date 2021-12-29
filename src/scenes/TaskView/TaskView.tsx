@@ -8,12 +8,7 @@ import {
 } from 'react-beautiful-dnd'
 import { v4 as uuidv4 } from 'uuid'
 import * as models from '../../models'
-import {
-  NavigationItem,
-  Task,
-  TaskCreateAttributes,
-  UpdateTaskParams,
-} from '../../types'
+import { NavigationItem, Task, UpdateTaskParams } from '../../types'
 import NoteView from '../NoteView'
 import AddTaskBar from './AddTaskBar'
 import ConfirmNavDeleteWidget from './ConfirmNavDeleteWidget'
@@ -67,27 +62,10 @@ export default function TaskView({
 
   // FUNCTIONS
 
-  const refreshTasks = () => {
-    if (isNext3DaysFilter) {
-      models.Task.findNext3Days().then((todayTasks) => {
-        setTasks(todayTasks)
-      })
-    } else {
-      autoReorderTasks(folderId).then((updatedTasks) => {
-        const wasActiveTaskRemoved =
-          updatedTasks.findIndex((task) => task.id === activeTaskId) === -1
-        if (wasActiveTaskRemoved) {
-          setActiveTaskId(null)
-        }
-        setTasks(updatedTasks)
-      })
-    }
-  }
-
-  const addTask = ({ name }: TaskCreateAttributes) => {
-    const newTaskId = uuidv4()
-    models.Task.create({
-      id: newTaskId,
+  const addTask = ({ name }: Task) => {
+    const now = Date.now()
+    const newTask: Task = {
+      id: uuidv4(),
       name,
       folderId,
       orderInFolder: 0,
@@ -98,9 +76,14 @@ export default function TaskView({
       plannedEndDate: null,
       plannedStartDate: null,
       filePaths: [],
-    })
-    refreshTasks()
-    setActiveTaskId(newTaskId)
+      createdAt: now,
+      modifiedAt: now,
+    }
+    const updatedTasks = _.cloneDeep(tasks)
+    updatedTasks.push(newTask)
+    models.Task.create(newTask)
+    setTasks(updatedTasks)
+    setActiveTaskId(newTask.id)
   }
 
   const moveTask = (taskIdToMove: string, direction: 'UP' | 'DOWN') => {
@@ -121,7 +104,7 @@ export default function TaskView({
     models.Task.bulkPut(tasksToUpdate)
   }
 
-  const updateTask = async ({
+  const updateTask = ({
     id,
     actualEndDate,
     name,
@@ -133,42 +116,67 @@ export default function TaskView({
   }: UpdateTaskParams) => {
     const isMovingFolder = !!newFolderId
     const isSettingToUncompleted = actualEndDate === null
-    const shouldBringTaskToTop =
-      !isNext3DaysFilter &&
-      ((isMovingFolder && !actualEndDate) || isSettingToUncompleted)
+    const shouldBringTaskToTopOfFolder =
+      (isMovingFolder && !actualEndDate) || isSettingToUncompleted
 
-    await models.Task.update({
-      id,
-      actualEndDate,
-      name,
-      folderId: newFolderId,
-      orderInFolder: shouldBringTaskToTop ? -1 : undefined,
-      filePaths,
-      content,
-      plannedEndDate,
-      plannedStartDate,
-    })
-    const updatedTask = await models.Task.get({ id })
-    const taskStillInFolder = updatedTask && updatedTask.folderId === folderId
+    const taskToUpdateIndex = tasks.findIndex((task) => task.id === id)
+    const taskToUpdate = _.cloneDeep(tasks[taskToUpdateIndex])
+    const updatedTask: Task = {
+      ...taskToUpdate,
+      actualEndDate:
+        actualEndDate === undefined
+          ? taskToUpdate.actualEndDate
+          : actualEndDate,
+      name: name === undefined ? taskToUpdate.name : name,
+      folderId: newFolderId === undefined ? taskToUpdate.folderId : newFolderId,
+      orderInFolder: shouldBringTaskToTopOfFolder
+        ? -1
+        : taskToUpdate.orderInFolder,
+      filePaths: filePaths === undefined ? taskToUpdate.filePaths : filePaths,
+      content: content === undefined ? taskToUpdate.content : content,
+      plannedEndDate:
+        plannedEndDate === undefined
+          ? taskToUpdate.plannedEndDate
+          : plannedEndDate,
+      plannedStartDate:
+        plannedStartDate === undefined
+          ? taskToUpdate.plannedStartDate
+          : plannedStartDate,
+    }
+    models.Task.update(updatedTask)
+    const taskStillInFolder = updatedTask.folderId === folderId
     const setToUncompletedOrOtherValueChanged = !actualEndDate
 
     if (!setToUncompletedOrOtherValueChanged) {
       setActiveTaskId(null)
-    } else if (isNext3DaysFilter) {
-      //
-    } else if (!(updatedTask && taskStillInFolder)) {
-      setActiveTaskId(null)
     }
-    refreshTasks()
+    const updatedTasks = _.cloneDeep(tasks)
+    updatedTasks[taskToUpdateIndex] = updatedTask
+    if (isNext3DaysFilter) {
+      setTasks(updatedTasks)
+    } else {
+      if (isMovingFolder) {
+        updatedTasks.splice(taskToUpdateIndex, 1)
+      }
+      if (!taskStillInFolder) {
+        setActiveTaskId(null)
+      }
+      const reorderedTasks = autoReorderTasks(folderId, updatedTasks)
+      models.Task.bulkPut(reorderedTasks)
+
+      const wasActiveTaskRemoved =
+        reorderedTasks.findIndex((task) => task.id === activeTaskId) === -1
+      if (wasActiveTaskRemoved) {
+        setActiveTaskId(null)
+      }
+      setTasks(reorderedTasks)
+    }
   }
 
   const deleteTask = (id: string) => {
-    const _tasks = _.cloneDeep(tasks)
-    const updatedTasks = _tasks.filter((task) => task.id !== id)
+    const updatedTasks = _.cloneDeep(tasks).filter((task) => task.id !== id)
     setTasks(updatedTasks)
-    if (activeTaskId === id) {
-      setActiveTaskId(null)
-    }
+    setActiveTaskId(null)
     models.Task.destroy({ id })
   }
 
@@ -196,17 +204,19 @@ export default function TaskView({
     // Reset state
     setActiveTaskId(null)
     setShowCompleted(false)
-    refreshTasks()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [folderId])
 
-  useEffect(() => {
-    const runAsync = async () => {
-      refreshTasks()
+    if (isNext3DaysFilter) {
+      models.Task.findNext3Days().then((todayTasks) => {
+        setTasks(todayTasks)
+      })
+    } else {
+      models.Task.find({ folderId }).then((tasksToUse) => {
+        const reorderedTasks = autoReorderTasks(folderId, tasksToUse)
+        models.Task.bulkPut(reorderedTasks)
+        setTasks(reorderedTasks)
+      })
     }
-    runAsync()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [folderId, isNext3DaysFilter])
 
   useEffect(() => {
     if (sortedTasks.length !== totalTasks) {
@@ -223,20 +233,11 @@ export default function TaskView({
   }, [totalTasks])
 
   useEffect(() => {
-    const runAsync = async () => {
-      if (activeTaskId === null) {
-        setActiveTaskId(null)
-        return
-      }
-      const updatedTask = await models.Task.get({ id: activeTaskId })
-      if (!updatedTask) {
-        setActiveTaskId(null)
-        return
-      }
-      setActiveTaskId(updatedTask.id)
+    // Only show task as active (show note view) if it is in current folder tasks
+    if (!sortedTasks.find((task) => task.id === activeTaskId)) {
+      setActiveTaskId(null)
     }
-    runAsync()
-  }, [activeTaskId])
+  }, [activeTaskId, sortedTasks])
 
   useEffect(() => {
     // FIXME: When the last completed task is set to complete, active task is reset to null

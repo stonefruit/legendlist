@@ -1,6 +1,6 @@
 import db from './dexie-db'
 import { startOfDay, addDays } from 'date-fns'
-import { Task, TaskCreateAttributes } from '../types'
+import { Task } from '../types'
 import { Descendant } from 'slate'
 
 const create = async ({
@@ -15,8 +15,9 @@ const create = async ({
   actualStartDate,
   plannedEndDate,
   plannedStartDate,
-}: TaskCreateAttributes): Promise<string> => {
-  const now = Date.now()
+  createdAt,
+  modifiedAt,
+}: Task): Promise<string> => {
   await db.Task.put({
     id,
     folderId,
@@ -29,8 +30,8 @@ const create = async ({
     actualStartDate,
     plannedEndDate,
     plannedStartDate,
-    createdAt: now,
-    modifiedAt: now,
+    createdAt,
+    modifiedAt,
   })
   return id
 }
@@ -81,7 +82,7 @@ const update = async ({
   actualEndDate?: number | null
   content?: Descendant[]
   name?: string
-  filePaths?: string[]
+  filePaths?: string[] | null
   plannedStartDate?: number | null
   plannedEndDate?: number | null
 }): Promise<boolean> => {
