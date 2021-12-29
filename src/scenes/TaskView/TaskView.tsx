@@ -240,17 +240,16 @@ export default function TaskView({
   }, [activeTaskId, sortedTasks])
 
   useEffect(() => {
-    // FIXME: When the last completed task is set to complete, active task is reset to null
     if (sortedCompletedTasks.length === 0) {
       setShowCompleted(false)
     }
   }, [sortedCompletedTasks])
 
   useEffect(() => {
-    if (!showCompleted) {
+    if (!showCompleted && sortedCompletedTasks.length > 0) {
       setActiveTaskId(null)
     }
-  }, [showCompleted])
+  }, [showCompleted, sortedCompletedTasks])
 
   return (
     <div className="ml-64 flex flex-row bg-yellow-50 opacity-90">
