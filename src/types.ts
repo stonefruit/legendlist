@@ -79,7 +79,7 @@ export type NavigationItem = {
   icon?: (props: React.SVGProps<SVGSVGElement>) => JSX.Element
 }
 
-export type TaskCreateAttributes = Omit<Task, 'id' | 'createdAt' | 'modifiedAt'>
+export type TaskCreateAttributes = Omit<Task, 'createdAt' | 'modifiedAt'>
 export type FolderCreateAttributes = Omit<
   Folder,
   'id' | 'createdAt' | 'modifiedAt'

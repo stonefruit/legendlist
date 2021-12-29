@@ -1,10 +1,10 @@
 import db from './dexie-db'
-import { v4 as uuidv4 } from 'uuid'
 import { startOfDay, addDays } from 'date-fns'
 import { Task, TaskCreateAttributes } from '../types'
 import { Descendant } from 'slate'
 
 const create = async ({
+  id,
   folderId,
   orderInFolder,
   name,
@@ -16,7 +16,6 @@ const create = async ({
   plannedEndDate,
   plannedStartDate,
 }: TaskCreateAttributes): Promise<string> => {
-  const id = uuidv4()
   const now = Date.now()
   await db.Task.put({
     id,

@@ -3,7 +3,7 @@ import { PlusIcon } from '@heroicons/react/solid'
 import { classNames } from '../../utils'
 
 type Props = {
-  addTask(task: { name: string }): Promise<void>
+  addTask(task: { name: string }): void
 }
 function AddTaskBar({ addTask }: Props) {
   const [name, setName] = useState('')

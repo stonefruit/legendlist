@@ -6,6 +6,7 @@ import {
   Droppable,
   DropResult,
 } from 'react-beautiful-dnd'
+import { v4 as uuidv4 } from 'uuid'
 import * as models from '../../models'
 import {
   NavigationItem,
@@ -66,23 +67,27 @@ export default function TaskView({
 
   // FUNCTIONS
 
-  const refreshTasks = async () => {
+  const refreshTasks = () => {
     if (isNext3DaysFilter) {
-      const todayTasks = await models.Task.findNext3Days()
-      setTasks(todayTasks)
+      models.Task.findNext3Days().then((todayTasks) => {
+        setTasks(todayTasks)
+      })
     } else {
-      const updatedTasks = await autoReorderTasks(folderId)
-      const wasActiveTaskRemoved =
-        updatedTasks.findIndex((task) => task.id === activeTaskId) === -1
-      if (wasActiveTaskRemoved) {
-        setActiveTaskId(null)
-      }
-      setTasks(updatedTasks)
+      autoReorderTasks(folderId).then((updatedTasks) => {
+        const wasActiveTaskRemoved =
+          updatedTasks.findIndex((task) => task.id === activeTaskId) === -1
+        if (wasActiveTaskRemoved) {
+          setActiveTaskId(null)
+        }
+        setTasks(updatedTasks)
+      })
     }
   }
 
-  const addTask = async ({ name }: TaskCreateAttributes) => {
-    const newTaskId = await models.Task.create({
+  const addTask = ({ name }: TaskCreateAttributes) => {
+    const newTaskId = uuidv4()
+    models.Task.create({
+      id: newTaskId,
       name,
       folderId,
       orderInFolder: 0,
@@ -94,7 +99,7 @@ export default function TaskView({
       plannedStartDate: null,
       filePaths: [],
     })
-    await refreshTasks()
+    refreshTasks()
     setActiveTaskId(newTaskId)
   }
 
@@ -108,7 +113,7 @@ export default function TaskView({
     )
 
     await models.Task.bulkPut(tasksToUpdate)
-    await refreshTasks()
+    refreshTasks()
   }
 
   const updateTask = async ({
@@ -149,7 +154,7 @@ export default function TaskView({
     } else if (!(updatedTask && taskStillInFolder)) {
       setActiveTaskId(null)
     }
-    await refreshTasks()
+    refreshTasks()
   }
 
   const deleteTask = (id: string) => {
@@ -192,7 +197,7 @@ export default function TaskView({
 
   useEffect(() => {
     const runAsync = async () => {
-      await refreshTasks()
+      refreshTasks()
     }
     runAsync()
     // eslint-disable-next-line react-hooks/exhaustive-deps
