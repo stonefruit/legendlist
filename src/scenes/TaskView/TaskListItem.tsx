@@ -16,7 +16,7 @@ type Props = {
   deleteTask?: (id: string) => void
   activeTaskId: string | null
   selectActiveTask: (id: string | null) => void
-  moveTask?: (taskId: string, direction: 'UP' | 'DOWN') => Promise<void>
+  moveTask?: (taskId: string, direction: 'UP' | 'DOWN') => void
   isTopOfList?: boolean
   isBottomOfList?: boolean
 }

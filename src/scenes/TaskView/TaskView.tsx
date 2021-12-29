@@ -103,17 +103,22 @@ export default function TaskView({
     setActiveTaskId(newTaskId)
   }
 
-  const moveTask = async (taskIdToMove: string, direction: 'UP' | 'DOWN') => {
-    const dbTasks = await models.Task.find({ folderId })
-    const dbUncompletedTasks = dbTasks.filter((task) => !task.actualEndDate)
+  const moveTask = (taskIdToMove: string, direction: 'UP' | 'DOWN') => {
     const tasksToUpdate = prepareTasksToUpdate(
-      dbUncompletedTasks,
+      uncompletedTasks,
       taskIdToMove,
       direction
     )
-
-    await models.Task.bulkPut(tasksToUpdate)
-    refreshTasks()
+    const updatedTasks = _.cloneDeep(tasks).map((task) => {
+      const taskToUpdate = tasksToUpdate.find((_task) => task.id === _task.id)
+      if (taskToUpdate) {
+        return taskToUpdate
+      } else {
+        return task
+      }
+    })
+    setTasks(updatedTasks)
+    models.Task.bulkPut(tasksToUpdate)
   }
 
   const updateTask = async ({
