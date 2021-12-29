@@ -47,7 +47,11 @@ export default function NoteView({ task, navigation, updateTask }: Props) {
     if (date instanceof Date) {
       updateTask({ id: task.id, plannedStartDate: +date })
       if (plannedEndDate && plannedEndDate < date) {
-        updateTask({ id: task.id, plannedEndDate: +date })
+        updateTask({
+          id: task.id,
+          plannedEndDate: +date,
+          plannedStartDate: +date,
+        })
       }
     } else if (date === null) {
       updateTask({ id: task.id, plannedStartDate: null })
@@ -61,7 +65,11 @@ export default function NoteView({ task, navigation, updateTask }: Props) {
     if (date instanceof Date) {
       updateTask({ id: task.id, plannedEndDate: +date })
       if (plannedStartDate && plannedStartDate > date) {
-        updateTask({ id: task.id, plannedStartDate: +date })
+        updateTask({
+          id: task.id,
+          plannedStartDate: +date,
+          plannedEndDate: +date,
+        })
       }
     } else if (date === null) {
       updateTask({ id: task.id, plannedStartDate: null, plannedEndDate: null })
