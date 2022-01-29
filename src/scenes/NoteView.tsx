@@ -103,7 +103,7 @@ export default function NoteView({ task, navigation, updateTask }: Props) {
       const taskContentString = JSON.stringify(task?.content)
       const taskContentChanged = taskContentString !== contentString
       if (task && taskContentChanged) {
-        await updateTask({ id: task.id, content: content })
+        updateTask({ id: task.id, content: content })
       }
     }
     runAsync()

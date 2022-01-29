@@ -45,9 +45,9 @@ export default function TaskListItem({
     }
     e.preventDefault()
     if (e.target.checked) {
-      await updateTask({ id: task.id, actualEndDate: Date.now() })
+      updateTask({ id: task.id, actualEndDate: Date.now() })
     } else {
-      await updateTask({ id: task.id, actualEndDate: null })
+      updateTask({ id: task.id, actualEndDate: null })
     }
   }
 
@@ -60,7 +60,7 @@ export default function TaskListItem({
       return
     }
     setName(e.target.value)
-    await updateTask({ id: task.id, name: e.target.value })
+    updateTask({ id: task.id, name: e.target.value })
   }
 
   // EFFECTS

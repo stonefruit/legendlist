@@ -8,7 +8,7 @@ type Props = {
   changeCurrentNavigation(id: string): void
   onClickAddFolder(): void
   selectedNavId: string
-  updateFolder({ id, name }: { id: string; name?: string }): Promise<void>
+  updateFolder({ id, name }: { id: string; name?: string }): void
 }
 export default function SideBar({
   navigation,
@@ -23,7 +23,7 @@ export default function SideBar({
   }
 
   const onChangeName = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    await updateFolder({ id: selectedNavId, name: e.target.value })
+    updateFolder({ id: selectedNavId, name: e.target.value })
   }
 
   const isNext3DaysFilter = 'NEXT_3_DAYS' === selectedNavId

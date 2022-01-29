@@ -5,6 +5,8 @@ import {
   FolderIcon,
   InboxInIcon,
 } from '@heroicons/react/outline'
+import { v4 as uuidv4 } from 'uuid'
+import _ from 'lodash'
 import hillBackground from '../assets/hillBackground'
 import * as models from '../models'
 import { Activity, NavigationItem } from '../types'
@@ -32,7 +34,6 @@ const assignIcons = (navigation: NavigationItem[]) => {
 
 export default function Shell() {
   const [navigation, setNavigation] = useState<NavigationItem[]>([])
-  const [shouldRefresh, setShouldRefresh] = useState(true)
   const [navIndex, setNavIndex] = useState<number | 'NEXT_3_DAYS'>(
     'NEXT_3_DAYS'
   )
@@ -42,15 +43,43 @@ export default function Shell() {
 
   // FUNCTIONS
 
-  const onClickAddFolder = async () => {
-    await models.Folder.create({ name: 'New Folder' })
-    setShouldRefresh(true)
+  const onClickAddFolder = () => {
+    const now = Date.now()
+    const newFolder = {
+      id: uuidv4(),
+      name: 'New Folder',
+      createdAt: now,
+      modifiedAt: now,
+    }
+    models.Folder.create(newFolder)
+    const allFolders = _.cloneDeep(navigation)
+    allFolders.push(newFolder)
+    setNavigation(allFolders)
   }
-  const onClickDeleteFolder = async (id: string) => {
-    await models.Folder.destroy({ id })
+  const onClickDeleteFolder = (id: string) => {
+    const allFolders = _.cloneDeep(navigation)
+    const selectedFolderIndex = allFolders.findIndex(
+      (folder) => folder.id === id
+    )
+    allFolders.splice(selectedFolderIndex, 1)
+    models.Folder.destroy({ id })
+    setNavigation(allFolders)
     setNavIndex(0)
-    setShouldRefresh(true)
   }
+  const updateFolder = ({ id, name }: { id: string; name?: string }) => {
+    const allFolders = _.cloneDeep(navigation)
+    const selectedFolderIndex = allFolders.findIndex(
+      (folder) => folder.id === id
+    )
+    allFolders[selectedFolderIndex] = {
+      ...allFolders[selectedFolderIndex],
+      id,
+      name: name ?? '',
+    }
+    models.Folder.update({ id, name })
+    setNavigation(allFolders)
+  }
+
   const changeCurrentNavigation = (id: string) => {
     if (id === 'NEXT_3_DAYS') {
       setNavIndex('NEXT_3_DAYS')
@@ -61,15 +90,10 @@ export default function Shell() {
     }
   }
 
-  const updateFolder = async ({ id, name }: { id: string; name?: string }) => {
-    await models.Folder.update({ id, name })
-    setShouldRefresh(true)
-  }
-
   // EFFECTS
 
   useEffect(() => {
-    if (shouldRefresh) {
+    if (activity === 'TASK') {
       const runAsync = async () => {
         const _folders = await models.Folder.find()
         const allFolders = _folders.map((folder): NavigationItem => {
@@ -81,10 +105,8 @@ export default function Shell() {
         setNavigation(allFolders)
       }
       runAsync()
-      setShouldRefresh(false)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [shouldRefresh])
+  }, [activity])
 
   if (navigation.length === 0) {
     return null

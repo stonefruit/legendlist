@@ -4,7 +4,7 @@ type TrashState = 'INACTIVE' | 'ACTIVE' | 'CONFIRM'
 type Props = {
   trashState: string
   setTrashState: React.Dispatch<React.SetStateAction<TrashState>>
-  onClickDeleteFolder: (id: string) => Promise<void>
+  onClickDeleteFolder: (id: string) => void
   selectedNavId: string
 }
 export default function ConfirmNavDeleteWidget({

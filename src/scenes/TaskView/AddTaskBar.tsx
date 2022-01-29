@@ -10,24 +10,24 @@ function AddTaskBar({ addTask }: Props) {
 
   // FUNCTIONS
 
-  const validateAndAddTask = async () => {
+  const validateAndAddTask = () => {
     if (name) {
-      await addTask({ name })
+      addTask({ name })
       setName('')
     }
   }
 
-  const onClickAddTask = async () => {
-    await validateAndAddTask()
+  const onClickAddTask = () => {
+    validateAndAddTask()
   }
 
   const onChangeContent = (e: React.ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value)
   }
 
-  const onKeyUp = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const onKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      await validateAndAddTask()
+      validateAndAddTask()
     }
   }
 

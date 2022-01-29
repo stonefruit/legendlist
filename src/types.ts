@@ -79,11 +79,6 @@ export type NavigationItem = {
   icon?: (props: React.SVGProps<SVGSVGElement>) => JSX.Element
 }
 
-export type FolderCreateAttributes = Omit<
-  Folder,
-  'id' | 'createdAt' | 'modifiedAt'
->
-
 export type CustomElement = { type: string; children: CustomText[] }
 export type CustomText = { text: string }
 

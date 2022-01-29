@@ -28,7 +28,7 @@ type TrashState = 'INACTIVE' | 'ACTIVE' | 'CONFIRM'
 type Props = {
   navigator: NavigationItem
   selectedNavId: string
-  onClickDeleteFolder(id: string): Promise<void>
+  onClickDeleteFolder(id: string): void
   navigation: NavigationItem[]
 }
 export default function TaskView({
