@@ -6,6 +6,26 @@ import NoteView from '../NoteView'
 import TaskListItem from '../TaskView/TaskListItem'
 import SearchBar from './SearchBar'
 
+// TODO: Move as helper and add tests
+const getTextFromRichText = (content: any[]): string => {
+  if (!Array.isArray(content)) {
+    return ''
+  }
+  const textArray: string[] = []
+  content.forEach((line) => {
+    if (Array.isArray(line?.children)) {
+      line.children.forEach((partialTextObj: any) => {
+        if (partialTextObj?.text) {
+          textArray.push(partialTextObj.text)
+        }
+      })
+    }
+    textArray.push(' ')
+  })
+  const text = textArray.join('')
+  return text
+}
+
 type Props = {
   navigation: NavigationItem[]
 }
@@ -17,9 +37,29 @@ export default function Search({ navigation }: Props) {
   const activeTask = tasks.find((task) => task.id === activeTaskId) || null
 
   const search = async ({ searchText }: { searchText: string }) => {
-    const dbTasks = await models.Task.find({})
+    const dbTasks: (Task & {
+      contentString?: string
+      filePathsString?: string
+    })[] = await models.Task.find({})
+    dbTasks.forEach((task) => {
+      task.contentString = getTextFromRichText(task.content)
+      task.filePathsString = task.filePaths ? task.filePaths.join(' ') : ''
+    })
     const fuse = new Fuse(dbTasks, {
-      keys: ['name'],
+      keys: [
+        {
+          name: 'name',
+          weight: 0.6,
+        },
+        {
+          name: 'contentString',
+          weight: 0.4,
+        },
+        {
+          name: 'filePathsString',
+          weight: 0.4,
+        },
+      ],
     })
     const fuseResults = fuse.search(searchText)
     const searchResults = fuseResults.map((result) => {
