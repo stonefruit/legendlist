@@ -68,7 +68,7 @@ export default function TaskView({
       id: uuidv4(),
       name,
       folderId,
-      orderInFolder: 0,
+      orderInFolder: -1,
       content: [],
       priority: 0,
       actualEndDate: null,
@@ -81,8 +81,9 @@ export default function TaskView({
     }
     const updatedTasks = _.cloneDeep(tasks)
     updatedTasks.push(newTask)
-    models.Task.create(newTask)
-    setTasks(updatedTasks)
+    const reorderedTasks = autoReorderTasks(folderId, updatedTasks)
+    models.Task.bulkPut(reorderedTasks)
+    setTasks(reorderedTasks)
     setActiveTaskId(newTask.id)
   }
 
