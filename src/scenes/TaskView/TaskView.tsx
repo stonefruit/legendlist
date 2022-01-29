@@ -42,12 +42,15 @@ export default function TaskView({
   const [trashState, setTrashState] = useState<TrashState>('INACTIVE')
   const [totalTasks, setTotalTasks] = useState(0)
   const [showCompleted, setShowCompleted] = useState(false)
+  const [delayedIsNext3DaysFilter, setDelayedIsNext3DaysFilter] = useState(true)
+  const [delayedFolderId, setDelayedFolderId] = useState<string>('')
+  const [delayedFolderName, setDelayedFolderName] = useState<string>('')
 
-  const isNext3DaysFilter = navigator.id === 'NEXT_3_DAYS'
+  const isNext3DaysFilter = folderId === 'NEXT_3_DAYS'
   const sortedTasks = isNext3DaysFilter
     ? taskSorter(tasks, 'plannedEndDate', 'ASC')
     : taskSorter(tasks, 'orderInFolder', 'ASC').filter(
-        (task) => task.folderId === navigator.id
+        (task) => task.folderId === delayedFolderId
       )
   const activeTask =
     sortedTasks.find((task) => task.id === activeTaskId) || null
@@ -209,15 +212,21 @@ export default function TaskView({
     if (isNext3DaysFilter) {
       models.Task.findNext3Days().then((todayTasks) => {
         setTasks(todayTasks)
+        setDelayedIsNext3DaysFilter(true)
+        setDelayedFolderId(folderId)
+        setDelayedFolderName(navigator.name)
       })
     } else {
       models.Task.find({ folderId }).then((tasksToUse) => {
         const reorderedTasks = autoReorderTasks(folderId, tasksToUse)
         models.Task.bulkPut(reorderedTasks)
         setTasks(reorderedTasks)
+        setDelayedIsNext3DaysFilter(false)
+        setDelayedFolderId(folderId)
+        setDelayedFolderName(navigator.name)
       })
     }
-  }, [folderId, isNext3DaysFilter])
+  }, [folderId, isNext3DaysFilter, navigator.name])
 
   useEffect(() => {
     if (sortedTasks.length !== totalTasks) {
@@ -259,9 +268,9 @@ export default function TaskView({
         <div className="py-6">
           <div className="max-w-7xl mx-auto px-8 flex justify-between items-center">
             <h1 className="text-2xl font-semibold text-gray-900">
-              {navigator.name}
+              {delayedFolderName}
             </h1>
-            {!(ReservedNavIds as any)[navigator.id] && (
+            {!(ReservedNavIds as any)[delayedFolderId] && (
               <ConfirmNavDeleteWidget
                 trashState={trashState}
                 setTrashState={setTrashState}
@@ -270,7 +279,7 @@ export default function TaskView({
               />
             )}
           </div>
-          {!isNext3DaysFilter && <AddTaskBar addTask={addTask} />}
+          {!delayedIsNext3DaysFilter && <AddTaskBar addTask={addTask} />}
           <div className="mx-auto">
             <DragDropContext onDragEnd={onDragEnd}>
               <Droppable droppableId="tasks">
@@ -283,7 +292,7 @@ export default function TaskView({
                           key={task.id}
                           index={index}
                           draggableId={task.id}
-                          isDragDisabled={isNext3DaysFilter}
+                          isDragDisabled={delayedIsNext3DaysFilter}
                         >
                           {(provided) => (
                             <div
@@ -299,7 +308,9 @@ export default function TaskView({
                                 selectActiveTask={selectActiveTask}
                                 activeTaskId={activeTaskId}
                                 moveTask={
-                                  isNext3DaysFilter ? undefined : moveTask
+                                  delayedIsNext3DaysFilter
+                                    ? undefined
+                                    : moveTask
                                 }
                                 isTopOfList={index === 0}
                                 isBottomOfList={
