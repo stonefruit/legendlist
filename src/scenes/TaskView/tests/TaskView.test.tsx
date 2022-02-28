@@ -24,7 +24,7 @@ test('TaskView', async () => {
     <TaskView
       navigator={navigator}
       selectedNavId="INBOX"
-      onClickDeleteFolder={async () => {}}
+      onClickArchiveFolder={async () => {}}
       navigation={navigation}
     />
   )

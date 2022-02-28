@@ -65,6 +65,8 @@ export type Folder = {
   name: string
   createdAt: number
   modifiedAt: number
+  archivedAt?: number | null
+  order?: number
 }
 
 // END - DB TYPES

@@ -28,18 +28,18 @@ type TrashState = 'INACTIVE' | 'ACTIVE' | 'CONFIRM'
 type Props = {
   navigator: NavigationItem
   selectedNavId: string
-  onClickDeleteFolder(id: string): void
+  onClickArchiveFolder(id: string): void
   navigation: NavigationItem[]
 }
 export default function TaskView({
   navigator,
   selectedNavId: folderId,
-  onClickDeleteFolder,
+  onClickArchiveFolder,
   navigation,
 }: Props) {
   const [tasks, setTasks] = useState<Task[]>([])
   const [activeTaskId, setActiveTaskId] = useState<string | null>(null)
-  const [trashState, setTrashState] = useState<TrashState>('INACTIVE')
+  const [trashState, setTrashState] = useState<TrashState>('ACTIVE')
   const [totalTasks, setTotalTasks] = useState(0)
   const [showCompleted, setShowCompleted] = useState(false)
   const [delayedIsNext3DaysFilter, setDelayedIsNext3DaysFilter] = useState(true)
@@ -235,14 +235,6 @@ export default function TaskView({
   }, [sortedTasks, totalTasks])
 
   useEffect(() => {
-    if (totalTasks > 0) {
-      setTrashState('INACTIVE')
-    } else {
-      setTrashState('ACTIVE')
-    }
-  }, [totalTasks])
-
-  useEffect(() => {
     // Only show task as active (show note view) if it is in current folder tasks
     if (!sortedTasks.find((task) => task.id === activeTaskId)) {
       setActiveTaskId(null)
@@ -274,7 +266,7 @@ export default function TaskView({
               <ConfirmNavDeleteWidget
                 trashState={trashState}
                 setTrashState={setTrashState}
-                onClickDeleteFolder={onClickDeleteFolder}
+                onClickArchiveFolder={onClickArchiveFolder}
                 selectedNavId={folderId}
               />
             )}

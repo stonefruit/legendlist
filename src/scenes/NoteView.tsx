@@ -204,7 +204,7 @@ export default function NoteView({ task, navigation, updateTask }: Props) {
                 maxMenuHeight={200}
                 value={{
                   value: task.folderId,
-                  label: currentFolder?.name,
+                  label: currentFolder?.name ?? 'Archived',
                 }}
                 isSearchable={false}
                 isClearable={false}

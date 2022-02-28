@@ -10,8 +10,17 @@ const get = async ({ id }: { id: string }): Promise<Folder | undefined> => {
   return await db.Folder.get(id)
 }
 
-const find = async (): Promise<Folder[]> => {
-  return await db.Folder.orderBy('createdAt').toArray()
+const find = async ({
+  isArchived,
+}: {
+  isArchived?: boolean
+}): Promise<Folder[]> => {
+  const folders = await db.Folder.orderBy('createdAt').toArray()
+
+  if (isArchived) {
+    return folders.filter((folder) => folder.archivedAt)
+  }
+  return folders.filter((folder) => !folder.archivedAt)
 }
 
 const update = async ({
@@ -32,8 +41,8 @@ const update = async ({
   }
 }
 
-const destroy = async ({ id }: { id: string }): Promise<void> => {
-  return await db.Folder.delete(id)
+const archive = async ({ id }: { id: string }): Promise<void> => {
+  await db.Folder.update(id, { archivedAt: Date.now() })
 }
 
-export { create, get, find, update, destroy }
+export { create, get, find, update, archive }

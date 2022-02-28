@@ -56,13 +56,13 @@ export default function Shell() {
     allFolders.push(newFolder)
     setNavigation(allFolders)
   }
-  const onClickDeleteFolder = (id: string) => {
+  const onClickArchiveFolder = (id: string) => {
     const allFolders = _.cloneDeep(navigation)
     const selectedFolderIndex = allFolders.findIndex(
       (folder) => folder.id === id
     )
     allFolders.splice(selectedFolderIndex, 1)
-    models.Folder.destroy({ id })
+    models.Folder.archive({ id })
     setNavigation(allFolders)
     setNavIndex(0)
   }
@@ -95,7 +95,7 @@ export default function Shell() {
   useEffect(() => {
     if (activity === 'TASK') {
       const runAsync = async () => {
-        const _folders = await models.Folder.find()
+        const _folders = await models.Folder.find({})
         const allFolders = _folders.map((folder): NavigationItem => {
           return {
             id: folder.id,
@@ -139,7 +139,7 @@ export default function Shell() {
         <TaskView
           navigator={navigator}
           selectedNavId={navigator.id}
-          onClickDeleteFolder={onClickDeleteFolder}
+          onClickArchiveFolder={onClickArchiveFolder}
           navigation={navigation}
         />
       )}
