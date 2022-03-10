@@ -11,7 +11,7 @@ import * as models from '../../models'
 import { NavigationItem, Task, UpdateTaskParams } from '../../types'
 import NoteView from '../NoteView'
 import AddTaskBar from './AddTaskBar'
-import ConfirmNavDeleteWidget from './ConfirmNavDeleteWidget'
+import ConfirmNavArchiveWidget from './ConfirmNavArchiveWidget'
 import TaskListItem from './TaskListItem'
 import CompletedTasks from './CompletedTasks'
 import { autoReorderTasks, taskSorter, prepareTasksToUpdate } from './helpers'
@@ -45,6 +45,9 @@ export default function TaskView({
   const [delayedIsNext3DaysFilter, setDelayedIsNext3DaysFilter] = useState(true)
   const [delayedFolderId, setDelayedFolderId] = useState<string>('')
   const [delayedFolderName, setDelayedFolderName] = useState<string>('')
+  const [delayedFolderArchivedAt, setDelayedFolderArchivedAt] = useState<
+    number | null | undefined
+  >(null)
 
   const isNext3DaysFilter = folderId === 'NEXT_3_DAYS'
   const sortedTasks = isNext3DaysFilter
@@ -215,6 +218,7 @@ export default function TaskView({
         setDelayedIsNext3DaysFilter(true)
         setDelayedFolderId(folderId)
         setDelayedFolderName(navigator.name)
+        setTrashState('ACTIVE')
       })
     } else {
       models.Task.find({ folderId }).then((tasksToUse) => {
@@ -224,9 +228,11 @@ export default function TaskView({
         setDelayedIsNext3DaysFilter(false)
         setDelayedFolderId(folderId)
         setDelayedFolderName(navigator.name)
+        setDelayedFolderArchivedAt(navigator.archivedAt)
+        setTrashState('ACTIVE')
       })
     }
-  }, [folderId, isNext3DaysFilter, navigator.name])
+  }, [folderId, isNext3DaysFilter, navigator.name, navigator.archivedAt])
 
   useEffect(() => {
     if (sortedTasks.length !== totalTasks) {
@@ -263,7 +269,8 @@ export default function TaskView({
               {delayedFolderName}
             </h1>
             {!(ReservedNavIds as any)[delayedFolderId] && (
-              <ConfirmNavDeleteWidget
+              <ConfirmNavArchiveWidget
+                isArchived={!!delayedFolderArchivedAt}
                 trashState={trashState}
                 setTrashState={setTrashState}
                 onClickArchiveFolder={onClickArchiveFolder}

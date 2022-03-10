@@ -6,12 +6,14 @@ type Props = {
   setTrashState: React.Dispatch<React.SetStateAction<TrashState>>
   onClickArchiveFolder: (id: string) => void
   selectedNavId: string
+  isArchived: boolean
 }
 export default function ConfirmNavDeleteWidget({
   trashState,
   setTrashState,
   onClickArchiveFolder,
   selectedNavId,
+  isArchived,
 }: Props) {
   return (
     <div>
@@ -25,7 +27,9 @@ export default function ConfirmNavDeleteWidget({
       )}
       {trashState === 'CONFIRM' && (
         <div className="flex justify-center items-center">
-          <div className="text-sm">Archive this folder?</div>
+          <div className="text-sm">{`${
+            isArchived ? 'Una' : 'A'
+          }rchive this folder?`}</div>
           <button
             onClick={() => {
               setTrashState('ACTIVE')

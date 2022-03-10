@@ -26,7 +26,7 @@ export default function NoteView({ task, navigation, updateTask }: Props) {
   const folderOptions = navigation.map((nav) => {
     return {
       value: nav.id,
-      label: nav.name,
+      label: nav.archivedAt ? `[Archived] ${nav.name}` : nav.name,
     }
   })
   const currentFolder = navigation.find((nav) => nav.id === task?.folderId)

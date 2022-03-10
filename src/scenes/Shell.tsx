@@ -61,10 +61,22 @@ export default function Shell() {
     const selectedFolderIndex = allFolders.findIndex(
       (folder) => folder.id === id
     )
-    allFolders.splice(selectedFolderIndex, 1)
-    models.Folder.archive({ id })
+    if (allFolders[selectedFolderIndex].archivedAt) {
+      allFolders[selectedFolderIndex].archivedAt = null
+    } else {
+      allFolders[selectedFolderIndex].archivedAt = Date.now()
+    }
+    models.Folder.archive({
+      id,
+      archivedAt: allFolders[selectedFolderIndex].archivedAt,
+    })
+    const newIndex = allFolders.findIndex((navigator) => navigator.id === id)
     setNavigation(allFolders)
-    setNavIndex(0)
+    if (allFolders[selectedFolderIndex].archivedAt) {
+      setNavIndex(0)
+    } else {
+      setNavIndex(newIndex)
+    }
   }
   const updateFolder = ({ id, name }: { id: string; name?: string }) => {
     const allFolders = _.cloneDeep(navigation)
@@ -100,6 +112,7 @@ export default function Shell() {
           return {
             id: folder.id,
             name: folder.name,
+            archivedAt: folder.archivedAt,
           }
         })
         setNavigation(allFolders)

@@ -79,6 +79,7 @@ export type NavigationItem = {
   id: string
   name: string
   icon?: (props: React.SVGProps<SVGSVGElement>) => JSX.Element
+  archivedAt?: number | null
 }
 
 export type CustomElement = { type: string; children: CustomText[] }
