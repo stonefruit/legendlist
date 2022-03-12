@@ -11,15 +11,17 @@ import {
 import { withHistory } from 'slate-history'
 import { Editable, withReact, useSlate, Slate, ReactEditor } from 'slate-react'
 import { Button, Toolbar } from './components'
-import BoldIcon from '../../assets/BoldIcon'
-import CodeIcon from '../../assets/CodeIcon'
-import H1Icon from '../../assets/H1Icon'
-import H2Icon from '../../assets/H2Icon'
-import ItalicIcon from '../../assets/ItalicIcon'
-import OrderedListIcon from '../../assets/OrderedListIcon'
-import QuoteIcon from '../../assets/QuoteIcon'
-import UnderlineIcon from '../../assets/UnderlineIcon'
-import UnorderedListIcon from '../../assets/UnorderedListIcon'
+import {
+  BoldIcon,
+  CodeIcon,
+  H1Icon,
+  H2Icon,
+  ItalicIcon,
+  OrderedListIcon,
+  QuoteIcon,
+  UnderlineIcon,
+  UnorderedListIcon,
+} from '../../assets'
 
 type EditorType = BaseEditor & ReactEditor
 type CustomText = { text: string }

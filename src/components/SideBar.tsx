@@ -1,7 +1,7 @@
 // TODO: Add state testing
 import { useState } from 'react'
 import { PlusIcon, CalendarIcon } from '@heroicons/react/solid'
-import LegendListLogo from '../assets/LegendListLogo'
+import { LegendListLogo } from '../assets'
 import { NavigationItem } from '../types'
 import { classNames } from '../utils'
 
