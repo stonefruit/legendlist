@@ -13,8 +13,8 @@ import { Activity, NavigationItem } from '../types'
 import ImportExport from './ImportExport'
 import MiniSideBar from './MiniSideBar'
 import SideBar from './SideBar'
-import TaskView from './TaskView'
-import Search from './Search/Search'
+import TaskView from '../components/TaskView'
+import Search from '../components/Search/Search'
 import Files from './Files'
 
 const assignIcons = (navigation: NavigationItem[]) => {
