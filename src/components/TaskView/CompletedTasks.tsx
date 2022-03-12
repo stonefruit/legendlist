@@ -1,6 +1,7 @@
+// TODO: Add state testing
 import { ChevronDownIcon } from '@heroicons/react/outline'
-import { Task, UpdateTask } from '../../types'
 import TaskListItem from './TaskListItem'
+import { Task, UpdateTask } from '../../types'
 
 type Props = {
   showCompleted: boolean

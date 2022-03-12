@@ -1,12 +1,12 @@
+// TODO: Add state testing
 import { useEffect, useState } from 'react'
+import DatePicker from 'react-datepicker'
 import Select from 'react-select'
 import { Descendant } from 'slate'
-import DatePicker from 'react-datepicker'
-
-import RichTextEditor from '../components/RichTextEditor'
+import NoteViewFilePaths from './NoteViewFilePaths'
+import RichTextEditor from './RichTextEditor'
 import { NavigationItem, Task, UpdateTask } from '../types'
 import { classNames } from '../utils'
-import NoteViewFilePaths from './NoteViewFilePaths'
 
 type Props = {
   task: Task | null

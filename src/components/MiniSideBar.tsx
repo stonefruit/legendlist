@@ -1,3 +1,4 @@
+// TODO: Add state testing
 import { SearchIcon, FolderIcon } from '@heroicons/react/outline'
 import {
   BellIcon,

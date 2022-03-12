@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react'
+// TODO: Add state testing
 import _ from 'lodash'
+import { useEffect, useState } from 'react'
 import {
   DragDropContext,
   Draggable,
@@ -7,14 +8,14 @@ import {
   DropResult,
 } from 'react-beautiful-dnd'
 import { v4 as uuidv4 } from 'uuid'
+import AddTaskBar from './AddTaskBar'
+import CompletedTasks from './CompletedTasks'
+import ConfirmNavArchiveWidget from './ConfirmNavArchiveWidget'
+import { autoReorderTasks, taskSorter, prepareTasksToUpdate } from './helpers'
+import TaskListItem from './TaskListItem'
+import NoteView from '../NoteView'
 import * as models from '../../models'
 import { NavigationItem, Task, UpdateTaskParams } from '../../types'
-import NoteView from '../NoteView'
-import AddTaskBar from './AddTaskBar'
-import ConfirmNavArchiveWidget from './ConfirmNavArchiveWidget'
-import TaskListItem from './TaskListItem'
-import CompletedTasks from './CompletedTasks'
-import { autoReorderTasks, taskSorter, prepareTasksToUpdate } from './helpers'
 
 const ReservedNavIds = {
   INBOX: 'INBOX',

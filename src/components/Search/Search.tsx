@@ -1,10 +1,10 @@
-import { useState } from 'react'
 import Fuse from 'fuse.js'
-import * as models from '../../models'
-import { NavigationItem, Task } from '../../types'
+import { useState } from 'react'
+import SearchBar from './SearchBar'
 import NoteView from '../NoteView'
 import TaskListItem from '../TaskView/TaskListItem'
-import SearchBar from './SearchBar'
+import * as models from '../../models'
+import { NavigationItem, Task } from '../../types'
 
 // TODO: Move as helper and add tests
 const getTextFromRichText = (content: any[]): string => {

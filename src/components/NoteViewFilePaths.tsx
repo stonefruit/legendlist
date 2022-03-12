@@ -1,7 +1,8 @@
+// TODO: Add state testing
 import { useEffect, useState } from 'react'
 import { MinusIcon, PlusIcon, XIcon } from '@heroicons/react/outline'
-import { classNames } from '../utils'
 import { Task, UpdateTask } from '../types'
+import { classNames } from '../utils'
 
 type Props = {
   task: Task

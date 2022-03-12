@@ -1,7 +1,6 @@
 // @ts-nocheck
-import { useCallback, useMemo } from 'react'
 import isHotkey from 'is-hotkey'
-import { Editable, withReact, useSlate, Slate, ReactEditor } from 'slate-react'
+import { useCallback, useMemo } from 'react'
 import {
   Editor,
   Transforms,
@@ -10,18 +9,17 @@ import {
   BaseEditor,
 } from 'slate'
 import { withHistory } from 'slate-history'
-
+import { Editable, withReact, useSlate, Slate, ReactEditor } from 'slate-react'
 import { Button, Toolbar } from './components'
-
-import BoldIcon from '../assets/BoldIcon'
-import CodeIcon from '../assets/CodeIcon'
-import H1Icon from '../assets/H1Icon'
-import H2Icon from '../assets/H2Icon'
-import OrderedListIcon from '../assets/OrderedListIcon'
-import UnorderedListIcon from '../assets/UnorderedListIcon'
-import ItalicIcon from '../assets/ItalicIcon'
-import QuoteIcon from '../assets/QuoteIcon'
-import UnderlineIcon from '../assets/UnderlineIcon'
+import BoldIcon from '../../assets/BoldIcon'
+import CodeIcon from '../../assets/CodeIcon'
+import H1Icon from '../../assets/H1Icon'
+import H2Icon from '../../assets/H2Icon'
+import ItalicIcon from '../../assets/ItalicIcon'
+import OrderedListIcon from '../../assets/OrderedListIcon'
+import QuoteIcon from '../../assets/QuoteIcon'
+import UnderlineIcon from '../../assets/UnderlineIcon'
+import UnorderedListIcon from '../../assets/UnorderedListIcon'
 
 type EditorType = BaseEditor & ReactEditor
 type CustomText = { text: string }

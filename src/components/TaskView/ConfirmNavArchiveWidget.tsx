@@ -1,3 +1,4 @@
+// TODO: Add state testing
 import { CheckIcon, ArchiveIcon, XIcon } from '@heroicons/react/solid'
 
 type TrashState = 'INACTIVE' | 'ACTIVE' | 'CONFIRM'

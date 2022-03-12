@@ -1,3 +1,6 @@
+// TODO: Add state testing
+import { format } from 'date-fns'
+import { useEffect, useState } from 'react'
 import {
   ChevronDownIcon,
   ChevronUpIcon,
@@ -5,8 +8,6 @@ import {
   TrashIcon,
 } from '@heroicons/react/outline'
 import { FolderIcon } from '@heroicons/react/solid'
-import { useEffect, useState } from 'react'
-import { format } from 'date-fns'
 import { Task, UpdateTask } from '../../types'
 import { classNames } from '../../utils'
 

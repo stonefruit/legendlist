@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import { useEffect, useState } from 'react'
 import {
   HomeIcon,
@@ -6,16 +7,15 @@ import {
   InboxInIcon,
 } from '@heroicons/react/outline'
 import { v4 as uuidv4 } from 'uuid'
-import _ from 'lodash'
-import hillBackground from '../assets/hillBackground'
-import * as models from '../models'
-import { Activity, NavigationItem } from '../types'
+import Files from './Files'
 import ImportExport from './ImportExport'
 import MiniSideBar from './MiniSideBar'
 import SideBar from './SideBar'
-import TaskView from '../components/TaskView'
+import hillBackground from '../assets/hillBackground'
 import Search from '../components/Search/Search'
-import Files from './Files'
+import TaskView from '../components/TaskView'
+import * as models from '../models'
+import { Activity, NavigationItem } from '../types'
 
 const assignIcons = (navigation: NavigationItem[]) => {
   return navigation.map((nav) => {

@@ -1,6 +1,7 @@
+// TODO: Add state testing
 import { useState } from 'react'
-import { classNames } from '../../utils'
 import { SearchIcon } from '@heroicons/react/outline'
+import { classNames } from '../../utils'
 
 type Props = {
   search(searchParams: { searchText: string }): Promise<void>
