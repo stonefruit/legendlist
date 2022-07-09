@@ -20,3 +20,8 @@ jobs:
           node-version: 16
       - run: npm ci
       - run: npm run bake
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifact
+          path: builds/${{ env.filename }}
