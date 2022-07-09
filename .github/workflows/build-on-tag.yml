@@ -1,4 +1,4 @@
-name: 'Build on push'
+name: 'Build on version tag'
 
 # **What it does**: Renders the content of every page and check all internal links.
 # **Why we have it**: To make sure all links connect correctly.
@@ -19,9 +19,14 @@ jobs:
         with:
           node-version: 16
       - run: npm ci
-      - run: npm run bake
-      - name: Archive code coverage results
+      - run: npm run cake
+      - name: Build and upload single file html app
         uses: actions/upload-artifact@v3
         with:
           name: build-artifact
           path: builds/${{ env.filename }}
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            builds/${{ env.filename }}

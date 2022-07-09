@@ -20,7 +20,7 @@ jobs:
           node-version: 16
       - run: npm ci
       - run: npm run bake
-      - name: Archive code coverage results
+      - name: Build and upload single file html app
         uses: actions/upload-artifact@v3
         with:
           name: build-artifact
