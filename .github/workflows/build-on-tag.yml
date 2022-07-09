@@ -28,5 +28,5 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          files: |
-            builds/${{ env.filename }}
+          files: ${{ env.filename }}
+          fail_on_unmatched_files: true
