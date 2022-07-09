@@ -1,8 +1,13 @@
 prev_version=$(cat VERSION.txt)
 new_version=$(( prev_version + 1 ))
 
-npm run build && npx gulp && 
-sed -i '' -e "s/__BUILD__/v$new_version/" build/index.html 
+npm run build && npx gulp
+
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  sed -i '' -e "s/__BUILD__/v$new_version/" build/index.html 
+else
+  sed -i -e "s/__BUILD__/v$new_version/" build/index.html 
+fi
 
 # Checksum generation. Verify by running next 2 commands with 
 # the sample file and compare first 3 letters

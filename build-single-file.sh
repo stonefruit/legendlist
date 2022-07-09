@@ -1,8 +1,13 @@
 prev_build=$(cat BUILD.txt)
 new_build=$(( prev_build + 1 ))
 
-npm run build && npx gulp && 
-sed -i '' -e "s/__BUILD__/Build $new_build on $(date +'%d %b %Y')/" build/index.html 
+npm run build && npx gulp
+
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  sed -i '' -e "s/__BUILD__/Build $new_build on $(date +'%d %b %Y')/" build/index.html 
+else
+  sed -i -e "s/__BUILD__/Build $new_build on $(date +'%d %b %Y')/" build/index.html 
+fi
 
 # Checksum generation. Verify by running next 2 commands with 
 # the sample file and compare first 3 letters
