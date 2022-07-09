@@ -26,11 +26,9 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: build-artifact
-          path: builds/${{ env.filename }}
-      - name: Copy built file
-        run: cp builds/${{ env.filename }} legendlist.html
+          path: builds/legendlist.html
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          files: legendlist.html
+          files: builds/legendlist.html
           fail_on_unmatched_files: true
