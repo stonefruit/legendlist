@@ -27,6 +27,8 @@ jobs:
         with:
           name: build-artifact
           path: builds/legendlist.html
+      - name: Copy for gh-pages
+        run: cp builds/legendlist.html builds/index.html
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
