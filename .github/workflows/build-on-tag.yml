@@ -25,8 +25,10 @@ jobs:
         with:
           name: build-artifact
           path: builds/${{ env.filename }}
+      - name: Copy built file
+        run: cp builds/${{ env.filename }} legendlist.html
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          files: ${{ env.filename }}
+          files: legendlist.html
           fail_on_unmatched_files: true
